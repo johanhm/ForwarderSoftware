@@ -16,7 +16,6 @@
 #define ML 3
 #define BR 4
 #define BL 5
-volatile sint16 Ref_out[6]={RefZero};
 #define CAN_TEST_ON							1	// Set to 1 when outputting values to CAN
 #define ANALOG_OUTPUT_ON					0	// Set to 1 when outputting values to pins
 
@@ -47,7 +46,7 @@ void actuate(void) {
 	}
 
 	//Cylinder position limit control, does not let cylinder be actuated further in the direction that passed the limit
-	if(CYL_POSITION_LIMIT_ON){
+	if(CYL_POSITION_LIMIT_ON) {
 		for (i = 0; i < 6; i++) {
 			if (Cyl_limit[i] == 1) {
 				if (posData[i] < CYL_POS_MIN) { //Assuming REF_A() makes the cylinder go to the positive (extending) direction
@@ -740,70 +739,11 @@ void test_Task(void) {
 		}
 	}
 
-	/*
-//Balance side to side
-sint16 Back_diff=0;
-sint16 Front_diff=0;
-sint16 Mid_diff=0;
-Back_diff=abs(Load_force[BL]-Load_force[BR]);
-Mid_diff=abs(Load_force[ML]-Load_force[MR]);
-Front_diff=abs(Load_force[FL]-Load_force[FR]);
-
-Ref_balance_force[BL]=0;
-Ref_balance_force[BR]=0;
-if(Back_diff>500){  //If difference is higher than 10000 N
-
-	if(Load_force[BL]>Load_force[BR]) {
-		Ref_balance_force[BL]=-balance_force;
-		Ref_balance_force[BR]=balance_force;
-	}
-	else{
-		Ref_balance_force[BL]=balance_force;
-		Ref_balance_force[BR]=-balance_force;
-	}}
-
-
-Ref_balance_force[ML]=0;
-Ref_balance_force[MR]=0;
-if(Mid_diff>500){  //If difference is higher than 10000 N
-
-	if(Load_force[ML]>Load_force[MR]) {
-		Ref_balance_force[ML]=-balance_force;
-		Ref_balance_force[MR]=balance_force;
-	}
-	else{
-		Ref_balance_force[ML]=balance_force;
-		Ref_balance_force[MR]=-balance_force;
-	}}
-
-Ref_balance_force[FL]=0;
-Ref_balance_force[FR]=0;
-if(Front_diff>500){  //If difference is higher than 10000 N
-
-	if(Load_force[FL]>Load_force[FR]) {
-		Ref_balance_force[FL]=-balance_force;
-		Ref_balance_force[FR]=balance_force;
-	}
-	else{
-		Ref_balance_force[FL]=balance_force;
-		Ref_balance_force[FR]=-balance_force;
-	}}
-
-	 */
-
 	double a[18]={1.0,1.0,1.0,1.0,1.0,1.0,0.5,-0.5,0.5,-0.5,0.5,-0.5,1.5,1.5,-0.5,-0.5,-2.75,-2.75};
 	double a_modified[18]={0};
 	uint i=0;
-	/*
-for(i=0;i<6;i++){                    //Change Geometry matrix depending on unavailable actuators (Off the ground, not responding, saturated)
-a_modified[i]=a[i]*ARM_ACTIVE[i];
-a_modified[i+6]=a[i+6]*ARM_ACTIVE[i];
-a_modified[i+12]=a[i+12]*ARM_ACTIVE[i];
-}
-	 */
 
-
-	for(i=0;i<6;i++){                    //Change Geometry matrix depending on unavailable actuators (Off the ground, not responding, saturated)
+	for(i = 0; i < 6; i++) {                    //Change Geometry matrix depending on unavailable actuators (Off the ground, not responding, saturated)
 		a_modified[i]    = a[i]    * ARM_ACTIVE_F[i];
 		a_modified[i+6]  = a[i+6]  * ARM_ACTIVE_F[i];
 		a_modified[i+12] = a[i+12] * ARM_ACTIVE_F[i];
@@ -1056,16 +996,6 @@ void Dynamic_control_Task(void){
 	//ADD current Load force, calculated cylinder force needed and individual skyhook damping forces
 	calculateForceReferenceForAllWheels();
 
-	//Debugging variables, global and will send out on CAN sometime
-	/*sl_debug_1 = F_REF_CYL[0];
-	sl_debug_2 = F_REF_CYL[1];
-	sl_debug_3 = F_REF_CYL[2];
-	sl_debug_4 = F_REF_CYL[3];
-	sl_debug_5 = F_REF_CYL[4];
-	sl_debug_6 = F_REF_CYL[5];*/
-	sl_debug_1 = ACTIVE_FORCE_CONTROL;
-	sl_debug_2 = Force_control_cylinders[6];
-
 }
 
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
@@ -1092,11 +1022,11 @@ void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 
 	//create variables
-	uint32 sl_P1 = 0; //KPa*1000=[Pa]
-	uint32 sl_P2 = 0;  //Kpa*1000=[Pa]
-	sint32 sl_Fl = 0; //Load force in [N]
+	uint32 sl_P1  = 0; //KPa*1000=[Pa]
+	uint32 sl_P2  = 0;  //Kpa*1000=[Pa]
+	sint32 sl_Fl  = 0; //Load force in [N]
 	sint32 sl_Vel = 0;  //Cylinder velocity in mm/s
-	sint32 sigma = 0;
+	sint32 sigma  = 0;
 
 	float L = 0;
 	float sgn = 0;
