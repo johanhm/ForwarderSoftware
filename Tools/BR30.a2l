@@ -1,0 +1,477 @@
+ASAP2_VERSION  1 6
+/begin PROJECT RC30 ""
+  /begin HEADER ""
+    VERSION    "0"
+    PROJECT_NO RC30
+  /end HEADER
+
+  /begin MODULE CCP ""
+
+  /begin A2ML 
+    block "IF_DATA" taggedunion if_data {
+/****************************************************************************/
+/*                                                                          */
+/*   ASAP2 Meta Language for CCP CAN Calibration Protocol V2.1              */
+/*   Assumes ASAP2 V1.3 or later                                            */
+/*                                                                          */
+/*   AML Version V2.4, 27.04.1999                                           */
+/*                                                                          */
+/*   Vector Informatik, Zaiser                                              */
+/*   Hewlett Packard, Krueger                                               */
+/*   ETAS, Maier                                                            */
+/*   SIEMENS Automotive, Stuhler                                            */
+/*                                                                          */
+/*   Datatypes:                                                             */
+/*                                                                          */
+/*   A2ML       ASAP2          Windows  Erlaeuuterung                       */
+/*   ----------------------------------------------------------------       */
+/*   uchar      UBYTE          BYTE     unsigned 8 Bit                      */
+/*   char       SBYTE          char     signed 8 Bit                        */
+/*   uint       UWORD          WORD     unsigned integer 16 Bit             */
+/*   int        SWORD          int      signed integer 16 Bit               */
+/*   ulong      ULONG          DWORD    unsigned integer 32 Bit             */
+/*   long       SLONG          LONG     signed integer 32 Bit               */
+/*   float      FLOAT32_IEEE            float 32 Bit                        */
+/*                                                                          */
+/****************************************************************************/
+
+"ASAP1B_CCP" taggedstruct {
+
+    /* Beschreibung der DAQ-Listen */
+    (block "SOURCE" struct {
+
+      struct {
+        char [101];   /* Name of the DAQ-List (data acquisition list),
+                         measurement source .        */
+
+                      /* If the DAQ-Liste only supports one fixed ECU 
+                         sampling rate, it can be declared below
+                         to achieve compatibility with the ASAP2 standard.
+                         Otherwise description of the possible ECU
+                         sampling rates in QP_BLOB      */
+        int;          /* Period definition : Basic scaling unit in 
+                         CSE defined in ASAP1b (CSE=Code for Scaling Unit) */
+        long;         /* Period definition : Rate in Scaling Units */
+      };
+
+
+      taggedstruct {
+
+        "DISPLAY_IDENTIFIER" char[32];
+
+        block "QP_BLOB" struct {
+
+          uint;	               /* Number of the DAQ-List 0..n               */
+
+          taggedstruct {
+            "LENGTH" uint;     /* Length of the DAQ-Liste, maximum number of
+                                  the useable ODTs                          */
+
+            "CAN_ID_VARIABLE"; /* CAN-Message-ID is variable                */
+
+            "CAN_ID_FIXED" ulong;
+                               /* CAN-Message-ID of the DTOs is fixed,
+                                  Default DTO
+                                  Bit31 = 1: extended Identifier
+                                  Bit31 = 0: standard Identifier            */
+
+                               /* Not applied if the ECU uses the DTM-Id    */
+
+            ("RASTER" uchar )*;
+                               /* Supported CCP Event Channel Names
+                                  of this DAQ List */
+
+            ("EXCLUSIVE" int )*;
+                               /* Exclusion of other DAQ-Lists              */
+
+            "REDUCTION_ALLOWED";
+                               /* Data reduction possible                   */
+
+            "FIRST_PID" uchar; /* First Packet ID (PID) of the DAQ List     */
+          };
+        };
+      };  /* optional parameters for this DAQ list  */
+    } )*;  /* DAQ list description*/
+
+
+    /* Description of the available ECU Sampling Rates (Event Channels)      */
+    (block "RASTER" struct {
+
+       char [101];   /* CCP Event Channel Name                               */
+       char [9];     /* Short Display Name of the Event Channel Name         */
+       uchar;        /* Event Channel No., used for CCP START_STOP)          */
+       int;          /* Period definition :  basic scaling unit in CSE
+                        as defined in ASAP1b                                 */
+       long;         /* ECU sample rate of the event channel,
+                        period definition based on the basic scaling unit    */
+
+       taggedstruct {
+         ("EXCLUSIVE" uchar )*;
+                     /* Exclusion of other CCP Event Channels                */
+       };
+
+    } )*;
+
+    /* Group several event channels to form one combined event */
+    /* e.g. group all cylinder synchronous events to one combined element */
+    (block "EVENT_GROUP" struct {
+
+       char [101];   /* Event group name */
+       char [9];     /* Short name for the event group */
+       taggedstruct {
+         ("RASTER" uchar )*;
+       };
+                     /* all event channels beloging to group
+                        (CCP Event Channel Numbers for START_STOP)               */
+    } )*;
+
+
+    /* Description of the authentification process */
+    block "SEED_KEY" struct {
+       char[256];    /* Name of the Seed&Key DLL for CAL Priviledge,
+                        including file-Extension without path */
+       char[256];    /* Name of the Seed&Key DLL for DAQ Priviledge,
+                        including file-Extension without path */
+       char[256];    /* Name of the Seed&Key DLL for PGM Priviledge,
+                        including file-Extension without path */
+    };
+
+
+/* Description of the checksum calculation process */
+    block "CHECKSUM" struct {
+       char[256];    /* Name of the Checksum DLL representing the ECU Algorithm, 
+                        including file-Extension without path */
+};
+
+
+block "TP_BLOB" struct {
+
+      uint;	  /* CCP Version,       High Byte: Version
+                                    Low Byte : subversion (dec.)            */
+      uint;	  /* Blob-Version,      High Byte: Version
+                                    Low Byte : subversion (dec.)            */
+      ulong;	  /* CAN-Message ID for 'Transmitting to ECU (CRM)'
+                                    Bit31 = 1: extended Identifier
+                                    Bit31 = 0: standard Identifier          */
+      ulong;	  /* CAN-Message ID for 'Receiving from ECU (DTM)'
+                                    Bit31 = 1: extended Identifier
+                                    Bit31 = 0: standard Identifier          */
+      uint;	  /* Logical CCP-Address of the (station address)           */
+      uint;	  /* Byte order of Multiple-byte-items
+                                    1 = high Byte first, 2 = low byte first */
+      taggedstruct {
+
+        block "CAN_PARAM" struct {
+          uint;                  /* Quartz freq. of the elec. control unit  */
+          uchar;                 /* BTR0                                    */
+          uchar;                 /* BTR1                                    */
+        };
+
+        "BAUDRATE" ulong;        /* Baud rate in Hz.                        */
+        "SAMPLE_POINT" uchar;    /* sampling point of time in percent       */
+        "SAMPLE_RATE" uchar;     /* number of samples per Bit (1 oder 3)    */
+        "BTL_CYCLES" uchar;      /* number of BTL-cycles                    */
+        "SJW" uchar;             /* SJW-parameter in BTL-cycles             */
+        "SYNC_EDGE" enum {
+           "SINGLE" = 0,         /* Synchronisation only on fallende edge   */
+           "DUAL" = 1            /* Synchr. on falling and rising edge      */
+        };
+
+        "DAQ_MODE" enum {        /* mode of cylcic data acquisition         */
+           "ALTERNATING" = 0,    /* ECU is sending one ODT per cycle        */
+           "BURST" = 1           /* ECU is sending a complete DAQ           */
+        };
+
+        "BYTES_ONLY";            /* ECU supports max. elements of one Byte size */
+                                 /* otherwise ECU supports different dataTypes  */
+
+        "RESUME_SUPPORTED";      /* ECU supports the Resume function            */
+
+        "STORE_SUPPORTED";       /* ECU supports the Store function             */
+
+        "CONSISTENCY" enum {
+           "DAQ" = 0,            /* consistency of a complete DAQ ist guaranteed */
+           "ODT" = 1             /* consistency of a complete ODT ist guaranteed */
+        };
+
+        "ADDRESS_EXTENSION" enum {  /* address extension                      */
+           "DAQ" = 0,               /* ECU supports only one Address extension
+                                       within an DAQ                    */
+           "ODT" = 1                /* ECU supports only one Address extension
+                                       within an ODT                    */
+        };
+
+        block "CHECKSUM_PARAM" struct {
+          uint;	           /* checksum calculation procedure
+                               standard types not yet defined,
+                               if greater of equal 1000 : manufacturer specific  */
+
+          ulong;               /* Maximum block length used by an ASAP1a-CCP
+                                  command, for checksum calculation procedure  */
+
+          taggedstruct {
+            "CHECKSUM_CALCULATION" enum {
+               "ACTIVE_PAGE" = 0,
+               "BIT_OR_WITH_OPT_PAGE" = 1
+            };
+          };
+        };
+
+        (block "DEFINED_PAGES" struct {
+           struct {
+              uint;            /* Logical No. of the memory page (1,2,..)   */
+              char[101];       /* Name of the memory page                   */
+              uint;            /* Adress-Extension of the memory page (only
+                                  Low Byte significant)                     */
+              ulong;           /* Base address of the memory page           */
+              ulong;           /* Length of the memory page in Bytes        */
+           };
+           taggedstruct {
+             "RAM";              /* memory page in RAM */
+             "ROM";              /* memory page in ROM */
+             "FLASH";            /* memory page in FLASH */
+             "EEPROM";           /* memory page in EEPROM */
+             "RAM_INIT_BY_ECU";  /* memory page is initialised by ECU start-up */
+             "RAM_INIT_BY_TOOL"; /* RAM- memory page is initialised by the MCS */
+             "AUTO_FLASH_BACK";  /* RAM memory page is automatically flashed back */
+             "FLASH_BACK";       /* feature available to flash back the RAM memory page */
+             "DEFAULT";          /* memory page is standard (fallback mode) */
+           };
+        } ) *;
+
+        ( "OPTIONAL_CMD"  uint )*; /* CCP-Code of the optional command available
+                                      in the ECU. It is recommended to declare all
+                                      non-standard ECU commands here */
+
+      };
+
+    };
+
+/* for CHARACTERISTIC and AXIS_PTS and MEMORY_LAYOUT */
+    "DP_BLOB" struct {
+      uint;	/* Address extension of the calibration data
+                   (only Low Byte significant) */
+      ulong;	/* Base address of the calibration data */
+      ulong;	/* Number of Bytes belonging to the calibration data  */
+    };
+
+/* for MEASUREMENT */
+    "KP_BLOB" struct {
+      uint;	/* Address extension of the online data
+                   (only Low Byte significant) */
+      ulong;	/* Base address of the online data   */
+      ulong;	/* Number of Bytes belonging to the online data (1,2 or 4) */
+      taggedstruct {
+         ("RASTER" uchar )*;
+                /* Array of event channel initialization values */
+       };
+    };
+};
+
+    }; 
+  /end A2ML
+
+ /begin MOD_COMMON ""
+    BYTE_ORDER MSB_LAST
+    ALIGNMENT_BYTE 1
+    ALIGNMENT_WORD 2
+    ALIGNMENT_LONG 4
+    ALIGNMENT_INT64 8
+    ALIGNMENT_FLOAT32_IEEE 4
+    ALIGNMENT_FLOAT64_IEEE 8
+  /end MOD_COMMON
+
+  /begin IF_DATA ASAP1B_CCP
+    /begin SOURCE
+      /* daq name        */ "event triggered"
+      /* period unit CSE */ 103
+      /* repetition rate */ 1
+      /begin QP_BLOB
+        /* daq number    */ 0
+        LENGTH              10
+        CAN_ID_FIXED        0x330
+        FIRST_PID           0
+        RASTER              0
+      /end QP_BLOB
+    /end SOURCE
+    
+    /begin SOURCE
+      /* daq name        */ "10ms time synchronous"
+      /* period unit CSE */ 4
+      /* repetition rate */ 1
+      /begin QP_BLOB
+        /* daq number    */ 1
+        LENGTH              15
+        CAN_ID_FIXED        0x340
+        FIRST_PID           10
+        RASTER              1
+      /end QP_BLOB
+    /end SOURCE
+    
+    /begin SOURCE
+      /* daq name        */ "100ms time synchronous"
+      /* period unit CSE */ 4
+      /* repetition rate */ 10
+      /begin QP_BLOB
+        /* daq number    */ 2
+        LENGTH              15
+        CAN_ID_FIXED        0x350
+        FIRST_PID           25
+        RASTER              2
+      /end QP_BLOB
+    /end SOURCE
+    
+    /begin RASTER
+      /* event name       */ "event triggered"
+      /* event short name */ "even_trig"
+      /* event number     */ 0
+      /* scaling unit CSE */ 103
+      /* sample rate      */ 1
+    /end RASTER
+    
+    /begin RASTER
+      /* event name       */ "10ms time synchronous"
+      /* event short name */ "10_ms"
+      /* event number     */ 1
+      /* scaling unit CSE */ 4
+      /* sample rate      */ 1
+    /end RASTER
+    
+    /begin RASTER
+      /* event name       */ "100ms time synchronous"
+      /* event short name */ "100_ms"
+      /* event number     */ 2
+      /* scaling unit CSE */ 4
+      /* sample rate      */ 10
+    /end RASTER
+    
+    /begin SEED_KEY
+      /* seed&key dll for CAL */ ""
+      /* seed&key dll for DAQ */ ""
+      /* seed&key dll for PGM */ ""
+    /end SEED_KEY
+    
+    /begin TP_BLOB
+      /* CCP version     */ 0x201
+      /* Blob version    */ 0x204
+      /* CAN msg ID-send */ 0x310
+      /* CAN msg ID-recv */ 0x320
+      /* station address */ 0x1
+      /* byte order      */ 2
+      
+      BAUDRATE           1000000 /* in Hz */
+      SAMPLE_POINT       80 /* in % */
+      SAMPLE_RATE        1 /* 1 or 3 */
+      BTL_CYCLES         20
+      SJW                2
+      SYNC_EDGE          SINGLE /* SINGLE or DUAL */
+      
+      DAQ_MODE           BURST
+      CONSISTENCY        DAQ
+      
+      /begin CHECKSUM_PARAM
+        /* algorithm */      0xC001
+        /* limit     */      0xFFFFFFFF
+        CHECKSUM_CALCULATION ACTIVE_PAGE
+      /end CHECKSUM_PARAM 
+      
+      /begin DEFINED_PAGES
+        /* page number    */ 1
+        /* page name      */ "reference page"
+        /* address ext.   */ 0x0
+        /* base address   */ 0x82006010
+        /* page length    */ 0x38000
+        ROM
+         
+         
+         
+      /end DEFINED_PAGES
+      
+      /begin DEFINED_PAGES
+        /* page number    */ 2
+        /* page name      */ "working page"
+        /* address ext.   */ 0x0
+        /* base address   */ 0x48000
+        /* page length    */ 0x38000
+        RAM
+        RAM_INIT_BY_ECU
+         
+         
+      /end DEFINED_PAGES
+      
+      OPTIONAL_CMD 0x5  /* TEST */
+      OPTIONAL_CMD 0x8  /* START_STOP_ALL */
+      OPTIONAL_CMD 0x9  /* GET_ACTIVE_CAL_PAGE */
+      OPTIONAL_CMD 0xC  /* SET_S_STATUS */
+      OPTIONAL_CMD 0xD  /* GET_S_STATUS */
+      OPTIONAL_CMD 0xE  /* BUILD_CHKSUM */
+      OPTIONAL_CMD 0xF   /* SHORT_UPLOAD        */
+      OPTIONAL_CMD 0x11  /* SELECT_CAL_PAGE */
+      OPTIONAL_CMD 0x12  /* GET_SEED */
+      OPTIONAL_CMD 0x13  /* UNLOCK */
+      OPTIONAL_CMD 0x19  /* MOVE */
+      OPTIONAL_CMD 0x23  /* DNLOAD_6 */
+
+    /end TP_BLOB
+  /end IF_DATA
+
+/* Overrides for ATI VISION */
+/begin IF_DATA VISION
+    DEVICE_SETTING "CCP=2.1FixedDaqLists"
+    DEVICE_SETTING "CCP_Event1=even_trig, 1, 1"
+    DEVICE_SETTING "CCP_FixedDaqList1=even_trig, 0, 17, 0, 0, 0, 1, 1, 0x330"
+    DEVICE_SETTING "CCP_FixedDaqList2=10_ms, 1, 26, 0, 10, 10, 1, 1, 0x340"
+    DEVICE_SETTING "CCP_FixedDaqList3=100_ms, 2, 46, 0, 25, 100, 2, 1, 0x350"
+/end IF_DATA
+
+
+/begin RECORD_LAYOUT Kw_Ws16
+
+    FNC_VALUES        1 SWORD COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT ValA_Ws16
+
+    FNC_VALUES        1 SWORD COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT ValA_Wu16
+
+    FNC_VALUES        1 UWORD COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT ValA_Wu8
+
+    FNC_VALUES        1 UBYTE COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT Val_Ws16
+
+    FNC_VALUES        1 SWORD COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT Val_Wu16
+
+    FNC_VALUES        1 UWORD COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT Val_Wu32
+
+    FNC_VALUES        1 ULONG COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+/begin RECORD_LAYOUT Val_Wu8
+
+    FNC_VALUES        1 UBYTE COLUMN_DIR DIRECT
+
+/end RECORD_LAYOUT
+
+  /end MODULE
+/end PROJECT
