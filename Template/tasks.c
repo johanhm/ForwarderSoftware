@@ -256,16 +256,19 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 
 void sendSupplyVoltageOnCAN1(void) {
 	sint16 batterySupplyVoltage = sys_getSupply(VB);
-	sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
-	sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
-	sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
+	//sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
+	//sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
+
+	sl_debug_5 = batterySupplyVoltage;
+
+	//sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
 }
 
 
 void send_CAN_sensors_values_Task(void)
 {
 
-	//sendSupplyVoltageOnCAN();
+	sendSupplyVoltageOnCAN1();
 
 	//Construct msg SMS 1
 	uint8 data_au8_sms_1[8];
@@ -737,11 +740,6 @@ void test_Task(void) {
 		}
 	}
 
-
-
-
-
-
 	/*
 //Balance side to side
 sint16 Back_diff=0;
@@ -822,9 +820,9 @@ a_modified[i+12]=a[i+12]*ARM_ACTIVE[i];
 			index_1++;
 		}
 	}
-	sint16 i9=0;
-	sint16 i10=0;
-	for(i=0;i<6;i++){
+	sint16 i9 = 0;
+	sint16 i10 = 0;
+	for(i = 0; i < 6; i++) {
 		i9=((In_ground[i]<<i)| i9 );
 		i10=((ARM_ACTIVE[i]<<i)| i10 );
 	}
@@ -832,20 +830,14 @@ a_modified[i+12]=a[i+12]*ARM_ACTIVE[i];
 }
 
 void massCenterLocationAndSendOnCAN(void) {
-	float lengthOfForwarder_m = 5.70;
-	float lengthToMidOfForwarder_m = 3.50;
+	float lengthOfForwarder_m = 6.05;
+	float lengthToMidOfForwarder_m = 3.70;
 	float widthOfForwarder_m = 2.35;
 
 	float sumOfForcesOnWheels_N = Weight;
 
 	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (forceVertical[FR] + forceVertical[MR] + forceVertical[BR]) * widthOfForwarder_m;
-
-	float forceML = forceVertical[ML];
-	float forceMR = forceVertical[MR];
-	float forceBL = forceVertical[BL];
-	float forceBR = forceVertical[BR];
-
-	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((forceML + forceMR) * lengthToMidOfForwarder_m + (forceBL + forceBR) * lengthOfForwarder_m);
+	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((forceVertical[ML] + forceVertical[MR]) * lengthToMidOfForwarder_m + (forceVertical[BL] + forceVertical[BR]) * lengthOfForwarder_m);
 
 	sint16 massCenterLocationX_sint16_10m = (massCenterLocationX_m / widthOfForwarder_m  * 100);
 	sint16 massCenterLocationY_sint16_10m = (massCenterLocationY_m / lengthOfForwarder_m * 100);
@@ -859,9 +851,21 @@ void massCenterLocationAndSendOnCAN(void) {
 
 }
 
+void calculateForceErrorPercentageAndSendOnCAN1(void) {
+	sint16 wheel = 0;
+	sint16 forceErrorInPercent[INDEX_SIZE_WHEELS] = {0};
+	for (wheel = 0; wheel < INDEX_SIZE_WHEELS; wheel++) {
+		forceErrorInPercent[wheel] = (float)( (float)(forceReferenceOptimalDistrubution_N[wheel] - messuredForceCylinderLoad_deciN[wheel]) / (float)forceReferenceOptimalDistrubution_N[wheel] ) * 100;
+	}
+
+	sendCAN1_sint16(0x18FF1004, forceErrorInPercent[FL], forceErrorInPercent[FR], forceErrorInPercent[ML], forceErrorInPercent[MR]);
+	sendCAN1_sint16(0x18FF1005, forceErrorInPercent[BL], forceErrorInPercent[BR], 0, 0);
+
+}
+
 void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
-	float lengthOfForwarder_m      = 5.70;
-	float lengthToMidOfForwarder_m = 3.50;
+	float lengthOfForwarder_m      = 6.05;
+	float lengthToMidOfForwarder_m = 3.70;
 	float widthOfForwarder_m       = 2.35;
 
 	float kMidScalingConstant = (float)1/3;
@@ -890,6 +894,9 @@ void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 
 	sendCAN1_sint16(0x18FF1002, forceReferenceOptimalDistrubution_N[FL], forceReferenceOptimalDistrubution_N[FR], forceReferenceOptimalDistrubution_N[ML], forceReferenceOptimalDistrubution_N[MR]);
 	sendCAN1_sint16(0x18FF1003, forceReferenceOptimalDistrubution_N[BL], forceReferenceOptimalDistrubution_N[BR], Weight, forceReferenceDispSum_N);
+
+	calculateForceErrorPercentageAndSendOnCAN1();
+
 }
 
 void hightControllSkyhookForceAddition(void) {
@@ -1012,7 +1019,7 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 
 void calculateForceReferenceForAllWheels(void) {
 	uint8 x = 0;
-	for(x = 0; x <= 5; x++){
+	for(x = 0; x <= 5; x++) {
 		if (To_ground_active == 0) {
 			Ref_ground_force[x] = 0;
 		}
@@ -1050,12 +1057,15 @@ void Dynamic_control_Task(void){
 	calculateForceReferenceForAllWheels();
 
 	//Debugging variables, global and will send out on CAN sometime
-	sl_debug_1 = F_REF_CYL[0];
+	/*sl_debug_1 = F_REF_CYL[0];
 	sl_debug_2 = F_REF_CYL[1];
 	sl_debug_3 = F_REF_CYL[2];
 	sl_debug_4 = F_REF_CYL[3];
 	sl_debug_5 = F_REF_CYL[4];
-	sl_debug_6 = F_REF_CYL[5];
+	sl_debug_6 = F_REF_CYL[5];*/
+	sl_debug_1 = ACTIVE_FORCE_CONTROL;
+	sl_debug_2 = Force_control_cylinders[6];
+
 }
 
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
@@ -1102,14 +1112,18 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	else {
 		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
-	//sigma=sl_Fl-sl_Ref[x];
-	sigma = sl_Fl - F_REF_CYL[wheelCounter];
+
+	sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
+
 	//sigma = sigma / 500;
+	//sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
 	//float filterValue = 500000.00;
-	float filterValue = forceReferenceOptimalDistrubution_N[wheelCounter] * 190;
-
+	float filterValue = (float)forceReferenceOptimalDistrubution_N[wheelCounter] * 110.0;
 	sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
+
+	sl_debug_4 = sl_Fl - F_REF_CYL[0];
+
 
 	if (sl_uold[wheelCounter] >= 0) {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
@@ -1125,18 +1139,19 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	else if (sl_u < -1) {
 		sl_u = -1;
 	}
-
 	sl_uold[wheelCounter] = sl_u;
 }
 
 void FORCE_ControlTask(void)  //Sliding mode
 {
 	uint8 wheelCounter = 0; //Loop counter
-	for(wheelCounter = 0; wheelCounter < 6; wheelCounter++){  //ALL
+	for(wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
 		//Calculate erestimated flow with sliding mode controll structure
 		calculateErestimatedFlowForWheelWithNumber(wheelCounter);
 
 		//Calculate corresponding valve current for requested flow using fitted flow curve
 		mapErestimatedFlowToCurrentOutputOnWheelWithNumber(wheelCounter);
+
 	}//end for
+	sl_debug_6 = sl_debug_6 + 1;
 }

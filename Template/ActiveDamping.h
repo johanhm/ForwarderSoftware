@@ -111,9 +111,9 @@ volatile uint8 SEND_FLOW=0;
 #define TEST_TASK_TIME_MS_DU32  		20
 #define TEST_TASK_OFFS_MS_DU32  		0
 
-#define FORCE_CONTROL_TASK_PRIO_DU8      	4
-#define FORCE_CONTROL_TIME_MS_DU32  		1
-#define FORCE_CONTROL_OFFS_MS_DU32  		0
+#define FORCE_CONTROL_TASK_PRIO_DU8      	1
+#define FORCE_CONTROL_TIME_MS_DU32  		10
+#define FORCE_CONTROL_OFFS_MS_DU32  		1
 
 #define DYNAMIC_TASK_PRIO_DU8      	5
 #define DYNAMIC_TIME_MS_DU32  		10
@@ -587,6 +587,7 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
 void calculateForceReferenceForAllWheels(void);
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
 void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
+void calculateForceErrorPercentageAndSendOnCAN1(void);
 void sendSupplyVoltageOnCAN1(void);
 
 //--- CAN prototypes ----------------------------
