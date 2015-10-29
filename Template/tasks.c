@@ -864,6 +864,8 @@ void massCenterLocationAndSendOnCAN(void) {
 	massCenterLocationY_m = 0.32 * lengthOfForwarder_m;
 	//end of temporare to remove
 
+	sint16 hello = 10;
+
 }
 
 
@@ -961,10 +963,10 @@ void rollPhiControllAddToAllocationMatrix(void) {
 		Phi_k = Phi_error * K_phi;
 		Phi_I = Phi_error + Phi_I;
 		if(Phi_I > MAX_PHI_I) {
-			Phi_I=MAX_PHI_I;
+			Phi_I = MAX_PHI_I;
 		}  //Clamp integrator to max
 		if(Phi_I < -MAX_PHI_I) {
-			Phi_I=-MAX_PHI_I;
+			Phi_I = -MAX_PHI_I;
 		}  //Clamp integrator to min
 
 		Phi_sky = -BSky_phi * Gyro_Phi_deg;
