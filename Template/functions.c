@@ -52,7 +52,7 @@ sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical
 }
 
 
-void SENDCAN1(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D){  //Send up to 4x16bit Variables on CAN1 msg
+void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D){  //Send up to 4x16bit Variables on CAN1 msg
 	uint8 data_au8_sms[8] = {0};
 	data_au8_sms[0] = A;
 	data_au8_sms[1] = A >> 8;
@@ -66,7 +66,7 @@ void SENDCAN1(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D){  //Send up to 4x16
 	if (0 == can_sendData(CAN_1, ID, CAN_EXD_DU8, 8, data_au8_sms)) {}
 }
 
-void sendCan1UnsignInt(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D) {  //Send up to 4x16bit Variables on CAN1 msg
+void sendCAN1_uint16(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D) {  //Send up to 4x16bit Variables on CAN1 msg
 	uint8 data_au8_sms[8] = {0};
 	data_au8_sms[0] = A;
 	data_au8_sms[1] = A >> 8;

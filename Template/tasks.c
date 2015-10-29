@@ -265,7 +265,7 @@ void sendSupplyVoltageOnCAN(void) {
 	sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
 	sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
 
-	SENDCAN1(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
+	sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
 }
 
 
@@ -473,9 +473,9 @@ void send_CAN_sensors_values_Task(void)
 		if (0 == can_sendData(CAN_1, CAN_ID_SENSOR_INFO_SMS_2, CAN_EXD_DU8, 8, data_au8_sms_2)) {}
 		if (0 == can_sendData(CAN_1, CAN_ID_SENSOR_INFO_SMS_3, CAN_EXD_DU8, 8, data_au8_sms_3)) {}
 
-		sendCan1UnsignInt(0x18FF1050,pressureData_mV[0],pressureData_mV[1],pressureData_mV[2],pressureData_mV[3]);
-		sendCan1UnsignInt(0x18FF1051,pressureData_mV[4],pressureData_mV[5],pressureData_mV[6],pressureData_mV[7]);
-		sendCan1UnsignInt(0x18FF1052,pressureData_mV[8],pressureData_mV[9],pressureData_mV[10],pressureData_mV[11]);
+		sendCAN1_uint16(0x18FF1050,pressureData_mV[0],pressureData_mV[1],pressureData_mV[2],pressureData_mV[3]);
+		sendCAN1_uint16(0x18FF1051,pressureData_mV[4],pressureData_mV[5],pressureData_mV[6],pressureData_mV[7]);
+		sendCAN1_uint16(0x18FF1052,pressureData_mV[8],pressureData_mV[9],pressureData_mV[10],pressureData_mV[11]);
 	}
 
 	if(SEND_POS_AND_VEL == 1) {
@@ -682,8 +682,8 @@ void send_CAN_sensors_values_Task(void)
 
 	if (0 == can_sendData(CAN_1, 0x1FD, CAN_STD_DU8, 4, angleData_au8)) {}
 
-	SENDCAN1(CAN_ID_DEBUG_MSG_4	,F_matrix[0],F_matrix[0]>>16,F_matrix[1],F_matrix[1]>>16);
-	SENDCAN1(CAN_ID_DEBUG_MSG_5	,F_matrix[2],F_matrix[2]>>16,0,0);
+	sendCAN1_sint16(CAN_ID_DEBUG_MSG_4, F_matrix[0], F_matrix[0] >> 16, F_matrix[1], F_matrix[1]>>16);
+	sendCAN1_sint16(CAN_ID_DEBUG_MSG_5, F_matrix[2], F_matrix[2] >> 16 ,0 ,0);
 
 	massCenterLocationAndSendOnCAN();
 	calculateOptimalForceForAllWheelsAndSendOnCAN();
@@ -835,7 +835,7 @@ a_modified[i+12]=a[i+12]*ARM_ACTIVE[i];
 		i9=((In_ground[i]<<i)| i9 );
 		i10=((ARM_ACTIVE[i]<<i)| i10 );
 	}
-	SENDCAN1(CAN_ID_DEBUG_MSG_6	,i9,i10,ACTIVE_FORCE_CONTROL,0);
+	sendCAN1_sint16(CAN_ID_DEBUG_MSG_6	,i9,i10,ACTIVE_FORCE_CONTROL,0);
 }
 
 void massCenterLocationAndSendOnCAN(void) {
@@ -845,26 +845,24 @@ void massCenterLocationAndSendOnCAN(void) {
 
 	float sumOfForcesOnWheels_N = Weight;
 
-	massCenterLocationX_m = 1/sumOfForcesOnWheels_N * (forceVertical[1] + forceVertical[3] + forceVertical[5]) * widthOfForwarder_m;
+	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (forceVertical[1] + forceVertical[3] + forceVertical[5]) * widthOfForwarder_m;
 
 	float forceML = forceVertical[2];
 	float forceMR = forceVertical[3];
 	float forceBL = forceVertical[4];
 	float forceBR = forceVertical[5];
 
-	massCenterLocationY_m = 1/sumOfForcesOnWheels_N * ((forceML + forceMR) * lengthToMidOfForwarder_m + (forceBL + forceBR) * lengthOfForwarder_m);
+	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((forceML + forceMR) * lengthToMidOfForwarder_m + (forceBL + forceBR) * lengthOfForwarder_m);
 
 	sint16 massCenterLocationX_sint16_10m = (massCenterLocationX_m / widthOfForwarder_m  * 100);
 	sint16 massCenterLocationY_sint16_10m = (massCenterLocationY_m / lengthOfForwarder_m * 100);
 
-	SENDCAN1(0x18FF1001, massCenterLocationX_sint16_10m, massCenterLocationY_sint16_10m, 0, 0);
+	sendCAN1_sint16(0x18FF1001, massCenterLocationX_sint16_10m, massCenterLocationY_sint16_10m, 0, 0);
 
 	//temporary remove when logic is working
 	massCenterLocationX_m = 0.51 * widthOfForwarder_m;
 	massCenterLocationY_m = 0.32 * lengthOfForwarder_m;
 	//end of temporare to remove
-
-	sint16 hello = 10;
 
 }
 
@@ -882,30 +880,24 @@ void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 	float kRear  = (massCenterLocationY_m - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
 	float kRight = massCenterLocationX_m / widthOfForwarder_m;
 
-	sint16 forceReferenceFrontLeft_N  = kFront * kLeft  * Weight;
-	sint16 forceReferenceFrontRight_N = kFront * kRight * Weight;
-	sint16 forceReferenceMidLeft_N    = kMid   * kLeft  * Weight;
-	sint16 forceReferenceMidRight_N   = kMid   * kRight * Weight;
-	sint16 forceReferenceRearLeft_N   = kRear  * kLeft  * Weight;
-	sint16 forceReferenceRearRight_N  = kRear  * kRight * Weight;
+	//Optimal force ref vector vertical
+	forceReferenceOptimalDistrubution_N[FL]  = kFront * kLeft  * Weight;
+	forceReferenceOptimalDistrubution_N[FR]  = kFront * kRight * Weight;
+	forceReferenceOptimalDistrubution_N[ML]  = kMid   * kLeft  * Weight;
+	forceReferenceOptimalDistrubution_N[MR]  = kMid   * kRight * Weight;
+	forceReferenceOptimalDistrubution_N[BL]  = kRear  * kLeft  * Weight;
+	forceReferenceOptimalDistrubution_N[BR]  = kRear  * kRight * Weight;
 
-	sint16 forceReferenceDispSum_N = forceReferenceFrontLeft_N + forceReferenceFrontRight_N + forceReferenceMidLeft_N + forceReferenceMidRight_N + forceReferenceRearLeft_N + forceReferenceRearRight_N;
-
-	//Optimal force ref vector
-	forceReferenceOptimalDistrubution_N[FL] = forceReferenceFrontLeft_N;
-	forceReferenceOptimalDistrubution_N[FR] = forceReferenceFrontRight_N;
-	forceReferenceOptimalDistrubution_N[ML] = forceReferenceMidLeft_N;
-	forceReferenceOptimalDistrubution_N[MR] = forceReferenceMidRight_N;
-	forceReferenceOptimalDistrubution_N[BL] = forceReferenceRearLeft_N;
-	forceReferenceOptimalDistrubution_N[BR] = forceReferenceRearRight_N;
-
+	sint16 forceReferenceDispSum_N = 0;
 	sint16 wheel = 0;
+	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
 	for (wheel = 0; wheel < 5; wheel++) {
+		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubution_N[wheel];
 		forceReferenceOptimalDistrubution_N[wheel] = forceCylinderLoadFromForceOnWheel(posData[wheel], forceReferenceOptimalDistrubution_N[wheel]);
 	}
 
-	SENDCAN1(0x18FF1002, forceReferenceOptimalDistrubution_N[FL], forceReferenceOptimalDistrubution_N[FR], forceReferenceOptimalDistrubution_N[ML], forceReferenceOptimalDistrubution_N[MR]);
-	SENDCAN1(0x18FF1003, forceReferenceOptimalDistrubution_N[BL], forceReferenceOptimalDistrubution_N[BR], Weight, forceReferenceDispSum_N);
+	sendCAN1_sint16(0x18FF1002, forceReferenceOptimalDistrubution_N[FL], forceReferenceOptimalDistrubution_N[FR], forceReferenceOptimalDistrubution_N[ML], forceReferenceOptimalDistrubution_N[MR]);
+	sendCAN1_sint16(0x18FF1003, forceReferenceOptimalDistrubution_N[BL], forceReferenceOptimalDistrubution_N[BR], Weight, forceReferenceDispSum_N);
 }
 
 void hightControllSkyhookForceAddition(void) {

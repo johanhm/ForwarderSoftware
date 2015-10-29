@@ -619,8 +619,8 @@ sint16 forceOnWheelVerticalFromCylinderLoad(uint16 cylinderPoss_mm, sint16 Load_
 //sint32 Force_Load(uint16 x,sint32 Vertical_force);  //Calculates the load force needed for a desired vetical force
 sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical_force);
 void SEND_ARRAY_CAN1(uint32 ID1,uint32 ID2,volatile sint16 data[],uint8 size_array); //Send whole 6x16bit array on two CAN messages
-void SENDCAN1(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D);  //Send up to 4x16bit Variables on CAN1 msg
-void sendCan1UnsignInt(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D);
+void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D);  //Send up to 4x16bit Variables on CAN1 msg
+void sendCAN1_uint16(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D);
 
 
 
