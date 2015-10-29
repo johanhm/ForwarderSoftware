@@ -147,6 +147,7 @@ void can_1_RxDatabox_3_Callback(void)
 
 	// Databox Get Message data and assign to variables
 	if (0 == can_getDatabox(CAN_1, 3, confData_au8, &confNumBytes_u8)) {}
+
 	FORCE_REF = ((confData_au8[1] << 8) | (confData_au8[0]));   // Add two 8-bits to an unsigned 16-bit.
 	K_z       = ((confData_au8[3] << 8) | (confData_au8[2]));
 	BSky_Z    = ((confData_au8[5] << 8) | (confData_au8[4]));
@@ -167,7 +168,7 @@ void can_1_RxDatabox_4_Callback(void)
 	uint8 confNumBytes_u8;
 
 	// Databox Get Message data and assign to variables
-	//i changed that the waribalbes should be inside the if case here johan
+	//i changed that the variabels should be inside the if case here johan
 	if (0 == can_getDatabox(CAN_1, 4, confData_au8, &confNumBytes_u8)) {
 		K_theta    = ((confData_au8[1] << 8) | (confData_au8[0]));
 		K_phi      = ((confData_au8[3] << 8) | (confData_au8[2]));
@@ -181,7 +182,7 @@ void can_1_RxDatabox_4_Callback(void)
 
 void can_1_RxDatabox_7_Callback(void)
 {
-	uint8 i=0;
+	uint8 i = 0;
 	uint8 confData_au8[8];
 	uint8 confNumBytes_u8;
 	// Databox Get Message data and assign to variables

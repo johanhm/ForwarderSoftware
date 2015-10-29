@@ -415,7 +415,7 @@ volatile sint16 ACCELZ_RAW = 0;
 
 #define DELTA_PRESSURE_8bar 800000  //8 bar pressure compensator setting
 #define MAXIMUM_FLOW_QMAX_m3s  100/1000/60  // maximum flow  (m^3/s)
-#define SLIDING_MODE_CONTROL_PARAMETER_Kt 0.000077
+#define SLIDING_MODE_CONTROL_PARAMETER_Kt 0.000077 //orginalvalue is 0.000077
 volatile sint32 sl_Ref[INDEX_SIZE_WHEELS] = {0};
 volatile float sl_uold[INDEX_SIZE_WHEELS] = {0};
 volatile float sl_u = 0;
@@ -532,8 +532,8 @@ volatile uint8 defaultSafety = 0;
 
 ///Global actuation task defines and variables
 #define REFERENCE_CURRENT_ZERO 0 //Number taken as valve closed Zero output on both solenoids
-#define REFERENCE_CURRENT_MAXIMUM_B_mA -100 //Min Ref Equivalent to Max output on Solenoid B Deadband+ -RefMin
-#define REFERENCE_CURRENT_MAXIMUM_A_mA 100 //400 //Max Ref Equivalent to Max output on Solenoid A  Deadband+ Refmax
+#define REFERENCE_CURRENT_MAXIMUM_B_mA -200 //Min Ref Equivalent to Max output on Solenoid B Deadband+ -RefMin
+#define REFERENCE_CURRENT_MAXIMUM_A_mA 200 //400 //Max Ref Equivalent to Max output on Solenoid A  Deadband+ Refmax
 #define DEADZONE_FOR_SOLEONID_CURRENT_mA 400
 #define FR 0
 #define FL 1
@@ -587,7 +587,7 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
 void calculateForceReferenceForAllWheels(void);
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
 void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
-void sendSupplyVoltageOnCAN(void);
+void sendSupplyVoltageOnCAN1(void);
 
 //--- CAN prototypes ----------------------------
 void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8);

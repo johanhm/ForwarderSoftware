@@ -3,8 +3,6 @@
  All periodic running tasks
  */
 
-
-
 /*
   FUNCTION:      actuate
 
@@ -23,8 +21,8 @@ volatile sint16 Ref_out[6]={RefZero};
 #define ANALOG_OUTPUT_ON					0	// Set to 1 when outputting values to pins
 
  */
-void actuate(void){
-	uint8 i=0;
+void actuate(void) {
+	uint8 i = 0;
 
 	//Check global variables are within minimum and maximum range and limits
 	for(i = 0; i < 6; i++) {
@@ -35,7 +33,6 @@ void actuate(void){
 			referenceSoleonidOutputCurrent_ma[i] = REFERENCE_CURRENT_MAXIMUM_A_mA;
 		}
 	}
-
 	//Compute scaled values for each cylinder's valves
 	for(i = 0; i < 6; i++) {
 		if(referenceSoleonidOutputCurrent_ma[i] == 0) {//both valves off
@@ -51,18 +48,19 @@ void actuate(void){
 
 	//Cylinder position limit control, does not let cylinder be actuated further in the direction that passed the limit
 	if(CYL_POSITION_LIMIT_ON){
-
-		for(i=0;i<6;i++){
-			if(Cyl_limit[i]==1){
-				if(posData[i]<CYL_POS_MIN){Ref_A[i]=0;}           //Assuming REF_A() makes the cylinder go to the positive (extending) direction
-				else if(posData[i]>CYL_POS_MAX){Ref_B[i]=0;}     //Assuming REF_B() makes the cylinder go to the negative (retracting) direction
+		for (i = 0; i < 6; i++) {
+			if (Cyl_limit[i] == 1) {
+				if (posData[i] < CYL_POS_MIN) { //Assuming REF_A() makes the cylinder go to the positive (extending) direction
+					Ref_A[i] = 0;
+				} else if (posData[i] > CYL_POS_MAX) {
+					Ref_B[i] = 0;
+				}     //Assuming REF_B() makes the cylinder go to the negative (retracting) direction
 			}
 		}
 	}
 
-
 	//If OUT_Analog then actuate solenoids with scaled values
-	if(ANALOG_OUTPUT_ON==1){
+	if(ANALOG_OUTPUT_ON == 1) {
 		out(OUT_PENDELURM_FRONT_RIGHT_A, Ref_A[FR]);
 		out(OUT_PENDELURM_FRONT_RIGHT_B, Ref_B[FR]);
 
@@ -81,18 +79,14 @@ void actuate(void){
 		out(OUT_PENDELURM_REAR_LEFT_A,   Ref_A[BL]);
 		out(OUT_PENDELURM_REAR_LEFT_B,   Ref_B[BL]);}
 
-
 	defaultSafety++;
-	if(defaultSafety>80){   //if no command has been received for 80*1ms out references to 0
-		for(i=0;i<6;i++){
-			referenceSoleonidOutputCurrent_ma[i]=0;}
-		defaultSafety=82;
+	if (defaultSafety > 80) {   //if no command has been received for 80*1ms out references to 0
+		for (i = 0; i < 6; i++) {
+			referenceSoleonidOutputCurrent_ma[i] = 0;
+		}
+		defaultSafety = 82;
 	}
-
-
-
 }
-
 
 /***************************************************************************************************
  *  FUNCTION:      read_Sensor_Task
@@ -260,11 +254,10 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
  */
 /**************************************************************************************************/
 
-void sendSupplyVoltageOnCAN(void) {
+void sendSupplyVoltageOnCAN1(void) {
 	sint16 batterySupplyVoltage = sys_getSupply(VB);
 	sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
 	sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
-
 	sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
 }
 
@@ -845,12 +838,12 @@ void massCenterLocationAndSendOnCAN(void) {
 
 	float sumOfForcesOnWheels_N = Weight;
 
-	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (forceVertical[1] + forceVertical[3] + forceVertical[5]) * widthOfForwarder_m;
+	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (forceVertical[FR] + forceVertical[MR] + forceVertical[BR]) * widthOfForwarder_m;
 
-	float forceML = forceVertical[2];
-	float forceMR = forceVertical[3];
-	float forceBL = forceVertical[4];
-	float forceBR = forceVertical[5];
+	float forceML = forceVertical[ML];
+	float forceMR = forceVertical[MR];
+	float forceBL = forceVertical[BL];
+	float forceBR = forceVertical[BR];
 
 	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((forceML + forceMR) * lengthToMidOfForwarder_m + (forceBL + forceBR) * lengthOfForwarder_m);
 
@@ -860,19 +853,18 @@ void massCenterLocationAndSendOnCAN(void) {
 	sendCAN1_sint16(0x18FF1001, massCenterLocationX_sint16_10m, massCenterLocationY_sint16_10m, 0, 0);
 
 	//temporary remove when logic is working
-	massCenterLocationX_m = 0.51 * widthOfForwarder_m;
-	massCenterLocationY_m = 0.32 * lengthOfForwarder_m;
+	massCenterLocationX_m = 0.47 * widthOfForwarder_m;
+	massCenterLocationY_m = 0.34 * lengthOfForwarder_m;
 	//end of temporare to remove
 
 }
-
 
 void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 	float lengthOfForwarder_m      = 5.70;
 	float lengthToMidOfForwarder_m = 3.50;
 	float widthOfForwarder_m       = 2.35;
 
-	float kMidScalingConstant = 0.33333333333;
+	float kMidScalingConstant = (float)1/3;
 
 	float kFront = (lengthOfForwarder_m - massCenterLocationY_m - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
 	float kLeft  = 1 - massCenterLocationX_m / widthOfForwarder_m;
@@ -891,7 +883,7 @@ void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 	sint16 forceReferenceDispSum_N = 0;
 	sint16 wheel = 0;
 	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
-	for (wheel = 0; wheel < 5; wheel++) {
+	for (wheel = 0; wheel < 6; wheel++) {
 		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubution_N[wheel];
 		forceReferenceOptimalDistrubution_N[wheel] = forceCylinderLoadFromForceOnWheel(posData[wheel], forceReferenceOptimalDistrubution_N[wheel]);
 	}
@@ -919,8 +911,8 @@ void heightControllAddToAllocationMatrix(void) {
 	//Chassis Height control Zc
 	if(ACTIVE_HEIGHT_CONTROL == 1){
 		//P(Stiffness) I control
-		Zc_error=Zc_ref-Zc;   //Zc between is average of all arm positions, between (0 and 500) mm
-		if(Zc_error <5 && Zc_error >-5){
+		Zc_error = Zc_ref - Zc;   //Zc between is average of all arm positions, between (0 and 500) mm
+		if(Zc_error < 5 && Zc_error > -5) {
 			Z_I = 0;   //If we reach almost zero error, reset integrator
 			Zc_error = 0;
 		}
@@ -934,8 +926,8 @@ void heightControllAddToAllocationMatrix(void) {
 			Z_I = -MAX_ZI;
 		}  //Clamp integrator to min
 
-		F_Z_damp = -B_Zc*Zcdot;
-		F_REF_Z = Z_k+Z_I+F_Z_damp; //Sum vertical forces
+		F_Z_damp = -B_Zc * Zcdot;
+		F_REF_Z  = Z_k + Z_I + F_Z_damp; //Sum vertical forces
 		F_matrix[0] = F_REF_Z; //Include in Force matrix for decoupling
 	}
 	else {
@@ -947,7 +939,7 @@ void rollPhiControllAddToAllocationMatrix(void) {
 	if(ACTIVE_PHI_CONTROL == 1) {
 		Phi_error = 0 - Phi_deg; //Reference is 0
 
-		if(Phi_error < 5 && Phi_error > -5) {  //Error tolerance of 1 degree
+		if(Phi_error < 0.5 && Phi_error > -0.5) {  //Error tolerance of 1 degree when the value was set to 5
 			Phi_I = 0;   //If we reach almost zero error, reset integrator
 			Phi_error = 0;
 		}
@@ -975,7 +967,7 @@ void pitchThetaControllAddToAllocationMatrix(void) {
 	if(ACTIVE_THETA_CONTROL == 1){
 
 		Theta_error = 0 - Theta_deg; //Reference is 0
-		if(Theta_error < 5 && Theta_error > -5){  //Error tolerance of 1 degree
+		if(Theta_error < 0.5 && Theta_error > -0.5){  //Error tolerance of 1 degree when the value was set to 5
 			Theta_I = 0;   //If we reach almost zero error, reset integrator
 			Theta_error = 0;
 		}
@@ -1072,7 +1064,7 @@ void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 		sl_current = 400;
 	}
 	else if(fabs(sl_u) > 0.97) {
-		sl_current = 600 * (sl_u / fabs(sl_u));
+		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
 	}
 	else{
 		sl_current = (sl_u/fabs(sl_u)) * (VALVE_FLOW_FIT_PARAMETER_CP1*pow(absoluteFlowInPercent,4) + VALVE_FLOW_FIT_PARAMETER_CP2*pow(absoluteFlowInPercent,3) + VALVE_FLOW_FIT_PARAMETER_CP3*pow(absoluteFlowInPercent,2) + VALVE_FLOW_FIT_PARAMETER_CP4 * absoluteFlowInPercent + VALVE_FLOW_FIT_PARAMETER_CP5);
@@ -1087,7 +1079,7 @@ void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 	}
 }
 
-void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter) {
+void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 
 	//create variables
 	uint32 sl_P1 = 0; //KPa*1000=[Pa]
@@ -1100,23 +1092,26 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter) {
 	float sgn = 0;
 
 	//Map Variables to latest cylinder values and scale
-	sl_P1 = pressureData[cylinderCounter*2] * 1000; //KPa*1000=[Pa]
-	sl_P2 = pressureData[(cylinderCounter*2)+1] * 1000;  //Kpa*1000=[Pa]
-	sl_Fl = messuredForceCylinderLoad_deciN[cylinderCounter] * 10; //Load force in [N]
+	sl_P1 = pressureData[wheelCounter*2] * 1000; //KPa*1000=[Pa]
+	sl_P2 = pressureData[(wheelCounter*2)+1] * 1000;  //Kpa*1000=[Pa]
+	sl_Fl = messuredForceCylinderLoad_deciN[wheelCounter] * 10; //Load force in [N]
 
-	if((velData[cylinderCounter] > -10) || (velData[cylinderCounter] < 10)) {
+	if((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {
 		sl_Vel=0;
 	}
 	else {
-		sl_Vel = velData[cylinderCounter];
+		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
 	//sigma=sl_Fl-sl_Ref[x];
-	sigma = sl_Fl - F_REF_CYL[cylinderCounter];
-	sigma = sigma / 500;
+	sigma = sl_Fl - F_REF_CYL[wheelCounter];
+	//sigma = sigma / 500;
 
-	sgn = ((float)sigma / (labs(sigma) + 1000.0));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
+	//float filterValue = 500000.00;
+	float filterValue = forceReferenceOptimalDistrubution_N[wheelCounter] * 190;
 
-	if (sl_uold[cylinderCounter] >= 0) {
+	sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
+
+	if (sl_uold[wheelCounter] >= 0) {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
 	}
 	else {
@@ -1131,7 +1126,7 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter) {
 		sl_u = -1;
 	}
 
-	sl_uold[cylinderCounter] = sl_u;
+	sl_uold[wheelCounter] = sl_u;
 }
 
 void FORCE_ControlTask(void)  //Sliding mode

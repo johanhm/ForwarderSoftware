@@ -165,7 +165,6 @@ void sys_main(void)
   can_initRxDatabox(CAN_1, 7, CONF_MSG_ID_4, CAN_EXD_DU8, 8, can_1_RxDatabox_7_Buf_as,
                         CAN_1_RX_DATABOX_1_BUF_LEN_DU8, can_1_RxDatabox_7_Callback);
 
-
   //Init the databoxes for can 3
   can_initRxDatabox(CAN_3, 3,CAN_ID_LEFT_EXCIPAD_BUTTONS, CAN_EXD_DU8, 8, can_3_RxDatabox_3_Buf_as,
                       CAN_3_RX_DATABOX_3_BUF_LEN_DU8, can_3_RxDatabox_3_Callback);
@@ -182,20 +181,16 @@ void sys_main(void)
   //<-- Receive.
    can_registerBusOffCallback(CAN_1, can_1_BusOffCallback);  // Register application bus off callback.
 
-
   // Initialize CAN channel (including setting the baud rate).
   can_init(CAN_1, 1000000);
   can_init(CAN_2, 500000);
   can_init(CAN_3, 250000);
-
 
   //init IMU
   uint8 data_au8[2];
   data_au8[0] = 0x01;
   data_au8[1] = 0x7F;
   if (0 == can_sendData(CAN_2, 0x0, CAN_EXD_DU8, 2, data_au8)){}
-
-
 
   // initialize the DIAG module, if support of BODAS-service is required
   diag_initComm(CAN_1,          // can channel for diagnosis
@@ -207,7 +202,6 @@ void sys_main(void)
 
   // register a function to inform the application about data changes by BODAS-service
   diag_setVarsCallBack(appl_updateDiagData);
-
 
 } // sys_main
 
