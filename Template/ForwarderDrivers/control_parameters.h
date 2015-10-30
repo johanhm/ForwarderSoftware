@@ -1,4 +1,4 @@
-volatile uint8 CYL_POSITION_LIMIT_ON = 1;     //Set to 1 to activate software cylinder position limits
+volatile uint8  CYL_POSITION_LIMIT_ON = 1;     //Set to 1 to activate software cylinder position limits
 volatile uint16 CYL_POS_MAX = 490; 			//Software cylinder position maximum limit (mm)
 volatile uint16 CYL_POS_MIN = 100; 			//Software cylinder minimum position limit (mm)
 volatile uint8  ACTIVE_FORCE_CONTROL  = 0;		// To output force control reference to valve
@@ -7,8 +7,8 @@ volatile uint8  ACTIVE_HEIGHT_DAMPING = 1;
 volatile uint8 	ACTIVE_ZSKY_CONTROL   = 1;
 volatile uint8 	ACTIVE_THETA_CONTROL  = 1;
 volatile uint8 	ACTIVE_PHI_CONTROL    = 1;
-volatile uint8 Control_allocation_on  = 1;
-volatile uint8 To_ground_active       = 1;
+volatile uint8  Control_allocation_on  = 1;
+volatile uint8  To_ground_active       = 1;
 
 volatile uint16 balance_force = 10000;
 
