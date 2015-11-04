@@ -34,17 +34,19 @@ float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 
 //Return the vertical tire force correspondinthe load force in the cylinder
 //sint16 Force_Vertical(uint16 cylinderPoss_mm, sint16 Load_force) {
-sint16 forceOnWheelVerticalFromCylinderLoad(uint16 cylinderPoss_mm, sint16 Load_force) {
+//sint16 forceOnWheelVerticalFromCylinderLoad(uint16 cylinderPoss_mm, sint16 Load_force) {
+sint16 getVerticalWheelForceFromCylinderLoadForce_deciN(uint16 cylinderPoss_mm, sint16 cylinderLoadForce) {
 	float relativeConstant = forceRelationshipFromLoadToGround(cylinderPoss_mm);  //Get relationship dependg to ent on position
-	sint16 forceOnWheelVertical_N = relativeConstant * Load_force;//Load_force; /// F_VERT bebfor i changed johan
+	sint16 forceOnWheelVertical_deciN = relativeConstant * cylinderLoadForce;//Load_force; /// F_VERT bebfor i changed johan
 
-	return forceOnWheelVertical_N;
+	return forceOnWheelVertical_deciN;
 }
 
 
 //Calculates the load force needed for a desired vertical force
 //sint32 Force_Load(uint16 cylinderPoss_mm, sint32 Vertical_force) {
-sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical_force) {
+//sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical_force) {
+sint32 getCylinderLoadForceFromVerticalWheelForce_deciN(uint16 cylinderPoss_mm, sint32 Vertical_force) {
 	float relativeConstant = forceRelationshipFromLoadToGround(cylinderPoss_mm);  //Get relationship dependent on position
 	sint32 forceOnCylinder_N = Vertical_force / relativeConstant; //F_LOAD before i changed johan
 

@@ -20,6 +20,9 @@
 #define ANALOG_OUTPUT_ON					0	// Set to 1 when outputting values to pins
 
  */
+
+//#include ActiveDampening.h
+
 void actuate(void) {
 	uint8 i = 0;
 
@@ -618,7 +621,7 @@ void send_CAN_sensors_values_Task(void)
 	uint8 data_au8_sms_FORCE_VERTICAL2[4]={0}; //Vertical force
 	Weight = 0;
 	for(i = 0; i < 6; i++) {
-		forceVertical[i] = forceOnWheelVerticalFromCylinderLoad(posData[i], messuredForceCylinderLoad_deciN[i]);
+		forceVertical[i] = getVerticalWheelForceFromCylinderLoadForce_deciN(posData[i], messuredForceCylinderLoad_deciN[i]);
 		if(forceVertical[i] > 0) {
 			Weight = Weight + forceVertical[i];
 		}
@@ -800,7 +803,6 @@ void calculateForceErrorPercentageAndSendOnCAN1(void) {
 
 	sendCAN1_sint16(0x18FF1004, forceErrorInPercent[FL], forceErrorInPercent[FR], forceErrorInPercent[ML], forceErrorInPercent[MR]);
 	sendCAN1_sint16(0x18FF1005, forceErrorInPercent[BL], forceErrorInPercent[BR], 0, 0);
-
 }
 
 void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
@@ -829,7 +831,7 @@ void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
 	for (wheel = 0; wheel < 6; wheel++) {
 		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubution_N[wheel];
-		forceReferenceOptimalDistrubution_N[wheel] = forceCylinderLoadFromForceOnWheel(posData[wheel], forceReferenceOptimalDistrubution_N[wheel]);
+		forceReferenceOptimalDistrubution_N[wheel] = getCylinderLoadForceFromVerticalWheelForce_deciN(posData[wheel], forceReferenceOptimalDistrubution_N[wheel]);
 	}
 
 	sendCAN1_sint16(0x18FF1002, forceReferenceOptimalDistrubution_N[FL], forceReferenceOptimalDistrubution_N[FR], forceReferenceOptimalDistrubution_N[ML], forceReferenceOptimalDistrubution_N[MR]);
@@ -844,7 +846,7 @@ void hightControllSkyhookForceAddition(void) {
 	if(ACTIVE_ZSKY_CONTROL==1) {
 		for(x = 0; x < 6; x++) {
 			F_Z_sky[x] = -BSky_Z*Zi_vel[x];     //Skyhook damping force per chassis wheel point [N]
-			F_Z_sky[x] = forceCylinderLoadFromForceOnWheel(posData[x], F_Z_sky[x]); //Transform vertical force into cylinder force
+			F_Z_sky[x] = getCylinderLoadForceFromVerticalWheelForce_deciN(posData[x], F_Z_sky[x]); //Transform vertical force into cylinder force
 		}
 	}
 	else {
@@ -953,13 +955,13 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 			}
 		}
 		F_REF[i] = sum;  //Vertical reference force for each cylinder
-		F_REF_CYL[i] = forceCylinderLoadFromForceOnWheel(posData[i], F_REF[i]);  //Calculate needed cylinder force according to arm position
+		F_REF_CYL[i] = getCylinderLoadForceFromVerticalWheelForce_deciN(posData[i], F_REF[i]);  //Calculate needed cylinder force according to arm position
 	}
 }
 
 void calculateForceReferenceForAllWheels(void) {
 	uint8 x = 0;
-	for(x = 0; x <= 5; x++) {
+	for (x = 0; x <= 5; x++) {
 		if (To_ground_active == 0) {
 			Ref_ground_force[x] = 0;
 		}
