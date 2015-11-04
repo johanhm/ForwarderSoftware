@@ -11,8 +11,7 @@
 
 #define _APPLICATION_         /* replace it with the filename in capital letters */
 
-
-#include "ForwarderDrivers/ForwarderDrivers.h"
+#include "ForwarderDrivers.h"
 
 /***************************************************************************************************
 *  FUNCTION:      sys_main

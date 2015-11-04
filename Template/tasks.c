@@ -1000,20 +1000,18 @@ void Dynamic_control_Task(void){
 
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 	float absoluteFlowInPercent = fabs(sl_u * 100.0);
-	if(sl_u < 0.015 && sl_u > -0.015) {
+	if (sl_u < 0.015 && sl_u > -0.015) {
 		sl_current = 400;
-	}
-	else if(fabs(sl_u) > 0.97) {
+	} else if (fabs(sl_u) > 0.97) {
 		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
-	}
-	else{
+	} else {
 		sl_current = (sl_u/fabs(sl_u)) * (VALVE_FLOW_FIT_PARAMETER_CP1*pow(absoluteFlowInPercent,4) + VALVE_FLOW_FIT_PARAMETER_CP2*pow(absoluteFlowInPercent,3) + VALVE_FLOW_FIT_PARAMETER_CP3*pow(absoluteFlowInPercent,2) + VALVE_FLOW_FIT_PARAMETER_CP4 * absoluteFlowInPercent + VALVE_FLOW_FIT_PARAMETER_CP5);
 	}
 
 	sl_debug_current = sl_current - (sl_current / labs(sl_current)) * 400;  //Valve current to output in CAN for debugging
 
 	//Set reference to valves only if control is active generally and per cylinder
-	if((ACTIVE_FORCE_CONTROL == 1) & (Force_control_cylinders[wheelCounter] == 1)) {
+	if ((ACTIVE_FORCE_CONTROL == 1) & (Force_control_cylinders[wheelCounter] == 1)) {
 		referenceSoleonidOutputCurrent_ma[wheelCounter] = -1 * sl_debug_current - To_ground_ref[wheelCounter];
 		defaultSafety = 0;
 	}
@@ -1036,37 +1034,35 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	sl_P2 = pressureData[(wheelCounter*2)+1] * 1000;  //Kpa*1000=[Pa]
 	sl_Fl = messuredForceCylinderLoad_deciN[wheelCounter] * 10; //Load force in [N]
 
-	if((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {
+	if ((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {
 		sl_Vel=0;
-	}
-	else {
+	} else {
 		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
 
 	sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
 
-	//sigma = sigma / 500;
-	//sgn = ((float)sigma / (labs(sigma) + 1000.0));
+	sigma = sigma / 500;
+	sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
 	//float filterValue = 500000.00;
-	float filterValue = (float)forceReferenceOptimalDistrubution_N[wheelCounter] * 110.0;
-	sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
+	//float filterValue = (float)forceReferenceOptimalDistrubution_N[wheelCounter] * 110.0;
+	//sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
 
 	sl_debug_4 = sl_Fl - F_REF_CYL[0];
 
 
 	if (sl_uold[wheelCounter] >= 0) {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
-	}
-	else {
+	} else {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * sqrt(abs(sl_P1 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar) + CYLINDER_PUSH_AREA_SIDE_B2_m2 * MAXIMUM_FLOW_QMAX_m3s;
 	}
 
 	sl_u = 1.0 / L * ((pow(CYLINDER_PUSH_AREA_SIDE_A1_m2,2) + pow(CYLINDER_PUSH_AREA_SIDE_B2_m2,2)) * ((float)sl_Vel/1000.0) - SLIDING_MODE_CONTROL_PARAMETER_Kt * sgn);  //Requested flow in percentage
+	//Saturate requested flow % between -1 and 1  (100% full flow on both directions)
 	if (sl_u > 1) {
 		sl_u = 1;
-	}  //Saturate requested flow % between -1 and 1  (100% full flow on both directions)
-	else if (sl_u < -1) {
+	} else if (sl_u < -1) {
 		sl_u = -1;
 	}
 	sl_uold[wheelCounter] = sl_u;
@@ -1075,7 +1071,7 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 void FORCE_ControlTask(void)  //Sliding mode
 {
 	uint8 wheelCounter = 0; //Loop counter
-	for(wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
+	for (wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
 		//Calculate erestimated flow with sliding mode controll structure
 		calculateErestimatedFlowForWheelWithNumber(wheelCounter);
 
