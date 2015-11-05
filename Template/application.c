@@ -11,11 +11,7 @@
 
 #define _APPLICATION_         /* replace it with the filename in capital letters */
 
-#include "ActiveDamping.h"  /* Function Definitions */
-#include "ManualControl.c"  /*Manual pendulum arm control functions */
-#include "tasks.c"			/*Periodic tasks */
-#include "CAN_callbacks.c"	/*CAN receive callback functions */
-#include "functions.c"		/*Extra user support functions */
+#include "ForwarderDrivers.h"
 
 /***************************************************************************************************
 *  FUNCTION:      sys_main
@@ -23,11 +19,6 @@
 /**\brief         Configuration of application tasks.
 */
 /**************************************************************************************************/
-
-//Private functions used by application
-void initForIMU(void);
-void registerForwarderDriverTasks(void);
-
 
 void sys_main(void)
 {
@@ -57,8 +48,14 @@ void sys_main(void)
 
   resetInfo_ts ResetInfo_s;
 
+  // Register application error handler. At first!
+  sys_registerErrorCallback(appl_ErrorHandler);
   // get reset information
   sys_getResetInfo(&ResetInfo_s);
+
+  // Register application function for setting default values.
+  // Note: This function has to be called before sys_init() will be called.
+  sys_registerSetDefaultsFunction(appl_setDefaults);
 
   // Initialize RC/SRC.
   sys_init("SMS", "RC30-00D6"); // RC28-14/30
@@ -75,10 +72,31 @@ void sys_main(void)
   //<--- Configure inputs + outputs.
 
   // Register all application tasks.
-  registerForwarderDriverTasks();
+  sys_registerTask(appl_Task_1, TASK_1_PRIO_DU8, TASK_1_TIME_MS_DU32, TASK_1_OFFS_MS_DU32, 0);
 
-  // Register all check points, At least one check point has to be initialised.
-  sys_initTC(0, MANUAL_CONTROl_TASK_TIME_MS_DU32); // It is prepared for triggering in manual control
+  sys_registerTask(manual_Control_Task, MANUAL_CONTROl_TASK_PRIO_DU8, MANUAL_CONTROl_TASK_TIME_MS_DU32, MANUAL_CONTROl_TASK_OFFS_MS_DU32, 0);
+  sys_registerTask(read_Sensor_Task1, READ_SENSOR_TASK1_PRIO_DU8, READ_SENSOR_TASK1_TIME_MS_DU32, READ_SENSOR_TASK1_OFFS_MS_DU32, 0);
+  sys_registerTask(read_Sensor_Task2, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
+  sys_registerTask(send_CAN_sensors_values_Task, SEND_CAN_SENSORS_VALUES_TASK_PRIO_DU8, SEND_CAN_SENSORS_VALUES_TASK_TIME_MS_DU32, SEND_CAN_SENSORS_VALUES_TASK_OFFS_MS_DU32, 0);
+  //sys_registerTask(test_Task,TEST_TASK_PRIO_DU8, TEST_TASK_TIME_MS_DU32, TEST_TASK_OFFS_MS_DU32, 0);
+
+  sys_registerTask(FORCE_ControlTask,FORCE_CONTROL_TASK_PRIO_DU8, FORCE_CONTROL_TIME_MS_DU32, FORCE_CONTROL_OFFS_MS_DU32, 0);
+  sys_registerTask(Dynamic_control_Task, DYNAMIC_TASK_PRIO_DU8, DYNAMIC_TIME_MS_DU32, DYNAMIC_OFFS_MS_DU32, 0);
+  sys_registerTask(actuate, ACTUATE_TASK_PRIO_DU8, ACTUATE_TIME_MS_DU32, ACTUATE_OFFS_MS_DU32, 0);
+
+  // Register emergency task.
+  sys_registerEmergencyTask(appl_EmergencyTask, TASK_EMERGENCY_TIME_MS_DU32);
+
+  // Register all application idle tasks.
+  sys_registerIdleTask(appl_IdleTask_1, 0);
+  // ...
+
+  // Register application after run (power down) function.
+  sys_registerAfterRunFunction(appl_AfterRunFunc);
+
+  // Register all check points.
+  // At least one check point has to be initialised.
+  sys_initTC(0, TASK_1_TIME_MS_DU32); // It is prepared for triggering in appl_Task_1().
   // ...
 
   //----> Configure CAN 1.
@@ -159,7 +177,10 @@ void sys_main(void)
   can_init(CAN_3, 250000);
 
   //init IMU
-  initForIMU();
+  uint8 data_au8[2];
+  data_au8[0] = 0x01;
+  data_au8[1] = 0x7F;
+  if (0 == can_sendData(CAN_2, 0x0, CAN_EXD_DU8, 2, data_au8)){}
 
   // initialize the DIAG module, if support of BODAS-service is required
   diag_initComm(CAN_1,          // can channel for diagnosis
@@ -169,30 +190,10 @@ void sys_main(void)
                 50,             // communication task priority, can be lower than application
                 10);            // communication cycle time [ms]
 
+  // register a function to inform the application about data changes by BODAS-service
+  diag_setVarsCallBack(appl_updateDiagData);
+
 } // sys_main
-
-void initForIMU(void) {
-	  uint8 data_au8[2];
-	  data_au8[0] = 0x01;
-	  data_au8[1] = 0x7F;
-	  if (0 == can_sendData(CAN_2, 0x0, CAN_EXD_DU8, 2, data_au8)){}
-}
-
-void registerForwarderDriverTasks(void) {
-
-	  sys_registerTask(manual_Control_Task, MANUAL_CONTROl_TASK_PRIO_DU8, MANUAL_CONTROl_TASK_TIME_MS_DU32, MANUAL_CONTROl_TASK_OFFS_MS_DU32, 0);
-	  sys_registerTask(read_Sensor_Task1, READ_SENSOR_TASK1_PRIO_DU8, READ_SENSOR_TASK1_TIME_MS_DU32, READ_SENSOR_TASK1_OFFS_MS_DU32, 0);
-	  sys_registerTask(read_Sensor_Task2, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
-	  sys_registerTask(send_CAN_sensors_values_Task, SEND_CAN_SENSORS_VALUES_TASK_PRIO_DU8, SEND_CAN_SENSORS_VALUES_TASK_TIME_MS_DU32, SEND_CAN_SENSORS_VALUES_TASK_OFFS_MS_DU32, 0);
-	  //sys_registerTask(test_Task,TEST_TASK_PRIO_DU8, TEST_TASK_TIME_MS_DU32, TEST_TASK_OFFS_MS_DU32, 0);
-
-	  sys_registerTask(FORCE_ControlTask,FORCE_CONTROL_TASK_PRIO_DU8, FORCE_CONTROL_TIME_MS_DU32, FORCE_CONTROL_OFFS_MS_DU32, 0);
-	  sys_registerTask(Dynamic_control_Task, DYNAMIC_TASK_PRIO_DU8, DYNAMIC_TIME_MS_DU32, DYNAMIC_OFFS_MS_DU32, 0);
-	  sys_registerTask(actuate, ACTUATE_TASK_PRIO_DU8, ACTUATE_TIME_MS_DU32, ACTUATE_OFFS_MS_DU32, 0);
-
-	  // Register emergency task.
-	  sys_registerEmergencyTask(appl_EmergencyTask, TASK_EMERGENCY_TIME_MS_DU32);
-}
 
 
 
