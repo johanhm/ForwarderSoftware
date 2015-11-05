@@ -1,3 +1,7 @@
+
+#ifndef _ACTIVE_DAMPENING_H_
+#define _ACTIVE_DAMPENING_H_
+
 /**** include files ********************************************************************************
 * List of include files needed in this module.                                                    */
 
@@ -18,31 +22,24 @@
 
 //Testing variables changeable through CAN message configuration
 
-volatile uint8 SEND_SCALED_POS=1;
-volatile uint8  ANALOG_OUTPUT_ON=1;			// Set to 1 when outputting values to pins
+volatile uint8 SEND_SCALED_POS   = 1;
+volatile uint8  ANALOG_OUTPUT_ON = 1;			// Set to 1 when outputting values to pins
 
 
-volatile sint16 FORCE_REF=0;
+volatile sint16 FORCE_REF = 0;
 
-volatile uint8 CAN_TEST_ON=1;				// Set to 1 when outputting values to CAN
-volatile uint8 SEND_ACTUAL_CURRENT_CAN=1; //Set to 1 to send read output current out through can
-volatile uint8 SEND_PRESSURE=1;          // 1=Send  0= Do not send
-volatile uint8 SEND_POS_AND_VEL=1;
-volatile uint8 SEND_FORCE=1;
-volatile uint8 SEND_FLOW=0;
-
-//volatile uint8  Cyl_limit[INDEX_SIZE_WHEELS]={0,0,0,0,1,1};  //Individual cylinder limits  (Defined below so size is defined)
+volatile uint8 CAN_TEST_ON = 1;				  // Set to 1 when outputting values to CAN
+volatile uint8 SEND_ACTUAL_CURRENT_CAN = 1;   //Set to 1 to send read output current out through can
+volatile uint8 SEND_PRESSURE    = 1;          // 1=Send  0= Do not send
+volatile uint8 SEND_POS_AND_VEL = 1;
+volatile uint8 SEND_FORCE = 1;
+volatile uint8 SEND_FLOW  = 0;
 
 
-
-
-
-///////////////////////////////////////////////
 #define CAN_3_CHANNEL						CAN_1
 	#define CAN_ID_TEST_CYLINDERS_FRONT				0x17FE0001	//Made up for testing purposes
 	#define CAN_ID_TEST_CYLINDERS_MID				0x17FE0002
 	#define CAN_ID_TEST_CYLINDERS_REAR				0x17FE0003
-
 
 	#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_1		0
 	#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_2		1
@@ -87,6 +84,10 @@ volatile uint8 SEND_FLOW=0;
 #define cfg_debounce	100		/* [ms] */
 
 /*** Defines for TASKS **************************************************************************** */
+
+#define TASK_1_PRIO_DU8      				20
+#define TASK_1_TIME_MS_DU32  				50
+#define TASK_1_OFFS_MS_DU32   				0
 
 #define MANUAL_CONTROl_TASK_PRIO_DU8      	10
 #define MANUAL_CONTROl_TASK_TIME_MS_DU32  	6
@@ -549,12 +550,8 @@ volatile sint16 Ref_B[6] = {REFERENCE_CURRENT_ZERO};
 * Prototypes of functions defined and used only in this module. Memory class "static" has to be    *
 * used for each function.                                                                         */
 
-void sys_main(void);
-
-bool appl_setVpOnFirst(void);
 
 //--- Tasks prototypes ----------------------------
-void manual_Control_Task(void);
 void read_Sensor_Task1(void);  //Read pressure sensors
 void read_Sensor_Task2(void);  //Read position sensors
 void send_CAN_sensors_values_Task(void);
@@ -563,8 +560,6 @@ void massCenterLocationDataToCAN(void);
 void FORCE_ControlTask(void);
 void Dynamic_control_Task(void);
 
-void appl_EmergencyTask(void);
-void appl_IdleTask_1(void);
 void actuate(void);
 
 //---- Control Prototypes
@@ -618,14 +613,5 @@ void SEND_ARRAY_CAN1(uint32 ID1,uint32 ID2,volatile sint16 data[],uint8 size_arr
 void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D);  //Send up to 4x16bit Variables on CAN1 msg
 void sendCAN1_uint16(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D);
 
+#endif
 
-
-//--Manual controll prototypes ----------------
-bool toggleVariable(bool toggleTarget);
-void setVariablesZero(void);
-void caseSwitch(can_Message_ts* msg_s);
-void modes(can_Message_ts* msg_s);
-void turnOffSolenoids(void);
-void solenoidDown(uint16 solenoidOnValue);
-void solenoidUp(uint16 solenoidOnValue);
-void rampDownSolenoids(void);

@@ -1,4 +1,9 @@
 
+// Private functions used only in manual control
+void modes(can_Message_ts* msg_s);
+void caseSwitch(can_Message_ts* msg_s);
+bool toggleVariable(bool toggleTarget);
+void setVariablesZero(void);
 
 
 void manual_Control_Task(void)
@@ -14,7 +19,7 @@ void manual_Control_Task(void)
 	{
 		uint8 i = 0;
 		//Construct the fake msg to be sent to switchCase function
-		for(i = 0; i<8; i++)
+		for(i = 0; i < 8; i++)
 		{
 			msg_s_Excipad.data_au8[i] = LeftExcipad_au8[i];
 		}
@@ -72,7 +77,7 @@ void manual_Control_Task(void)
 		//end of fake msg construktion for the modes function
 	}
 
-	if(zButton==1)
+	if (zButton == 1)
 	{
 		++zButtonCounter;
 	}
@@ -110,7 +115,7 @@ void modes(can_Message_ts* msg_s)
 			++counter;
 		}
 	}
-	if(counter==0) mode = DEFAULT_MODE;
+	if (counter==0) mode = DEFAULT_MODE;
 
 	uint16 joystickInput = JOYSTICK_Y_MID_POINT;
 	if(msg_s->id_u32 == CAN_ID_JOYSTICK_Y) {
@@ -385,6 +390,30 @@ void caseSwitch(can_Message_ts* msg_s)
 	}
 }
 
+bool toggleVariable(bool toggleTarget)
+{
+	if (buttonStatus[toggleTarget])
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+void setVariablesZero(void)
+{
+	uint8 i;
+	for( i = 0; i < sizeofButtonStatus; i++)
+	{
+		buttonStatus[i] = 0;
+	}
+}
+
+
+// CONFIGURATION FUNCTIONS, SHOULD MOVE TO OTHER FILE
+
 void can_1_BusOffCallback(uint16 status_u16)
 {
 	static uint16 temp_u16;
@@ -478,6 +507,134 @@ void appl_configInputs(void)
  *                 FALSE: Setting VPs on was not finished.
  */
 /**************************************************************************************************/
+void appl_Task_1(void) {
+  uint16 diag_u16;
+  safout_ts safout_s;
+  uint16 appl_moError_u16;
+  bool appl_VpFirstOnStatus_l;
+
+
+  /* trigger check point 0 */
+  sys_triggerTC(0);
+
+  /* switch on VP's (power supplies for outputs) for the first time */
+  appl_VpFirstOnStatus_l = appl_setVpOnFirst();
+  if (FALSE != appl_VpFirstOnStatus_l) {
+	  //nothing
+  }
+
+  /*
+   * evaluation from the shut down test after startup - the channel is only available after
+   * an execcuted shut down test !!!
+   */
+
+  diag_u16 = safout_getStatus (SAFOUT_41_POH);
+
+  if (SDT_EXECUTE_DU16 == (diag_u16 & SDT_EXECUTE_DU16)) {
+    // execution from a shut down test pending (no power supply for the outputs) or
+    // still running - channel is not available
+    // ...
+  } else {
+    if (SDT_FAILED_DU16 == (diag_u16 & SDT_FAILED_DU16)) {
+      // shut down failed - channel is not available
+
+      // short circuits to the supply side from the shut down switch(es) could be ignored
+      // for a improved availability
+      safout_ignoreError(SAFOUT_41_POH);
+      // ...
+    }
+
+    if (SDT_CURRENT_TIMEOUT_DU16 == (diag_u16 & SDT_CURRENT_TIMEOUT_DU16))
+    {
+      // no current flow through the shut down switch(es)within the stated time (open load etc.)
+      //
+      // ...
+    }
+  }
+
+
+  // ...
+
+
+  /*
+   * shut down test is finished, channel is available - evaluation from the diagnosis status
+   */
+
+  diag_u16 = safout_getStatusxt (SAFOUT_41_POH, &safout_s);
+
+  if (NO_AVAILABILITY_DU16 == (diag_u16 & NO_AVAILABILITY_DU16))
+  {
+    // channel is deactivated - check the extended information for the error evaluation
+
+    // ...
+
+    // short circuits to the supply side from the shut down switch could be ignored
+    // for a improved availability
+    safout_ignoreError(SAFOUT_41_POH);
+
+    // ...
+
+  }
+  else
+  {
+    // channel is available
+    safout (SAFOUT_41_POH, OUT_1_POH_CL, 400);
+
+    // ...
+  }
+
+  // Check if there is a hardware monitor error
+  appl_moError_u16 = mo_getError();
+  if (0 != appl_moError_u16)
+  {
+    // There is a harware monitor error
+
+    // Inform the User by using CAN_1 (note: Transmitter of CAN_2, CAN_3 and CAN_4 are disabled
+    // at several errors)
+
+    switch (appl_moError_u16)
+    {
+      case MOF_VSS_1_DU16:
+      {
+        // sensor supply 1: voltage is out of range
+        // reaction: e.g. ignore all signals of sensors which are supplied by VSS_1
+        break;
+      }
+
+      case MOF_3V3_1V5_HW_DU16  :
+      {
+        // ECU internal voltages 1,5V/3,3V (one or both) are out of range
+        // reaction: e.g.
+        // - set outputs for an emergency mode such as speed < 5km/h:
+        //   out(..);
+        // - muting (include reset of hardware ciruit for 3V3/1V5 cut off and unlock VP on
+        //   and EMCY on):
+        //   mo_ignoreError();
+        // - set VPs  on:
+        //   sys_setVP(VP_1, ON);
+        //   sys_setVP(VP_2, ON);
+        // - set EMCY on:
+        //   emcy_setPowerOn();
+        // - If ECU internal voltages 1,5V/3,3V are in range than there is power on outputs.
+        break;
+      }
+
+      //...
+
+      default:
+      {
+        break;
+      }
+    } // switch
+  } // if
+
+  // ...
+} // appl_Task_1
+
+void appl_IdleTask_1(void)
+{
+  // ...
+} // appl_IdleTask_1
 
 bool appl_setVpOnFirst(void)
 {
@@ -600,45 +757,38 @@ bool appl_setVpOnFirst(void)
 
 	return returnValue_l;
 } // appl_setVpOnFirst
-/**************************************************************************************************/
 
 
-/***************************************************************************************************
- *  FUNCTION:      appl_EmergencyTask
- */
-/**\brief         Application emergency task.
- *
- * \param[in]      -
- *
- * \return         -
- */
-/**************************************************************************************************/
+void appl_AfterRunFunc(void)
+{
+  // ...
+} // appl_AfterRunFunc
+
+void appl_updateDiagData(void)
+{
+  // ...
+} //appl_updateDiagData(void)
 
 void appl_EmergencyTask(void)
 {
 	sys_triggerTC(0);
-	// ...
-} // appl_EmergencyTask
-
-
-bool toggleVariable(bool toggleTarget)
-{
-	if (buttonStatus[toggleTarget])
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
 }
 
-void setVariablesZero(void)
+void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8)
 {
-	uint8 i;
-	for( i = 0; i < sizeofButtonStatus; i++)
-	{
-		buttonStatus[i] = 0;
-	}
-}
+  static uint16 tempErrCode_u16;
+  static uint8  tempErrParam_u8;
+
+  tempErrCode_u16 = errorCode_u16;
+  tempErrParam_u8 = errorParam_u8;
+} // appl_ErrorHandler
+
+
+void appl_setDefaults(void)
+{
+  // ...
+} // appl_setDefaults
+
+
+
 

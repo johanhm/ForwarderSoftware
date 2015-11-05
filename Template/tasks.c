@@ -21,7 +21,11 @@
 
  */
 
-//#include ActiveDampening.h
+#include "ActiveDamping.h"
+
+
+
+
 
 void actuate(void) {
 	uint8 i = 0;
