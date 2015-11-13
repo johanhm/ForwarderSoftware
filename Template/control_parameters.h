@@ -29,7 +29,7 @@ volatile uint16 BSky_theta = 200;
 volatile sint16 I_theta    = 0;
 
 #define MAX_ZI      10000   //Integrator limit Z
-#define MAX_PHI_I   2000  //Integrator limit Phi
+#define MAX_PHI_I   100000//2000  //Integrator limit Phi
 #define MAX_THETA_I 2000 //Integrator limit Theta
 
 //Wheel in air constants

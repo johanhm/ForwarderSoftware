@@ -534,7 +534,7 @@ volatile uint8 defaultSafety = 0;
 #define REFERENCE_CURRENT_ZERO 0 //Number taken as valve closed Zero output on both solenoids
 #define REFERENCE_CURRENT_MAXIMUM_B_mA -200 //Min Ref Equivalent to Max output on Solenoid B Deadband+ -RefMin
 #define REFERENCE_CURRENT_MAXIMUM_A_mA 200 //400 //Max Ref Equivalent to Max output on Solenoid A  Deadband+ Refmax
-#define DEADZONE_FOR_SOLEONID_CURRENT_mA 400
+#define DEADZONE_FOR_SOLEONID_CURRENT_mA 390
 #define FR 0
 #define FL 1
 #define MR 2
@@ -585,6 +585,7 @@ void rollPhiControllAddToAllocationMatrix(void);
 void pitchThetaControllAddToAllocationMatrix(void);
 void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
 void calculateForceReferenceForAllWheels(void);
+sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter);
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
 void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
 void calculateForceErrorPercentageAndSendOnCAN1(void);
@@ -634,3 +635,6 @@ void turnOffSolenoids(void);
 void solenoidDown(uint16 solenoidOnValue);
 void solenoidUp(uint16 solenoidOnValue);
 void rampDownSolenoids(void);
+void setPassiveDampeningState(uint16 passiveState);
+
+

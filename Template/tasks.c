@@ -20,11 +20,14 @@
 #define ANALOG_OUTPUT_ON					0	// Set to 1 when outputting values to pins
 
  */
+
+
 void actuate(void) {
 	uint8 i = 0;
 
 	//Check global variables are within minimum and maximum range and limits
 	for(i = 0; i < 6; i++) {
+		//referenceSoleonidOutputCurrent_ma[i] = referenceSoleonidOutputCurrent_ma[i];
 		if(referenceSoleonidOutputCurrent_ma[i] < REFERENCE_CURRENT_MAXIMUM_B_mA) {
 			referenceSoleonidOutputCurrent_ma[i] = REFERENCE_CURRENT_MAXIMUM_B_mA;
 		}
@@ -163,8 +166,9 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 	posData_mV[ANALOG_LEFT_MID_PENDULUMARM]    = in(IN_4_AIV);
 	posData_mV[ANALOG_RIGHT_BACK_PENDULUMARM]  = in(IN_6_AIV);
 	posData_mV[ANALOG_LEFT_BACK_PENDULUMARM]   = in(IN_5_AIV);
+
 	for(x = 0; x < 6;x++) {
-		posData[x] = (float)((float)(posData_mV[x]-minPos[x])/(maxPos[x]-minPos[x]))*500;
+		posData[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 500;
 	} //scale to mm
 
 
@@ -254,11 +258,11 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 /**************************************************************************************************/
 
 void sendSupplyVoltageOnCAN1(void) {
-	sint16 batterySupplyVoltage = sys_getSupply(VB);
+	//sint16 batterySupplyVoltage = sys_getSupply(VB);
 	//sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
 	//sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
 
-	sl_debug_5 = batterySupplyVoltage;
+	//sl_debug_6 = batterySupplyVoltage;
 
 	//sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
 }
@@ -731,11 +735,11 @@ void test_Task(void) {
 
 		if (ARM_ACTIVE_F[x] > 1) {
 			ARM_ACTIVE_F[x] = 1;
-		    count_active[x] = MAX_COUNT;
+			count_active[x] = MAX_COUNT;
 		}  //Limit between 0 and 1
 		if (ARM_ACTIVE_F[x] < 0) {
 			ARM_ACTIVE_F[x] = 0;
-		    count_active[x] = 0;
+			count_active[x] = 0;
 		}
 	}
 
@@ -884,29 +888,52 @@ void heightControllAddToAllocationMatrix(void) {
 
 void rollPhiControllAddToAllocationMatrix(void) {
 	if(ACTIVE_PHI_CONTROL == 1) {
+
+		Phi_I = I_phi;
+		static volatile sint32 Idel = 0;
+		static volatile sint32 Phi_I_old = 0;
+		static volatile float intergratorPart = 0;
 		Phi_error = 0 - Phi_deg; //Reference is 0
 
-		if(Phi_error < 0.5 && Phi_error > -0.5) {  //Error tolerance of 1 degree when the value was set to 5
-			Phi_I = 0;   //If we reach almost zero error, reset integrator
-			Phi_error = 0;
+		if(Phi_error > 5 || Phi_error < -5) {  //Error tolerance of 1 degree when the value was set to 5
+			intergratorPart = intergratorPart + (float)(Phi_error) / 10; //if the error is less then 1 this will be zero
+		}
+
+		if (ACTIVE_FORCE_CONTROL == 0) {
+			intergratorPart = 0;
 		}
 
 		Phi_k = Phi_error * K_phi;
-		Phi_I = Phi_error + Phi_I;
-		if(Phi_I > MAX_PHI_I) {
-			Phi_I = MAX_PHI_I;
+		if (Phi_I != Phi_I_old) {
+			intergratorPart = 0;
+			Phi_I_old       = Phi_I;
+		}
+
+		Idel = intergratorPart * Phi_I ;
+		//Phi_I = Phi_I * intergratorPart / 100;
+
+		if (Idel > MAX_PHI_I) {
+			//Phi_I = MAX_PHI_I;
+			if (Phi_I == 0 ) {
+				Phi_I = 1;
+			}
+			intergratorPart = MAX_PHI_I / Phi_I;
 		}  //Clamp integrator to max
-		if(Phi_I < -MAX_PHI_I) {
-			Phi_I = -MAX_PHI_I;
-		}  //Clamp integrator to min
+		if (Idel < -MAX_PHI_I) {
+			intergratorPart = -MAX_PHI_I / Phi_I;
+		}
 
 		Phi_sky = -BSky_phi * Gyro_Phi_deg;
-		F_REF_Phi = Phi_k + Phi_sky + Phi_I; //Sum phi moment
+		F_REF_Phi = Phi_k + Phi_sky + Idel;//Phi_I; //Sum phi moment
 		F_matrix[1] = F_REF_Phi;  //Assign to force vector
+		sl_debug_1=Idel;
+		sl_debug_2=intergratorPart;
+		sl_debug_3=Phi_I;
 	}
 	else {
 		F_matrix[1] = 0;
 	}
+
 
 }
 
@@ -966,6 +993,7 @@ void calculateForceReferenceForAllWheels(void) {
 
 		//change between optimal dispribuiton or not
 		F_REF_CYL[x] = forceReferenceOptimalDistrubution_N[x] * 10 + F_REF_CYL[x] + F_Z_sky[x] + Ref_ground_force[x];
+	//	F_REF_CYL[x] = forceReferenceOptimalDistrubution_N[x] * 10;
 		//F_REF_CYL[x] = messuredForceCylinderLoad_deciN[x] * 10 + F_REF_CYL[x] + F_Z_sky[x] + Ref_ground_force[x];
 
 		//if(F_REF_CYL[x]<GROUND_P){F_REF_CYL[x]=Load_force[x]*10+Ref_ground_force[x];}
@@ -1000,7 +1028,7 @@ void Dynamic_control_Task(void){
 
 void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 	float absoluteFlowInPercent = fabs(sl_u * 100.0);
-	if (sl_u < 0.015 && sl_u > -0.015) {
+	if (sl_u < 0.025 && sl_u > -0.025) {
 		sl_current = 400;
 	} else if (fabs(sl_u) > 0.97) {
 		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
@@ -1040,16 +1068,15 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
 
-	sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
+	//sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
+	sigma = deadBandCheckForceReferenceError(sl_Fl , F_REF_CYL[wheelCounter], wheelCounter);
 
-	sigma = sigma / 500;
+	sigma = sigma / 200;
 	sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
 	//float filterValue = 500000.00;
 	//float filterValue = (float)forceReferenceOptimalDistrubution_N[wheelCounter] * 110.0;
 	//sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
-
-	sl_debug_4 = sl_Fl - F_REF_CYL[0];
 
 
 	if (sl_uold[wheelCounter] >= 0) {
@@ -1059,6 +1086,7 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	}
 
 	sl_u = 1.0 / L * ((pow(CYLINDER_PUSH_AREA_SIDE_A1_m2,2) + pow(CYLINDER_PUSH_AREA_SIDE_B2_m2,2)) * ((float)sl_Vel/1000.0) - SLIDING_MODE_CONTROL_PARAMETER_Kt * sgn);  //Requested flow in percentage
+
 	//Saturate requested flow % between -1 and 1  (100% full flow on both directions)
 	if (sl_u > 1) {
 		sl_u = 1;
@@ -1066,6 +1094,40 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 		sl_u = -1;
 	}
 	sl_uold[wheelCounter] = sl_u;
+}
+
+sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
+
+	static volatile sint32 sigmaOld[5] = {0};
+	static volatile uint8  forcecontrollerwindow[5] = {0};
+
+	sint32 errorSigma = currentCylinderForce - forceReferenceCylinder;
+
+
+	float errorChangedSign = 0;
+
+	switch (forcecontrollerwindow[wheelCounter]) {
+	case 0:
+		if (abs(errorSigma) > ((float)forceReferenceCylinder * 0.1)) {
+			forcecontrollerwindow[wheelCounter] = 1;
+		}
+		errorSigma = 0;
+		break;
+
+	case 1:
+		errorChangedSign = errorSigma - sigmaOld[wheelCounter];
+		if (fabs(errorChangedSign) > fabs(errorSigma)) {
+			forcecontrollerwindow[wheelCounter] = 0;
+
+		}
+		errorSigma = currentCylinderForce - forceReferenceCylinder; //dont commet this you retard
+		break;
+	}
+
+
+	sigmaOld[wheelCounter] = errorSigma;
+
+	return errorSigma;
 }
 
 void FORCE_ControlTask(void)  //Sliding mode
@@ -1079,5 +1141,4 @@ void FORCE_ControlTask(void)  //Sliding mode
 		mapErestimatedFlowToCurrentOutputOnWheelWithNumber(wheelCounter);
 
 	}//end for
-	sl_debug_6 = sl_debug_6 + 1;
 }

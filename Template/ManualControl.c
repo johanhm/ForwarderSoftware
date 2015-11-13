@@ -14,28 +14,37 @@ void manual_Control_Task(void)
 	     */
 
 	/* UNCOMMENT THIS TO MIRROR THE MESSAGES FROM CAN 3 TO CAN 1 to debugg */
-/*
-	can_Message_ts msg_s;
+
+	/* can_Message_ts msg_s;
 	uint8 can_status3 = can_getData(CAN_3, &msg_s);
 	if (can_status3 == 30 || can_status3 == 0)
 	{
 	    if (0 == can_sendData(CAN_1, msg_s.id_u32, CAN_EXD_DU8, 8, msg_s.data_au8)){}
+		if (0 == can_sendData(CAN_1, 0x565660, CAN_EXD_DU8, 8, msg_s.data_au8)){}
 	}
 	else
 	{
 		uint8 status_msg[8] = {0};
 		status_msg[0] = can_status3;
-		if (0 == can_sendData(CAN_1, 0x565656, CAN_EXD_DU8, 8, status_msg)){}
-	}
-	*/
-	//end of debugg mirror exipad */
+		if (0 == can_sendData(CAN_1, 0x565661, CAN_EXD_DU8, 8, status_msg)){}
+	} */
+	//end of debugg mirror exipad
 
 	uint8 LeftExcipad_au8[8];
 	uint8 LeftExcipadNumBytes_u8 = 0;
 	uint8 statusExcipad = can_getDatabox(CAN_3, 3, LeftExcipad_au8, &LeftExcipadNumBytes_u8);
+
+
+	/* uint8 status_msg[8] = {0};
+	status_msg[0] = statusExcipad;
+	//if (statusExcipad != 31) {
+		if (0 == can_sendData(CAN_1, 0x123456, CAN_EXD_DU8, 8, status_msg)) {}
+		if (0 == can_sendData(CAN_1, 0x123457, CAN_EXD_DU8, 8, LeftExcipad_au8)) {}
+	//} */
+
 	if (0 == statusExcipad)	// Databox 3 = CAN ID for Left excipad buttons
 	  {
-		//if (0 == can_sendData(CAN_1, 0x123456, CAN_EXD_DU8, 8, LeftExcipad_au8)) {}
+		//if (0 == can_sendData(CAN_1, 0x123458, CAN_EXD_DU8, 8, LeftExcipad_au8)) {}
 		uint8 i = 0;
 		//end debugg msg, this can be removed safly
 		//Construct the fake msg to be sent to switchCase function
@@ -72,8 +81,7 @@ void manual_Control_Task(void)
 		}
 		if (statusSum >= 1)
 		{
-			if (LeftExcipad_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN)
-			{
+			if (LeftExcipad_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN) {
 				caseSwitch(&msg_s_Excipad);
 			}
 			else if (LeftExcipad_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_UP)
@@ -467,11 +475,17 @@ void modes(can_Message_ts* msg_s)
 		case INDEX_CYLINDER_FRONT_RIGHT:								//----1----
 			defaultSafety=0;
 			referenceSoleonidOutputCurrent_ma[FR]=JoyREF;
+
+			uint16 passiveStateOn = 1;
+			setPassiveDampeningState(passiveStateOn);
 			break;
 
 		case INDEX_CYLINDER_FRONT_LEFT:								//----2----
 			defaultSafety=0;
 			referenceSoleonidOutputCurrent_ma[FL]=JoyREF;
+
+			uint16 passiveStateOff = 0;
+			setPassiveDampeningState(passiveStateOff);
 			break;
 
 		case INDEX_CYLINDER_MID_RIGHT:									//----3----
@@ -591,6 +605,19 @@ void modes(can_Message_ts* msg_s)
 }
 
 /**************************************************************************************************/
+
+
+
+void setPassiveDampeningState(uint16 passiveState) {
+
+	out(OUT_19_DOH, passiveState);
+	out(OUT_20_DOH, passiveState);
+	out(OUT_21_DOH, passiveState);
+	out(OUT_22_DOH, passiveState);
+	out(OUT_23_DOH, passiveState);
+	out(OUT_24_DOH, passiveState);
+}
+
 
 /***************************************************************************************************
 *  FUNCTION:      caseSwitch
@@ -809,6 +836,14 @@ void appl_configOutputs(void)
   out_cfgPI(OUT_10_POH_CL,157,136);
   out_cfgPI(OUT_11_POH_CL,157,136);
   out_cfgPI(OUT_12_POH_CL,157,136);
+
+
+  out_cfg(OUT_19_DOH, 100, f_100Hz_DU16, 4000, 18000);
+  out_cfg(OUT_20_DOH, 100, f_100Hz_DU16, 4000, 18000);
+  out_cfg(OUT_21_DOH, 100, f_100Hz_DU16, 4000, 18000);
+  out_cfg(OUT_22_DOH, 100, f_100Hz_DU16, 4000, 18000);
+  out_cfg(OUT_23_DOH, 100, f_100Hz_DU16, 4000, 18000);
+  out_cfg(OUT_24_DOH, 100, f_100Hz_DU16, 4000, 18000);
 
 
 } // appl_configOutputs

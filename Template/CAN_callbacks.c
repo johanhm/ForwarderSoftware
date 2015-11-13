@@ -229,6 +229,9 @@ void can_2_RxDatabox_2_Callback(void)
 
 void can_3_RxDatabox_3_Callback(void)
 {
+	//uint8 status_msg[8] = {0};
+	//if (0 == can_sendData(CAN_1, 0x565658, CAN_EXD_DU8, 8, status_msg)){}
+
 	// ...
 } // can_3_RxDatabox_1_Callback
 
