@@ -116,14 +116,14 @@ void read_Sensor_Task1(void)  //Read Pressure sensors at 1000hz
 
 	//Scale pressures into KiloPascals for sending  [KPa]
 	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
-		pressureData[x] = (float)pressureData_mV[x] * 6.25-3125;
+		pressureData[x] = (float)pressureData_mV[x] * 6.25 -3125;
 	}
 
 	//Low pass filter pressure signals
-	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
+	/*for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
 		pressureData[x]      = alpha * pressureData_last[x] + (1-alpha) * pressureData[x];
 		pressureData_last[x] = pressureData[x];
-	}
+	}*/
 
 
 	//Calculate corresponding forces at cylinder chambers and total
@@ -195,7 +195,6 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 	}
 	Zcdot = Zcdot / 6;  //Observer for average chassis height
 
-
 	//Calculate estimate of velocity of Zi chassis mounting points (where the cylinder is attached) using the Gyro measurements
 	//Calculate estimate of position of Zi chassis mounting points (where the cylinder is attached) using the Accelerometer measurements
 
@@ -235,8 +234,6 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 
 	}
 
-
-
 	///////////////////////////////////////////////////////
 	//Calculate cylinder flows in L/min and send
 	for (x = 0; x < 6; x++) {
@@ -258,13 +255,13 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 /**************************************************************************************************/
 
 void sendSupplyVoltageOnCAN1(void) {
-	//sint16 batterySupplyVoltage = sys_getSupply(VB);
-	//sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
-	//sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
+	sint16 batterySupplyVoltage = sys_getSupply(VB);
+	sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
+	sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
 
 	//sl_debug_6 = batterySupplyVoltage;
 
-	//sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
+	sendCAN1_sint16(0x18FF1060, batterySupplyVoltage, sensorSupplyVoltage1, sensorSupplyVoltage3, 0);
 }
 
 
