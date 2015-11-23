@@ -139,28 +139,8 @@ void modes(can_Message_ts* msg_s)
 	if(msg_s->id_u32 == CAN_ID_JOYSTICK_Y) {
 		joystickInput = ((msg_s->data_au8[1] << 8) | msg_s->data_au8[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
 	}
-	// joystickInput is between 350-4300.
-	sint32 xLow = 24,  xHigh = -23, cLow = -28200, cHigh = 83167, scaling = 100;
-	if ((joystickInput < JOYSTICK_Y_LOW_POINT) || (joystickInput > JOYSTICK_Y_HIGH_POINT)) {
-		joystickInput = JOYSTICK_Y_MID_POINT;		// Set mid-point
-	}
-	sint32 scaledJoystickInputLow = (joystickInput*xLow+cLow) / scaling;				// Scaling x to avoid float (c = 885, x = -0,33)
-	sint32 scaledJoystickInputHigh = (joystickInput*xHigh+cHigh) / scaling;			// Scaling x to avoid float (c = -58, x = 19)
-	if(scaledJoystickInputHigh > 750) {
-		scaledJoystickInputHigh = 750;				//Sanity check input value
-	}
-	if(scaledJoystickInputHigh < 330) {
-		scaledJoystickInputHigh = 330;				//Sanity check input value
-	}
-	if(scaledJoystickInputLow > 750) {
-		scaledJoystickInputLow = 750;					//Sanity check input value
-	}
-	if(scaledJoystickInputLow < 330) {
-		scaledJoystickInputLow = 330;					//Sanity check input value
-	}
 
 	sint16 JoyREF=0;
-
 	//Scale Joystick input for new actuate function Joystick 350 to 4300  to -300 to 300 signal
 	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
 		JoyREF = 0;
@@ -194,22 +174,22 @@ void modes(can_Message_ts* msg_s)
 
 	case INDEX_CYLINDER_MID_RIGHT:									//----3----
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[MR]=JoyREF;
+		referenceSoleonidOutputCurrent_ma[MR] = JoyREF;
 		break;
 
 	case INDEX_CYLINDER_MID_LEFT:									//----4----
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[ML]=JoyREF;
+		referenceSoleonidOutputCurrent_ma[ML] = JoyREF;
 		break;
 
 	case INDEX_CYLINDER_REAR_RIGHT:									//----5----
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[BR]=JoyREF;
+		referenceSoleonidOutputCurrent_ma[BR] = JoyREF;
 		break;
 
 	case INDEX_CYLINDER_REAR_LEFT:									//----6----
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[BL]=JoyREF;
+		referenceSoleonidOutputCurrent_ma[BL] = JoyREF;
 		break;
 
 	case INDEX_CYLINDER_ALL_DOWN:									//----7----
@@ -235,59 +215,52 @@ void modes(can_Message_ts* msg_s)
 
 	case INDEX_CYLINDER_TILT_Y:										//----9---- (Pitch)
 
-		if(joystickInput > JOYSTICK_Y_HIGH_DEADBAND)				//Low signal
-		{
-			defaultSafety=0;
-			referenceSoleonidOutputCurrent_ma[FR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[FL]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[BR]=REFINV;
-			referenceSoleonidOutputCurrent_ma[BL]=REFINV;
+		if(joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {				//Low signal
+			defaultSafety = 0;
+			referenceSoleonidOutputCurrent_ma[FR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[FL] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[BR] = REFINV;
+			referenceSoleonidOutputCurrent_ma[BL] = REFINV;
 
 		}
-		else if(joystickInput < JOYSTICK_Y_LOW_DEADBAND)			//High signal
-		{
-
-			defaultSafety=0;
-			referenceSoleonidOutputCurrent_ma[FR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[FL]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[BR]=REFINV;
-			referenceSoleonidOutputCurrent_ma[BL]=REFINV;
+		else if(joystickInput < JOYSTICK_Y_LOW_DEADBAND) {			//High signal
+			defaultSafety = 0;
+			referenceSoleonidOutputCurrent_ma[FR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[FL] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[BR] = REFINV;
+			referenceSoleonidOutputCurrent_ma[BL] = REFINV;
 		}
-		else if(joystickInput < JOYSTICK_Y_HIGH_DEADBAND && joystickInput > JOYSTICK_Y_LOW_DEADBAND)
-		{
+		else if(joystickInput < JOYSTICK_Y_HIGH_DEADBAND && joystickInput > JOYSTICK_Y_LOW_DEADBAND) {
 			for(i=0;i<6;i++){
 				referenceSoleonidOutputCurrent_ma[i]=0;}
 		}
 		break;
 
 	case INDEX_CYLINDER_TILT_X:										//----9---- (roll)
-		if(joystickInput > JOYSTICK_Y_HIGH_DEADBAND)			//Low signal
-		{
-			defaultSafety=0;
-			referenceSoleonidOutputCurrent_ma[FR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[MR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[BR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[FL]=REFINV;
-			referenceSoleonidOutputCurrent_ma[ML]=REFINV;
-			referenceSoleonidOutputCurrent_ma[BL]=REFINV;
+		if(joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {			//Low signal
+			defaultSafety = 0;
+			referenceSoleonidOutputCurrent_ma[FR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[MR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[BR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[FL] = REFINV;
+			referenceSoleonidOutputCurrent_ma[ML] = REFINV;
+			referenceSoleonidOutputCurrent_ma[BL] = REFINV;
 
 		}
-		else if(joystickInput < JOYSTICK_Y_LOW_DEADBAND)			//High signal
-		{
+		else if(joystickInput < JOYSTICK_Y_LOW_DEADBAND) {			//High signal
 
-
-			defaultSafety=0;
-			referenceSoleonidOutputCurrent_ma[FR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[MR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[BR]=JoyREF;
-			referenceSoleonidOutputCurrent_ma[FL]=REFINV;
-			referenceSoleonidOutputCurrent_ma[ML]=REFINV;
-			referenceSoleonidOutputCurrent_ma[BL]=REFINV;
+			defaultSafety = 0;
+			referenceSoleonidOutputCurrent_ma[FR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[MR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[BR] = JoyREF;
+			referenceSoleonidOutputCurrent_ma[FL] = REFINV;
+			referenceSoleonidOutputCurrent_ma[ML] = REFINV;
+			referenceSoleonidOutputCurrent_ma[BL] = REFINV;
 		}
-		else if(joystickInput < JOYSTICK_Y_HIGH_DEADBAND && joystickInput > JOYSTICK_Y_LOW_DEADBAND)
-		{
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+		else if(joystickInput < JOYSTICK_Y_HIGH_DEADBAND && joystickInput > JOYSTICK_Y_LOW_DEADBAND) {
+			for(i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i] = 0;
+			}
 		}
 		break;
 
@@ -297,17 +270,15 @@ void modes(can_Message_ts* msg_s)
 	}
 }
 
-void caseSwitch(can_Message_ts* msg_s)
-{
+void caseSwitch(can_Message_ts* msg_s) {
 	volatile bool status = 0;
 	uint8 i = 0;
-	if(msg_s->id_u32 == CAN_ID_LEFT_EXCIPAD_BUTTONS) 						//Check CAN ID
-	{
-		if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT) 		//MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT
-		{
+	if(msg_s->id_u32 == CAN_ID_LEFT_EXCIPAD_BUTTONS) {						//Check CAN ID
+		if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT) {		//MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT
 			status = toggleVariable(INDEX_CYLINDER_FRONT_RIGHT);
 			for(i = 0; i < 6; i++) {
-				referenceSoleonidOutputCurrent_ma[i] = 0;}					//Set all PWM-outputs (to solenoids) to zero
+				referenceSoleonidOutputCurrent_ma[i] = 0;
+			}					//Set all PWM-outputs (to solenoids) to zero
 			setVariablesZero();												//Reset buttonStatus to ensure only one is active
 			buttonStatus[INDEX_CYLINDER_FRONT_RIGHT] = status;				//Set active bit for buttonStatus
 			ACTIVE_FORCE_CONTROL = 0; //disable controller
@@ -316,7 +287,8 @@ void caseSwitch(can_Message_ts* msg_s)
 		{
 			status = toggleVariable(INDEX_CYLINDER_FRONT_LEFT);
 			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+				referenceSoleonidOutputCurrent_ma[i]=0;
+			}
 			setVariablesZero();
 			buttonStatus[INDEX_CYLINDER_FRONT_LEFT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
@@ -349,17 +321,16 @@ void caseSwitch(can_Message_ts* msg_s)
 			buttonStatus[INDEX_CYLINDER_REAR_RIGHT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_REAR_LEFT)	//MSG_ENABLE_PENDULUM_ARM_REAR_LEFT
-		{
+		else if(msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_REAR_LEFT) {	//MSG_ENABLE_PENDULUM_ARM_REAR_LEFT
 			status = toggleVariable(INDEX_CYLINDER_REAR_LEFT);
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+			for(i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i] = 0;
+			}
 			setVariablesZero();
 			buttonStatus[INDEX_CYLINDER_REAR_LEFT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN)		//MSG_ENABLE_PENDULUM_ARM_ALL_DOWN
-		{
+		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN) {		//MSG_ENABLE_PENDULUM_ARM_ALL_DOWN
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 			buttonStatus[INDEX_CYLINDER_ALL_DOWN] = 1;
@@ -371,44 +342,41 @@ void caseSwitch(can_Message_ts* msg_s)
 				zRampUp = 50;
 			}
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_UP)		//MSG_ENABLE_PENDULUM_ARM_ALL_UP
-		{
+		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_UP) {		//MSG_ENABLE_PENDULUM_ARM_ALL_UP
 			setVariablesZero();
-			ACTIVE_FORCE_CONTROL=0; //disable controller
+			ACTIVE_FORCE_CONTROL = 0; //disable controller
 			buttonStatus[INDEX_CYLINDER_ALL_UP] = 1;
 			zButton = 1;
 			zButtonCounter = 0;
 			++zRampUp;
-			if(zRampUp > 50)
-			{
+			if(zRampUp > 50) {
 				zRampUp = 50;
 			}
 		}
-		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_Y)		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
-		{
+		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_Y) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 			status = toggleVariable(INDEX_CYLINDER_TILT_Y);
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+			for( i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i]=0;
+			}
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 			buttonStatus[INDEX_CYLINDER_TILT_Y] = status;
 		}
-		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_X)		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
-		{
+		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_X) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 			status = toggleVariable(INDEX_CYLINDER_TILT_X);
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+			for(i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i]=0;
+			}
 			setVariablesZero();
-			ACTIVE_FORCE_CONTROL=0; //disable controller
+			ACTIVE_FORCE_CONTROL = 0; //disable controller
 			buttonStatus[INDEX_CYLINDER_TILT_X] = status;
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_SIMPLE_CONTROL)		//MSG_ENABLE_PENDULUM_simple controll
-		{
+		else if(msg_s->data_au8[2] == MSG_ENABLE_SIMPLE_CONTROL) {		//MSG_ENABLE_PENDULUM_simple controll
 			status = toggleVariable(INDEX_SIMPLE_CONTROL);
-
-			ACTIVE_FORCE_CONTROL=status;  //Enable or disable force control
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}
+			ACTIVE_FORCE_CONTROL = status;  //Enable or disable force control
+			for(i = 0 ; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i]=0;
+			}
 			setVariablesZero();
 			buttonStatus[INDEX_SIMPLE_CONTROL] = status;
 		}
@@ -417,12 +385,9 @@ void caseSwitch(can_Message_ts* msg_s)
 
 bool toggleVariable(bool toggleTarget)
 {
-	if (buttonStatus[toggleTarget])
-	{
+	if (buttonStatus[toggleTarget]) {
 		return 0;
-	}
-	else
-	{
+	} else {
 		return 1;
 	}
 }
@@ -430,8 +395,7 @@ bool toggleVariable(bool toggleTarget)
 void setVariablesZero(void)
 {
 	uint8 i;
-	for( i = 0; i < sizeofButtonStatus; i++)
-	{
+	for( i = 0; i < sizeofButtonStatus; i++) {
 		buttonStatus[i] = 0;
 	}
 }
