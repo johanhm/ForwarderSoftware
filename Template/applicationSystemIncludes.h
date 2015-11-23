@@ -8,7 +8,7 @@
 #ifndef _APPLICATIONSYSTEMINCLUDES_H_
 #define _APPLICATIONSYSTEMINCLUDES_H_
 
-
+//Public functions
 void appl_Task_1(void);
 void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8);
 void appl_setDefaults(void);

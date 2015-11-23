@@ -29,15 +29,6 @@
 #include "CAN_callbacks.c"	/*CAN receive callback functions */
 #include "functions.c"		/*Extra user support functions */
 
-/***************************************************************************************************
-*  FUNCTION:      sys_main
-*/
-/**\brief         Configuration of application tasks.
-*/
-/**************************************************************************************************/
-
-
-
 
 void sys_main(void)
 {
@@ -126,18 +117,6 @@ void sys_main(void)
   can_registerTxBuf(CAN_2, can_2_TxBuf_as, CAN_3_TX_BUF_LEN_DU8);
   can_registerTxBuf(CAN_3, can_3_TxBuf_as, CAN_3_TX_BUF_LEN_DU8);
 
-  //-> Transmit databoxes (optional).
-  // Register transmit databoxes. (Application has to allocate memory so that C-API can use this
-  // memory to manage the given number of transmit databoxes for this CAN channel.)
-  //can_registerTxDataboxes(CAN_1, can_1_TxDataboxes_as, CAN_1_NUM_TX_DATABOXES_DU16);
-
-  // Initialize all transmit databoxes of this CAN channel.
-  //can_initTxDatabox(CAN_1, 1, 0x34, CAN_STD);
-
-    // ...
-  //<- Transmit databoxes.
-  //<-- Transmit.
-
   //--> Receive.
   // Register receive buffer (optional).
   can_registerRxBuf(CAN_1, can_1_RxBuf_as, CAN_1_RX_BUF_LEN_DU8);
@@ -214,8 +193,3 @@ void sys_main(void)
 
 } // sys_main
 
-
-
-
-
-/* EOF ########################################################################################## */

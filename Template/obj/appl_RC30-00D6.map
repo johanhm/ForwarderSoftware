@@ -307,7 +307,7 @@ C:/HighTec/TriCore/bin/../tricore/lib\libc.a(strncmp.o)
 
 Linker version: GNU ld version 2.13 (tricore) using BFD version 2.13 (2008-12-10), Tool Version v5.2
 Name of linker executable: C:\HighTec\TriCore\bin\tricore-ld.exe
-Date of link run: Mon Nov 23 11:46:59 2015
+Date of link run: Mon Nov 23 16:09:41 2015
 Name of linker map file: obj/appl_RC30-00D6.map
 
 >>> Symbols (global (S = g) and static (S = l); sorted by address)
@@ -2360,9 +2360,9 @@ Start      End         Size S Name                                              
 0x8200e896 0x8200e896     1 g ACTIVE_HEIGHT_DAMPING                                       EXT_RAM   .data                   .data.a1                  obj/application.o
 0x8200e897 0x8200e897     1 g ACTIVE_HEIGHT_CONTROL                                       EXT_RAM   .data                   .data.a1                  obj/application.o
 0x8200e898 0x8200e898     1 g CYL_POSITION_LIMIT_ON                                       EXT_RAM   .data                   .data.a1                  obj/application.o
-0x8200e89a 0x8200e89b     2 g ARM_REF                                                     EXT_RAM   .data                   .data.a2                  obj/application.o
-0x8200e89c 0x8200e89d     2 g zRampUp                                                     EXT_RAM   .data                   .data.a2                  obj/application.o
-0x8200e89e 0x8200e89f     2 g zButtonCounter                                              EXT_RAM   .data                   .data.a2                  obj/application.o
+0x8200e89a 0x8200e89b     2 g zRampUp                                                     EXT_RAM   .data                   .data.a2                  obj/application.o
+0x8200e89c 0x8200e89d     2 g zButtonCounter                                              EXT_RAM   .data                   .data.a2                  obj/application.o
+0x8200e89e 0x8200e89f     2 g ARM_REF                                                     EXT_RAM   .data                   .data.a2                  obj/application.o
 0x8200e8a0 0x8200e8ab    12 g count_active                                                EXT_RAM   .data                   .data.a2                  obj/application.o
 0x8200e8ac 0x8200e8ad     2 g GROUND_P                                                    EXT_RAM   .data                   .data.a2                  obj/application.o
 0x8200e8ae 0x8200e8af     2 g Ground_ref_force                                            EXT_RAM   .data                   .data.a2                  obj/application.o
@@ -2413,14 +2413,14 @@ Start      End         Size S Name                                              
 0x8200ed78 0x8200ed78     0 g SBSS_END                                                    EXT_RAM   .sbss                   .sbss                     obj/appl_RC30-00D6.elf
 0x8200ed78 0x8200ed78     0 g SBSS_START                                                  EXT_RAM   .sbss                   .sbss                     obj/appl_RC30-00D6.elf
 0x8200ed78 0x8200ed78     0 g SDATA_END                                                   EXT_RAM   .sdata                  .sdata                    obj/appl_RC30-00D6.elf
-0x8200ed78 0x8200ed78     1 g defaultSafety                                               EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed79 0x8200ed79     1 g CONTROL_STATUS                                              EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed7a 0x8200ed7f     6 g In_ground_decoupling                                        EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed80 0x8200ed85     6 g In_ground                                                   EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed86 0x8200ed86     1 g TEST_MODE                                                   EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed87 0x8200ed8c     6 g Cyl_flow                                                    EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed8d 0x8200ed8d     1 g zButton                                                     EXT_RAM   .bss                    .bss.a1                   obj/application.o
-0x8200ed8e 0x8200ed98    11 g buttonStatus                                                EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed78 0x8200ed78     1 g zButton                                                     EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed79 0x8200ed83    11 g buttonStatus                                                EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed84 0x8200ed84     1 g defaultSafety                                               EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed85 0x8200ed85     1 g CONTROL_STATUS                                              EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed86 0x8200ed8b     6 g In_ground_decoupling                                        EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed8c 0x8200ed91     6 g In_ground                                                   EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed92 0x8200ed92     1 g TEST_MODE                                                   EXT_RAM   .bss                    .bss.a1                   obj/application.o
+0x8200ed93 0x8200ed98     6 g Cyl_flow                                                    EXT_RAM   .bss                    .bss.a1                   obj/application.o
 0x8200ed99 0x8200ed99     1 g SEND_FLOW                                                   EXT_RAM   .bss                    .bss.a1                   obj/application.o
 0x8200ed9a 0x8200ed9a     1 g ACTIVE_FORCE_CONTROL                                        EXT_RAM   .bss                    .bss.a1                   obj/application.o
 0x8200ed9b 0x8200ed9f     5 l forcecontrollerwindow.32                                    EXT_RAM   .bss                    .bss.a1                   obj/application.o
@@ -2443,52 +2443,52 @@ Start      End         Size S Name                                              
 0x8200edef 0x8200edef     1 g diag_language_u8                                            EXT_RAM   .bss                    .bss.a1                   ../Libs/lib_diag.a(dia_Services.o)
 0x8200edf0 0x8200efef   512 l dia_errors_as                                               EXT_RAM   .bss                    .bss.a1                   ../Libs/lib_diag.a(dia_Services.o)
 0x8200eff0 0x8200eff0     1 g uds_instNum_u8                                              EXT_RAM   .bss                    .bss.a1                   ../Libs/lib_uds.a(uds_main.o)
-0x8200eff2 0x8200effd    12 g Ref_B                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200effe 0x8200f009    12 g Ref_A                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f00a 0x8200f015    12 g referenceSoleonidOutputCurrent_ma                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f016 0x8200f017     2 g KS                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f018 0x8200f019     2 g BS                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f01a 0x8200f025    12 g To_ground_ref                                               EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f026 0x8200f031    12 g ARM_SET_REF                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f032 0x8200f033     2 g ARM_ERROR                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f034 0x8200f03f    12 g forceReferenceOptimalDistrubution_N                         EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f040 0x8200f041     2 g Zc_error                                                    EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f042 0x8200f043     2 g sl_current                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f044 0x8200f045     2 g ACCELZ_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f046 0x8200f047     2 g ACCELY_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f048 0x8200f049     2 g ACCELX_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f04a 0x8200f04b     2 g Gyro_Theta_RAW                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f04c 0x8200f04d     2 g Gyro_Phi_RAW                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f04e 0x8200f04f     2 g Gyro_Theta_deg                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f050 0x8200f051     2 g Gyro_Phi_deg                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f052 0x8200f053     2 g Phi_deg_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f054 0x8200f055     2 g Phi_deg                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f056 0x8200f057     2 g Theta_deg_last                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f058 0x8200f059     2 g Theta_deg                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f05a 0x8200f05b     2 g angle_acc_counter                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f05c 0x8200f05d     2 g Weight                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f05e 0x8200f069    12 g forceVertical                                               EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f06a 0x8200f075    12 g Ref_balance_force                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f076 0x8200f081    12 g Ref_ground_force                                            EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f082 0x8200f08d    12 g messuredForceCylinderLoad_deciN                             EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f08e 0x8200f0a5    24 g forceData                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f0a6 0x8200f0bd    24 g pressureData_last                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f0be 0x8200f0d5    24 g pressureData                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f0d6 0x8200f0ed    24 g pressureData_mV                                             EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f0ee 0x8200f0f9    12 g anglevel                                                    EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f0fa 0x8200f105    12 g Zi_vel_last                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f106 0x8200f111    12 g Zi_vel                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f112 0x8200f11d    12 g Zi_pos_last                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f11e 0x8200f129    12 g Zi_pos                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f12a 0x8200f135    12 g velData_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f136 0x8200f141    12 g velData                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f142 0x8200f143     2 g Zcdot                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f144 0x8200f145     2 g Zc                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f146 0x8200f151    12 g posData_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f152 0x8200f15d    12 g posData                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f15e 0x8200f169    12 g posData_mV                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f16a 0x8200f175    12 g angleData                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
-0x8200f176 0x8200f177     2 g preStatusExcipad                                            EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200eff2 0x8200eff3     2 g preStatusExcipad                                            EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200eff4 0x8200efff    12 g Ref_B                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f000 0x8200f00b    12 g Ref_A                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f00c 0x8200f017    12 g referenceSoleonidOutputCurrent_ma                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f018 0x8200f019     2 g KS                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f01a 0x8200f01b     2 g BS                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f01c 0x8200f027    12 g To_ground_ref                                               EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f028 0x8200f033    12 g ARM_SET_REF                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f034 0x8200f035     2 g ARM_ERROR                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f036 0x8200f041    12 g forceReferenceOptimalDistrubution_N                         EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f042 0x8200f043     2 g Zc_error                                                    EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f044 0x8200f045     2 g sl_current                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f046 0x8200f047     2 g ACCELZ_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f048 0x8200f049     2 g ACCELY_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f04a 0x8200f04b     2 g ACCELX_RAW                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f04c 0x8200f04d     2 g Gyro_Theta_RAW                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f04e 0x8200f04f     2 g Gyro_Phi_RAW                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f050 0x8200f051     2 g Gyro_Theta_deg                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f052 0x8200f053     2 g Gyro_Phi_deg                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f054 0x8200f055     2 g Phi_deg_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f056 0x8200f057     2 g Phi_deg                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f058 0x8200f059     2 g Theta_deg_last                                              EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f05a 0x8200f05b     2 g Theta_deg                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f05c 0x8200f05d     2 g angle_acc_counter                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f05e 0x8200f05f     2 g Weight                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f060 0x8200f06b    12 g forceVertical                                               EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f06c 0x8200f077    12 g Ref_balance_force                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f078 0x8200f083    12 g Ref_ground_force                                            EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f084 0x8200f08f    12 g messuredForceCylinderLoad_deciN                             EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f090 0x8200f0a7    24 g forceData                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f0a8 0x8200f0bf    24 g pressureData_last                                           EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f0c0 0x8200f0d7    24 g pressureData                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f0d8 0x8200f0ef    24 g pressureData_mV                                             EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f0f0 0x8200f0fb    12 g anglevel                                                    EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f0fc 0x8200f107    12 g Zi_vel_last                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f108 0x8200f113    12 g Zi_vel                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f114 0x8200f11f    12 g Zi_pos_last                                                 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f120 0x8200f12b    12 g Zi_pos                                                      EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f12c 0x8200f137    12 g velData_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f138 0x8200f143    12 g velData                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f144 0x8200f145     2 g Zcdot                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f146 0x8200f147     2 g Zc                                                          EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f148 0x8200f153    12 g posData_last                                                EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f154 0x8200f15f    12 g posData                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f160 0x8200f16b    12 g posData_mV                                                  EXT_RAM   .bss                    .bss.a2                   obj/application.o
+0x8200f16c 0x8200f177    12 g angleData                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
 0x8200f178 0x8200f179     2 g FORCE_REF                                                   EXT_RAM   .bss                    .bss.a2                   obj/application.o
 0x8200f17a 0x8200f17b     2 g I_theta                                                     EXT_RAM   .bss                    .bss.a2                   obj/application.o
 0x8200f17c 0x8200f17d     2 g I_phi                                                       EXT_RAM   .bss                    .bss.a2                   obj/application.o
@@ -3441,9 +3441,9 @@ $icr                                                        l 0x0000fe2c 0x0000f
 $isp                                                        l 0x0000fe28 0x0000fe28     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 $lcx                                                        l 0x0000fe3c 0x0000fe3c     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 $pcxi                                                       l 0x0000fe00 0x0000fe00     0 *ABS*     *ABS*                   *ABS*                     *ABS*
-ACCELX_RAW                                                  g 0x8200f048 0x8200f049     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-ACCELY_RAW                                                  g 0x8200f046 0x8200f047     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-ACCELZ_RAW                                                  g 0x8200f044 0x8200f045     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+ACCELX_RAW                                                  g 0x8200f04a 0x8200f04b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+ACCELY_RAW                                                  g 0x8200f048 0x8200f049     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+ACCELZ_RAW                                                  g 0x8200f046 0x8200f047     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 ACTIVE_FORCE_CONTROL                                        g 0x8200ed9a 0x8200ed9a     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 ACTIVE_HEIGHT_CONTROL                                       g 0x8200e897 0x8200e897     1 EXT_RAM   .data                   .data.a1                  obj/application.o
 ACTIVE_HEIGHT_DAMPING                                       g 0x8200e896 0x8200e896     1 EXT_RAM   .data                   .data.a1                  obj/application.o
@@ -3466,9 +3466,9 @@ APPL_EXT_RAM_END                                            g 0x8200e79f 0x8200e
 APPL_EXT_RAM_START                                          g 0x8200e7a0 0x8200e7a0     0 EXT_RAM   .extram                 .extram                   obj/appl_RC30-00D6.elf
 ARM_ACTIVE                                                  g 0x8200e878 0x8200e87d     6 EXT_RAM   .data                   .data.a1                  obj/application.o
 ARM_ACTIVE_F                                                g 0x8200e994 0x8200e9ab    24 EXT_RAM   .data                   .data.a4                  obj/application.o
-ARM_ERROR                                                   g 0x8200f032 0x8200f033     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-ARM_REF                                                     g 0x8200e89a 0x8200e89b     2 EXT_RAM   .data                   .data.a2                  obj/application.o
-ARM_SET_REF                                                 g 0x8200f026 0x8200f031    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+ARM_ERROR                                                   g 0x8200f034 0x8200f035     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+ARM_REF                                                     g 0x8200e89e 0x8200e89f     2 EXT_RAM   .data                   .data.a2                  obj/application.o
+ARM_SET_REF                                                 g 0x8200f028 0x8200f033    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 ASC                                                         g 0xf0000a00 0xf0000a00     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 ASC0                                                        g 0xf0000a00 0xf0000a00     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 ASC1                                                        g 0xf0000b00 0xf0000b00     0 *ABS*     *ABS*                   *ABS*                     *ABS*
@@ -3493,7 +3493,7 @@ Adc_UpdateRatiometric                                       g 0x8004ef42 0x8004e
 Adc_xRatiometricFactor_s32                                  g 0xd0006bf8 0xd0006bfb     4 DMI_RAM   .bss_dmiram             .bss.core.a4              ../Libs/lib_basic.a(adchal.o)
 ApplError_as                                                g 0x800601de 0x800602e1   260 FlashCode .rodata                 .rodata.a1                obj/application.o
 ApplError_ps                                                g 0x8200e9d0 0x8200e9d3     4 EXT_RAM   .data                   .data.a4                  obj/application.o
-BS                                                          g 0x8200f018 0x8200f019     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+BS                                                          g 0x8200f01a 0x8200f01b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 BSS_API_END                                                 g 0xd0006120 0xd0006120     0 DMI_RAM   .bss_dmiram             .bss_dmiram               obj/appl_RC30-00D6.elf
 BSS_API_START                                               g 0xd0005718 0xd0005718     0 DMI_RAM   .bss_dmiram             .bss_dmiram               obj/appl_RC30-00D6.elf
 BSS_APPL_DMI_LDRAM_END                                      g 0xd0005717 0xd0005717     0 DMI_RAM   .bss_dmiram             .bss_dmiram               obj/appl_RC30-00D6.elf
@@ -3547,7 +3547,7 @@ B_Zc                                                        g 0x8200e8ba 0x8200e
 CAN                                                         g 0xf0004000 0xf0004000     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 CAN_TEST_ON                                                 g 0x8200e88e 0x8200e88e     1 EXT_RAM   .data                   .data.a1                  obj/application.o
 CBS                                                         g 0xf0000464 0xf0000464     0 *ABS*     *ABS*                   *ABS*                     *ABS*
-CONTROL_STATUS                                              g 0x8200ed79 0x8200ed79     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+CONTROL_STATUS                                              g 0x8200ed85 0x8200ed85     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 CORE                                                        g 0xf7e1fd00 0xf7e1fd00     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 CPLD                                                        g 0xe0000000 0xe0000000     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 CPS                                                         g 0xf7e0ff08 0xf7e0ff08     0 *ABS*     *ABS*                   *ABS*                     *ABS*
@@ -3912,7 +3912,7 @@ Cy320_xPowerGetBuffer_au16                                  g 0xd0001a02 0xd0001
 Cy320_xPowerSetBuffer_au16                                  g 0xd0001a10 0xd0001a1b    12 DMI_RAM   .data_dmiram            .data.core.a2             ../Libs/lib_basic.a(cy320_auto_conf.o)
 Cy320_xRequest_s                                            l 0xd0006650 0xd000665b    12 DMI_RAM   .bss_dmiram             .bss.core.a4              ../Libs/lib_basic.a(cy320_monitoring.o)
 Cy320_xStopCounterSetBuffer_au16                            g 0xd0001a00 0xd0001a01     2 DMI_RAM   .data_dmiram            .data.core.a2             ../Libs/lib_basic.a(cy320_auto_conf.o)
-Cyl_flow                                                    g 0x8200ed87 0x8200ed8c     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+Cyl_flow                                                    g 0x8200ed93 0x8200ed98     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 Cyl_limit                                                   g 0x8200e884 0x8200e889     6 EXT_RAM   .data                   .data.a1                  obj/application.o
 DATA_API_END                                                g 0xd0001a00 0xd0001a00     0 DMI_RAM   .data_dmiram            .data_dmiram              obj/appl_RC30-00D6.elf
 DATA_API_START                                              g 0xd00019b8 0xd00019b8     0 DMI_RAM   .data_dmiram            .data_dmiram              obj/appl_RC30-00D6.elf
@@ -4204,19 +4204,19 @@ Gpta_PreInitPhase                                           g 0x8004c3e6 0x8004c
 Gpta_Proc_Ini                                               g 0x8004c428 0x8004c477    80 FlashCode .text                   .text                     ../Libs/lib_basic.a(gpta.o)
 Ground_ref_force                                            g 0x8200e8ae 0x8200e8af     2 EXT_RAM   .data                   .data.a2                  obj/application.o
 Gtc2_Copy                                                   l 0xf0060208 0xf0060208     0 PCP_PCODE .pcptext                .pcptext                  ../Libs/lib_basic.a(pwmoutirq_pcp.o)
-Gyro_Phi_RAW                                                g 0x8200f04c 0x8200f04d     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Gyro_Phi_deg                                                g 0x8200f050 0x8200f051     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Gyro_Phi_RAW                                                g 0x8200f04e 0x8200f04f     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Gyro_Phi_deg                                                g 0x8200f052 0x8200f053     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Gyro_Phi_rad                                                g 0x8200fbe0 0x8200fbe3     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-Gyro_Theta_RAW                                              g 0x8200f04a 0x8200f04b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Gyro_Theta_deg                                              g 0x8200f04e 0x8200f04f     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Gyro_Theta_RAW                                              g 0x8200f04c 0x8200f04d     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Gyro_Theta_deg                                              g 0x8200f050 0x8200f051     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Gyro_Theta_rad                                              g 0x8200fbdc 0x8200fbdf     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 I_phi                                                       g 0x8200f17c 0x8200f17d     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 I_theta                                                     g 0x8200f17a 0x8200f17b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 I_z                                                         g 0x8200f17e 0x8200f17f     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Idel.33                                                     l 0x8200fbf8 0x8200fbfb     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-In_ground                                                   g 0x8200ed80 0x8200ed85     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
-In_ground_decoupling                                        g 0x8200ed7a 0x8200ed7f     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
-KS                                                          g 0x8200f016 0x8200f017     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+In_ground                                                   g 0x8200ed8c 0x8200ed91     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+In_ground_decoupling                                        g 0x8200ed86 0x8200ed8b     6 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+KS                                                          g 0x8200f018 0x8200f019     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 K_phi                                                       g 0x8200e8b8 0x8200e8b9     2 EXT_RAM   .data                   .data.a2                  obj/application.o
 K_theta                                                     g 0x8200e8b4 0x8200e8b5     2 EXT_RAM   .data                   .data.a2                  obj/application.o
 K_z                                                         g 0x8200e8bc 0x8200e8bd     2 EXT_RAM   .data                   .data.a2                  obj/application.o
@@ -4369,8 +4369,8 @@ Phase_PwmIn_Intr_Enable                                     g 0x8004c5b6 0x8004c
 Phase_PwmIn_Proc_Ini                                        g 0x8004c526 0x8004c5b5   144 FlashCode .text                   .text                     ../Libs/lib_basic.a(phase.o)
 Phi_I                                                       g 0x8200fb10 0x8200fb13     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Phi_I_old.34                                                l 0x8200fbfc 0x8200fbff     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-Phi_deg                                                     g 0x8200f054 0x8200f055     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Phi_deg_last                                                g 0x8200f052 0x8200f053     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Phi_deg                                                     g 0x8200f056 0x8200f057     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Phi_deg_last                                                g 0x8200f054 0x8200f055     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Phi_error                                                   g 0x8200fb18 0x8200fb1b     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Phi_k                                                       g 0x8200fb14 0x8200fb17     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Phi_rad                                                     g 0x8200fbe4 0x8200fbe7     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
@@ -4432,10 +4432,10 @@ Pwmout_DebugInfo_e                                          g 0xd0006237 0xd0006
 Pwmout_HBridgeDioNullMethod                                 g 0x800447a0 0x800447a1     2 FlashCode .text                   .text                     ../Libs/lib_basic.a(pwmout_auto_conf.o)
 Pwmout_Null_Proc                                            g 0x8004479e 0x8004479f     2 FlashCode .text                   .text                     ../Libs/lib_basic.a(pwmout_auto_conf.o)
 RC_diagTestFunction                                         g 0x80026aa0 0x80026b0f   112 FlashCode .text                   .text                     obj/RC_DiagFuncs.o
-Ref_A                                                       g 0x8200effe 0x8200f009    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Ref_B                                                       g 0x8200eff2 0x8200effd    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Ref_balance_force                                           g 0x8200f06a 0x8200f075    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Ref_ground_force                                            g 0x8200f076 0x8200f081    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Ref_A                                                       g 0x8200f000 0x8200f00b    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Ref_B                                                       g 0x8200eff4 0x8200efff    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Ref_balance_force                                           g 0x8200f06c 0x8200f077    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Ref_ground_force                                            g 0x8200f078 0x8200f083    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Reserved_0                                                  g 0x8005e000 0x8005e000     0 FlashCode .text                   .inttab                   ../Libs/lib_basic.a(intr.o)
 Reset_EcuWasOff                                             g 0x8004ec90 0x8004ecb5    38 FlashCode .text                   .text                     ../Libs/lib_basic.a(reset_swreset.o)
 Reset_InitSWResetConfig                                     g 0x8004eb7c 0x8004eb87    12 FlashCode .text                   .text                     ../Libs/lib_basic.a(reset_swreset.o)
@@ -4511,18 +4511,18 @@ Spi_xQHStat_acs                                             g 0x80061dec 0x80061
 SrvB_Div64                                                  g 0x8005bf30 0x8005bf7f    80 FlashCode .text                   .text.spram               ../Libs/lib_basic.a(srvb_div64.o)
 SrvB_MulDiv16_s32                                           g 0x8005bf80 0x8005bfd7    88 FlashCode .text                   .text.spram               ../Libs/lib_basic.a(srvb_muldiv16.o)
 SrvB_MulDiv32                                               g 0x8005bfd8 0x8005c02b    84 FlashCode .text                   .text.spram               ../Libs/lib_basic.a(srvb_muldiv32.o)
-TEST_MODE                                                   g 0x8200ed86 0x8200ed86     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+TEST_MODE                                                   g 0x8200ed92 0x8200ed92     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 TWO52                                                       l 0x8005f4d8 0x8005f4e7    16 FlashCode .rodata                 .rodata                   ../Libs/libm.a(s_rint.o)
 TextLength_cu8                                              g 0x800602e3 0x800602e3     1 FlashCode .rodata                 .rodata.a1                obj/application.o
 Theta_I                                                     g 0x8200fb00 0x8200fb03     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-Theta_deg                                                   g 0x8200f058 0x8200f059     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Theta_deg_last                                              g 0x8200f056 0x8200f057     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Theta_deg                                                   g 0x8200f05a 0x8200f05b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Theta_deg_last                                              g 0x8200f058 0x8200f059     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Theta_error                                                 g 0x8200fb08 0x8200fb0b     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Theta_k                                                     g 0x8200fb04 0x8200fb07     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Theta_rad                                                   g 0x8200fbe8 0x8200fbeb     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Theta_sky                                                   g 0x8200fafc 0x8200faff     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 To_ground_active                                            g 0x8200e891 0x8200e891     1 EXT_RAM   .data                   .data.a1                  obj/application.o
-To_ground_ref                                               g 0x8200f01a 0x8200f025    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+To_ground_ref                                               g 0x8200f01c 0x8200f027    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 TriCore_int_table                                           g 0x8005e000 0x8005e000     0 FlashCode .text                   .inttab                   ../Libs/lib_basic.a(intr.o)
 UnitCodeLength_cu8                                          g 0x8005f953 0x8005f953     1 FlashCode .rodata                 .rodata.a1                obj/application.o
 UnitCodes_cas8                                              g 0x8005f954 0x8005f95b     8 FlashCode .rodata                 .rodata.a1                obj/application.o
@@ -4530,21 +4530,21 @@ UnitCodes_ps                                                g 0x8200e9c4 0x8200e
 VECT_EepHal_dir                                             g 0x8200ed70 0x8200ed73     4 EXT_RAM   .sdata                  .sdata.pta_vectdir_EepHal ../Libs/lib_basic.a(sys_swadap_core.o)
 VECT_Reset_dir                                              g 0x8200ed74 0x8200ed77     4 EXT_RAM   .sdata                  .sdata.pta_vectdir_Reset  ../Libs/lib_basic.a(sys_swadap_core.o)
 WDT_UNL                                                     l 0x800200f8 0x800200f8     0 FlashCode .text                   .main                     ../Libs/lib_basic.a(main.o)
-Weight                                                      g 0x8200f05c 0x8200f05d     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Weight                                                      g 0x8200f05e 0x8200f05f     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 ZBSS_END                                                    g 0xd0000018 0xd0000018     0 DMI_RAM   .zbss                   .zbss                     obj/appl_RC30-00D6.elf
 ZBSS_START                                                  g 0xd0000018 0xd0000018     0 DMI_RAM   .zbss                   .zbss                     obj/appl_RC30-00D6.elf
 ZDATA_END                                                   g 0xd0000018 0xd0000018     0 DMI_RAM   .zdata                  .zdata                    obj/appl_RC30-00D6.elf
 ZDATA_START                                                 g 0xd0000018 0xd0000018     0 DMI_RAM   .zdata                  .zdata                    obj/appl_RC30-00D6.elf
 Z_I                                                         g 0x8200fb1c 0x8200fb1f     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 Z_k                                                         g 0x8200fb24 0x8200fb27     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-Zc                                                          g 0x8200f144 0x8200f145     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Zc_error                                                    g 0x8200f040 0x8200f041     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zc                                                          g 0x8200f146 0x8200f147     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zc_error                                                    g 0x8200f042 0x8200f043     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 Zc_ref                                                      g 0x8200e8be 0x8200e8bf     2 EXT_RAM   .data                   .data.a2                  obj/application.o
-Zcdot                                                       g 0x8200f142 0x8200f143     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Zi_pos                                                      g 0x8200f11e 0x8200f129    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Zi_pos_last                                                 g 0x8200f112 0x8200f11d    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Zi_vel                                                      g 0x8200f106 0x8200f111    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-Zi_vel_last                                                 g 0x8200f0fa 0x8200f105    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zcdot                                                       g 0x8200f144 0x8200f145     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zi_pos                                                      g 0x8200f120 0x8200f12b    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zi_pos_last                                                 g 0x8200f114 0x8200f11f    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zi_vel                                                      g 0x8200f108 0x8200f113    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+Zi_vel_last                                                 g 0x8200f0fc 0x8200f107    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 _.                                                          g 0x00000001 0x00000001     0 *ABS*     *ABS*                   *ABS*                     *ABS*
 _SMALL_DATA4_                                               g 0x8005ea80 0x8005ea80     0 FlashCode .sdata4                 .sdata4                   obj/appl_RC30-00D6.elf
 _SMALL_DATA_                                                g 0x82016d70 0x82016d70     0 EXT_RAM   .sdata                  .sdata                    obj/appl_RC30-00D6.elf
@@ -4954,12 +4954,12 @@ aiv_initTEMP_PTC_SISU                                       g 0x80046482 0x80046
 alpha                                                       g 0x8200e990 0x8200e993     4 EXT_RAM   .data                   .data.a4                  obj/application.o
 alphapos                                                    g 0x8200e988 0x8200e98b     4 EXT_RAM   .data                   .data.a4                  obj/application.o
 alphav                                                      g 0x8200e98c 0x8200e98f     4 EXT_RAM   .data                   .data.a4                  obj/application.o
-angleData                                                   g 0x8200f16a 0x8200f175    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+angleData                                                   g 0x8200f16c 0x8200f177    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 angleDataX                                                  g 0x8200fbf4 0x8200fbf7     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 angleDataY                                                  g 0x8200fbf0 0x8200fbf3     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 angleDataZ                                                  g 0x8200fbec 0x8200fbef     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-angle_acc_counter                                           g 0x8200f05a 0x8200f05b     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-anglevel                                                    g 0x8200f0ee 0x8200f0f9    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+angle_acc_counter                                           g 0x8200f05c 0x8200f05d     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+anglevel                                                    g 0x8200f0f0 0x8200f0fb    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 appl_AfterRunFunc                                           g 0x80023fe8 0x80023fe9     2 FlashCode .text                   .text                     obj/application.o
 appl_EmergencyTask                                          g 0x80024620 0x80024625     6 FlashCode .text                   .text                     obj/application.o
 appl_ErrorHandler                                           g 0x80023fd0 0x80023fe5    22 FlashCode .text                   .text                     obj/application.o
@@ -5017,7 +5017,7 @@ bufferP_POL_6                                               g 0xd00027ac 0xd0002
 bufferP_POL_7                                               g 0xd0002784 0xd00027ab    40 DMI_RAM   .data_dmiram            .data.core.a4             ../Libs/lib_basic.a(pwmout_auto_conf.o)
 bufferP_POL_8                                               g 0xd000275c 0xd0002783    40 DMI_RAM   .data_dmiram            .data.core.a4             ../Libs/lib_basic.a(pwmout_auto_conf.o)
 bufferP_POL_9                                               g 0xd0002734 0xd000275b    40 DMI_RAM   .data_dmiram            .data.core.a4             ../Libs/lib_basic.a(pwmout_auto_conf.o)
-buttonStatus                                                g 0x8200ed8e 0x8200ed98    11 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+buttonStatus                                                g 0x8200ed79 0x8200ed83    11 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 calculateErestimatedFlowForWheelWithNumber                  g 0x8002281e 0x80022b45   808 FlashCode .text                   .text                     obj/application.o
 calculateForceErrorPercentageAndSendOnCAN1                  g 0x800236de 0x80023771   148 FlashCode .text                   .text                     obj/application.o
 calculateForceOnCylinderChambers                            g 0x80022bba 0x80022c33   122 FlashCode .text                   .text                     obj/application.o
@@ -5186,7 +5186,7 @@ dcm_exit                                                    l 0xf0060176 0xf0060
 dcm_no_gap                                                  l 0xf0060146 0xf0060146     0 PCP_PCODE .pcptext                .pcptext                  ../Libs/lib_basic.a(pwmin.o)
 deadBandCheckForceReferenceError                            g 0x80022492 0x80022573   226 FlashCode .text                   .text                     obj/application.o
 decoupleHightRollPitchAndConvertToCylinderForceForAllWheels g 0x800255a8 0x80025693   236 FlashCode .text                   .text                     obj/application.o
-defaultSafety                                               g 0x8200ed78 0x8200ed78     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+defaultSafety                                               g 0x8200ed84 0x8200ed84     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 dfi_6ms_Proc                                                g 0x800498c6 0x8004997b   182 FlashCode .text                   .text                     ../Libs/lib_basic.a(dfi.o)
 di_cfgCPLD                                                  g 0x8004a41c 0x8004a459    62 FlashCode .text                   .text                     ../Libs/lib_basic.a(di.o)
 di_cfgFI_DSM                                                g 0x80048f10 0x80048f4d    62 FlashCode .text                   .text                     ../Libs/lib_basic.a(dfi.o)
@@ -5485,11 +5485,11 @@ flowCtrl_DFI03_b                                            g 0xd000624c 0xd0006
 flowCtrl_DFI07_b                                            g 0xd000624d 0xd000624d     1 DMI_RAM   .bss_dmiram             .bss.core.a1              ../Libs/lib_basic.a(phase.o)
 flowCtrl_DFI09_b                                            g 0xd000624e 0xd000624e     1 DMI_RAM   .bss_dmiram             .bss.core.a1              ../Libs/lib_basic.a(phase.o)
 forceCylinderLoadFromForceOnWheel                           g 0x80025414 0x80025425    18 FlashCode .text                   .text                     obj/application.o
-forceData                                                   g 0x8200f08e 0x8200f0a5    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+forceData                                                   g 0x8200f090 0x8200f0a7    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 forceOnWheelVerticalFromCylinderLoad                        g 0x80025730 0x80025747    24 FlashCode .text                   .text                     obj/application.o
-forceReferenceOptimalDistrubution_N                         g 0x8200f034 0x8200f03f    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+forceReferenceOptimalDistrubution_N                         g 0x8200f036 0x8200f041    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 forceRelationshipFromLoadToGround                           g 0x80024fbc 0x80025413  1112 FlashCode .text                   .text                     obj/application.o
-forceVertical                                               g 0x8200f05e 0x8200f069    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+forceVertical                                               g 0x8200f060 0x8200f06b    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 forcecontrollerwindow.32                                    l 0x8200ed9b 0x8200ed9f     5 EXT_RAM   .bss                    .bss.a1                   obj/application.o
 funcpinv                                                    g 0x80020a08 0x8002200f  5640 FlashCode .text                   .text                     obj/application.o
 g_moCCPU_xPartResp_u32                                      g 0xd00056f0 0xd00056f3     4 DMI_RAM   .bss_dmiram             .bss.Mo_RamTmp            ../Libs/lib_basic.a(mo_ccpu.o)
@@ -5620,7 +5620,7 @@ matherr                                                     g 0x8005a08a 0x8005a
 maxPos                                                      l 0x8200e8de 0x8200e8e9    12 EXT_RAM   .data                   .data.a2                  obj/application.o
 memcpy                                                      g 0x8005be8a 0x8005bea1    24 FlashCode .text                   .text                     C:/HighTec/TriCore/bin/../tricore/lib\libc.a(memcpy.o)
 memset                                                      g 0x8005bea2 0x8005beb7    22 FlashCode .text                   .text                     C:/HighTec/TriCore/bin/../tricore/lib\libc.a(memset.o)
-messuredForceCylinderLoad_deciN                             g 0x8200f082 0x8200f08d    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+messuredForceCylinderLoad_deciN                             g 0x8200f084 0x8200f08f    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 minPos                                                      l 0x8200e8ea 0x8200e8f5    12 EXT_RAM   .data                   .data.a2                  obj/application.o
 mirrorCANMessageForDebug                                    g 0x80023790 0x800237f3   100 FlashCode .text                   .text                     obj/application.o
 moCCPU_doMulDivS32_s32                                      l 0x8002f026 0x8002f06d    72 FlashCode .text                   .text                     ../Libs/lib_basic.a(mo_ccpu.o)
@@ -5997,14 +5997,14 @@ pic_getPOH_VND_CS                                           g 0x8003aeda 0x8003a
 pic_getPOL                                                  g 0x8003aefa 0x8003af17    30 FlashCode .text                   .text                     ../Libs/lib_basic.a(po.o)
 pic_getPOL_EHR                                              g 0x8003af18 0x8003af35    30 FlashCode .text                   .text                     ../Libs/lib_basic.a(po.o)
 pitchThetaControllAddToAllocationMatrix                     g 0x800222d2 0x8002240f   318 FlashCode .text                   .text                     obj/application.o
-posData                                                     g 0x8200f152 0x8200f15d    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-posData_last                                                g 0x8200f146 0x8200f151    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-posData_mV                                                  g 0x8200f15e 0x8200f169    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+posData                                                     g 0x8200f154 0x8200f15f    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+posData_last                                                g 0x8200f148 0x8200f153    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+posData_mV                                                  g 0x8200f160 0x8200f16b    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 pow                                                         g 0x8005785a 0x80057b4f   758 FlashCode .text                   .text                     ../Libs/libm.a(w_pow.o)
-preStatusExcipad                                            g 0x8200f176 0x8200f177     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-pressureData                                                g 0x8200f0be 0x8200f0d5    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-pressureData_last                                           g 0x8200f0a6 0x8200f0bd    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-pressureData_mV                                             g 0x8200f0d6 0x8200f0ed    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+preStatusExcipad                                            g 0x8200eff2 0x8200eff3     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+pressureData                                                g 0x8200f0c0 0x8200f0d7    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+pressureData_last                                           g 0x8200f0a8 0x8200f0bf    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+pressureData_mV                                             g 0x8200f0d8 0x8200f0ef    24 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 prioCatLimits_cas.3                                         l 0x80060ef2 0x80060ef9     8 FlashCode .rodata                 .rodata.a2                ../Libs/lib_basic.a(system.o)
 ps_doh_cau8                                                 g 0x80063344 0x80063344     0 FlashCode .rodata                 .rodata.a1                ../Libs/lib_basic.a(doh.o)
 ps_poh_cau8                                                 g 0x800608bf 0x800608bf     0 FlashCode .rodata                 .rodata.a1                ../Libs/lib_basic.a(po.o)
@@ -6121,7 +6121,7 @@ ree_setSysArray                                             g 0x80029dd2 0x80029
 ree_setSysValue                                             g 0x80029ce4 0x80029d65   130 FlashCode .text                   .text                     ../Libs/lib_basic.a(eep_Func.o)
 ree_setSysValueWoe                                          g 0x80029d66 0x80029dd1   108 FlashCode .text                   .text                     ../Libs/lib_basic.a(eep_Func.o)
 ree_setValue                                                g 0x80029a06 0x80029a97   146 FlashCode .text                   .text                     ../Libs/lib_basic.a(eep_Func.o)
-referenceSoleonidOutputCurrent_ma                           g 0x8200f00a 0x8200f015    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+referenceSoleonidOutputCurrent_ma                           g 0x8200f00c 0x8200f017    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 repeat003_u8.0                                              l 0xd00019bc 0xd00019bc     1 DMI_RAM   .data_dmiram            .data.api.a1              ../Libs/lib_basic.a(mo_csop.o)
 repeat014_u8.1                                              l 0xd00019bd 0xd00019bd     1 DMI_RAM   .data_dmiram            .data.api.a1              ../Libs/lib_basic.a(mo_csop.o)
 repeat015_u8.2                                              l 0xd00019be 0xd00019be     1 DMI_RAM   .data_dmiram            .data.api.a1              ../Libs/lib_basic.a(mo_csop.o)
@@ -6181,7 +6181,7 @@ sigmaOld.31                                                 l 0x8200fc04 0x8200f
 sin                                                         g 0x80057718 0x800577bd   166 FlashCode .text                   .text                     ../Libs/libm.a(s_sin.o)
 sizeofButtonStatus                                          g 0x8005f510 0x8005f510     1 FlashCode .rodata                 .rodata.a1                obj/application.o
 sl_Ref                                                      g 0x8200fbc4 0x8200fbdb    24 EXT_RAM   .bss                    .bss.a4                   obj/application.o
-sl_current                                                  g 0x8200f042 0x8200f043     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+sl_current                                                  g 0x8200f044 0x8200f045     2 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 sl_debug_1                                                  g 0x8200fba0 0x8200fba3     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 sl_debug_2                                                  g 0x8200fb9c 0x8200fb9f     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
 sl_debug_3                                                  g 0x8200fb98 0x8200fb9b     4 EXT_RAM   .bss                    .bss.a4                   obj/application.o
@@ -6452,8 +6452,8 @@ uds_transmitMsg_u8                                          g 0x800571f6 0x80057
 uds_txBuffDiag_au8                                          g 0xd0005226 0xd000531f   250 DMI_RAM   .bss_dmiram             .bss.LibDiag_AccessMiddle ../Libs/lib_diag.a(api_diagnostic.o)
 uds_txBuffRts_au8                                           g 0xd00055ca 0xd00056c3   250 DMI_RAM   .bss_dmiram             .bss.LibDiag_AccessMiddle ../Libs/lib_diag.a(dia_rtsCom.o)
 update_ctr_prim_old_u32.0                                   l 0xd000676c 0xd000676f     4 DMI_RAM   .bss_dmiram             .bss.core.a4              ../Libs/lib_basic.a(phase.o)
-velData                                                     g 0x8200f136 0x8200f141    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
-velData_last                                                g 0x8200f12a 0x8200f135    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+velData                                                     g 0x8200f138 0x8200f143    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
+velData_last                                                g 0x8200f12c 0x8200f137    12 EXT_RAM   .bss                    .bss.a2                   obj/application.o
 wda_status015_u8.4                                          l 0xd000575d 0xd000575d     1 DMI_RAM   .bss_dmiram             .bss.api.a1               ../Libs/lib_basic.a(mo_csop.o)
 wdeRequest_s.0                                              l 0xd0005d88 0xd0005d93    12 DMI_RAM   .bss_dmiram             .bss.api.a4               ../Libs/lib_basic.a(system.o)
 xAdcReSync_l                                                g 0xd0006123 0xd0006124     2 DMI_RAM   .bss_dmiram             .bss.core.a1              ../Libs/lib_basic.a(adcmux.o)
@@ -6470,9 +6470,9 @@ xBuffer_DFI_09_ps                                           g 0xd0006894 0xd0006
 xBuffer_DFI_10_ps                                           g 0xd0006898 0xd000689b     4 DMI_RAM   .bss_dmiram             .bss.core.a4              ../Libs/lib_basic.a(phase.o)
 xNewVal_u32.1                                               l 0xd00056cc 0xd00056cf     4 DMI_RAM   .bss_dmiram             .bss.LibEMCY_AccessHigh   ../Libs/lib_basic.a(emcy_main.o)
 xPasswd_u32.0                                               l 0xd00056c8 0xd00056cb     4 DMI_RAM   .bss_dmiram             .bss.LibEMCY_AccessHigh   ../Libs/lib_basic.a(emcy_main.o)
-zButton                                                     g 0x8200ed8d 0x8200ed8d     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
-zButtonCounter                                              g 0x8200e89e 0x8200e89f     2 EXT_RAM   .data                   .data.a2                  obj/application.o
-zRampUp                                                     g 0x8200e89c 0x8200e89d     2 EXT_RAM   .data                   .data.a2                  obj/application.o
+zButton                                                     g 0x8200ed78 0x8200ed78     1 EXT_RAM   .bss                    .bss.a1                   obj/application.o
+zButtonCounter                                              g 0x8200e89c 0x8200e89d     2 EXT_RAM   .data                   .data.a2                  obj/application.o
+zRampUp                                                     g 0x8200e89a 0x8200e89b     2 EXT_RAM   .data                   .data.a2                  obj/application.o
 
 >>> Memory segments (sorted by name)
 
@@ -9554,14 +9554,14 @@ LOAD C:/HighTec/TriCore/bin/../lib/gcc/tricore/3.4.5\libgcc.a
                 0x8200e8ba                B_Zc
                 0x8200e8ae                Ground_ref_force
                 0x8200e8b8                K_phi
-                0x8200e89a                ARM_REF
+                0x8200e89e                ARM_REF
                 0x8200e8bc                K_z
                 0x8200e8b2                BSky_theta
                 0x8200e8be                Zc_ref
                 0x8200e8b6                BSky_phi
-                0x8200e89c                zRampUp
+                0x8200e89a                zRampUp
                 0x8200e8ac                GROUND_P
-                0x8200e89e                zButtonCounter
+                0x8200e89c                zButtonCounter
  *(.data.a4)
  *fill*         0x8200e8f6        0x2 00
  .data.a4       0x8200e8f8       0xe4 obj/application.o
@@ -9634,15 +9634,15 @@ LOAD C:/HighTec/TriCore/bin/../lib/gcc/tricore/3.4.5\libgcc.a
  *(.bss.a1)
  .bss.a1        0x8200ed78       0x30 obj/application.o
                 0x8200ed99                SEND_FLOW
-                0x8200ed87                Cyl_flow
-                0x8200ed78                defaultSafety
-                0x8200ed86                TEST_MODE
-                0x8200ed80                In_ground
+                0x8200ed93                Cyl_flow
+                0x8200ed84                defaultSafety
+                0x8200ed92                TEST_MODE
+                0x8200ed8c                In_ground
                 0x8200ed9a                ACTIVE_FORCE_CONTROL
-                0x8200ed7a                In_ground_decoupling
-                0x8200ed79                CONTROL_STATUS
-                0x8200ed8d                zButton
-                0x8200ed8e                buttonStatus
+                0x8200ed86                In_ground_decoupling
+                0x8200ed85                CONTROL_STATUS
+                0x8200ed78                zButton
+                0x8200ed79                buttonStatus
  .bss.a1        0x8200eda8        0x2 ../Libs/lib_diag.a(api_diagnostic.o)
                 0x8200eda9                diag_machineType_u8
  .bss.a1        0x8200edaa       0x42 ../Libs/lib_diag.a(dia_main.o)
@@ -9659,57 +9659,57 @@ LOAD C:/HighTec/TriCore/bin/../lib/gcc/tricore/3.4.5\libgcc.a
  *(.bss.a2)
  *fill*         0x8200eff1        0x1 00
  .bss.a2        0x8200eff2      0x420 obj/application.o
-                0x8200f054                Phi_deg
-                0x8200f152                posData
+                0x8200f056                Phi_deg
+                0x8200f154                posData
                 0x8200f17c                I_phi
-                0x8200f0be                pressureData
-                0x8200f05c                Weight
-                0x8200f052                Phi_deg_last
-                0x8200f0d6                pressureData_mV
-                0x8200f04e                Gyro_Theta_deg
-                0x8200f0ee                anglevel
-                0x8200f04c                Gyro_Phi_RAW
-                0x8200f056                Theta_deg_last
-                0x8200f136                velData
-                0x8200f044                ACCELZ_RAW
+                0x8200f0c0                pressureData
+                0x8200f05e                Weight
+                0x8200f054                Phi_deg_last
+                0x8200f0d8                pressureData_mV
+                0x8200f050                Gyro_Theta_deg
+                0x8200f0f0                anglevel
+                0x8200f04e                Gyro_Phi_RAW
+                0x8200f058                Theta_deg_last
+                0x8200f138                velData
+                0x8200f046                ACCELZ_RAW
                 0x8200f17e                I_z
-                0x8200f15e                posData_mV
-                0x8200effe                Ref_A
-                0x8200f11e                Zi_pos
-                0x8200f032                ARM_ERROR
-                0x8200f01a                To_ground_ref
-                0x8200f076                Ref_ground_force
-                0x8200f05a                angle_acc_counter
-                0x8200f146                posData_last
-                0x8200f12a                velData_last
-                0x8200f0a6                pressureData_last
-                0x8200f034                forceReferenceOptimalDistrubution_N
-                0x8200f016                KS
-                0x8200f050                Gyro_Phi_deg
-                0x8200f08e                forceData
-                0x8200f16a                angleData
-                0x8200f042                sl_current
-                0x8200f048                ACCELX_RAW
-                0x8200f06a                Ref_balance_force
-                0x8200f05e                forceVertical
-                0x8200f018                BS
-                0x8200eff2                Ref_B
-                0x8200f00a                referenceSoleonidOutputCurrent_ma
-                0x8200f082                messuredForceCylinderLoad_deciN
+                0x8200f160                posData_mV
+                0x8200f000                Ref_A
+                0x8200f120                Zi_pos
+                0x8200f034                ARM_ERROR
+                0x8200f01c                To_ground_ref
+                0x8200f078                Ref_ground_force
+                0x8200f05c                angle_acc_counter
+                0x8200f148                posData_last
+                0x8200f12c                velData_last
+                0x8200f0a8                pressureData_last
+                0x8200f036                forceReferenceOptimalDistrubution_N
+                0x8200f018                KS
+                0x8200f052                Gyro_Phi_deg
+                0x8200f090                forceData
+                0x8200f16c                angleData
+                0x8200f044                sl_current
+                0x8200f04a                ACCELX_RAW
+                0x8200f06c                Ref_balance_force
+                0x8200f060                forceVertical
+                0x8200f01a                BS
+                0x8200eff4                Ref_B
+                0x8200f00c                referenceSoleonidOutputCurrent_ma
+                0x8200f084                messuredForceCylinderLoad_deciN
                 0x8200f17a                I_theta
-                0x8200f026                ARM_SET_REF
-                0x8200f144                Zc
-                0x8200f0fa                Zi_vel_last
-                0x8200f058                Theta_deg
+                0x8200f028                ARM_SET_REF
+                0x8200f146                Zc
+                0x8200f0fc                Zi_vel_last
+                0x8200f05a                Theta_deg
                 0x8200f178                FORCE_REF
-                0x8200f046                ACCELY_RAW
-                0x8200f112                Zi_pos_last
-                0x8200f040                Zc_error
-                0x8200f04a                Gyro_Theta_RAW
-                0x8200f106                Zi_vel
+                0x8200f048                ACCELY_RAW
+                0x8200f114                Zi_pos_last
+                0x8200f042                Zc_error
+                0x8200f04c                Gyro_Theta_RAW
+                0x8200f108                Zi_vel
                 0x8200f180                BSky_Z
-                0x8200f142                Zcdot
-                0x8200f176                preStatusExcipad
+                0x8200f144                Zcdot
+                0x8200eff2                preStatusExcipad
  .bss.a2        0x8200f412       0x12 ../Libs/lib_diag.a(dia_main.o)
                 0x8200f420                diag_kwpRxBufferSize_u16
                 0x8200f422                diag_kwpTxBufferSize_u16
@@ -10387,146 +10387,146 @@ LOAD C:/HighTec/TriCore/bin/../lib/gcc/tricore/3.4.5\libgcc.a
  .debug_pubnames
                 0x00009f10       0x3f ../Libs/lib_uds.a(uds_transLayer.o)
 
-.debug_info     0x00000000    0xbfcd1
+.debug_info     0x00000000    0xbfc92
  *(.debug_info)
- .debug_info    0x00000000     0x5363 obj/application.o
- .debug_info    0x00005363      0x333 obj/RC_DiagFuncs.o
- .debug_info    0x00005696     0x4021 ../Libs/lib_basic.a(can.o)
- .debug_info    0x000096b7     0x1dea ../Libs/lib_basic.a(eep_Func.o)
- .debug_info    0x0000b4a1     0x14e1 ../Libs/lib_basic.a(eepr_Server.o)
- .debug_info    0x0000c982      0xb78 ../Libs/lib_basic.a(emcy_api.o)
- .debug_info    0x0000d4fa     0x15c4 ../Libs/lib_basic.a(emcy_main.o)
- .debug_info    0x0000eabe     0x1a35 ../Libs/lib_basic.a(in.o)
- .debug_info    0x000104f3     0x1aea ../Libs/lib_basic.a(main.o)
- .debug_info    0x00011fdd     0x10ce ../Libs/lib_basic.a(mo_ccom.o)
- .debug_info    0x000130ab      0xe62 ../Libs/lib_basic.a(mo_ccpu.o)
- .debug_info    0x00013f0d     0x12c3 ../Libs/lib_basic.a(mo_cerror.o)
- .debug_info    0x000151d0     0x12fb ../Libs/lib_basic.a(mo_cmem.o)
- .debug_info    0x000164cb      0xd54 ../Libs/lib_basic.a(mo_cpfc.o)
- .debug_info    0x0001721f     0x3c55 ../Libs/lib_basic.a(mo_csop.o)
- .debug_info    0x0001ae74      0xe48 ../Libs/lib_basic.a(mo_exe.o)
- .debug_info    0x0001bcbc      0x15c ../Libs/lib_basic.a(mo_startup.o)
- .debug_info    0x0001be18     0x20c5 ../Libs/lib_basic.a(mo_system.o)
- .debug_info    0x0001dedd      0xda1 ../Libs/lib_basic.a(mo_tempHw.o)
- .debug_info    0x0001ec7e      0xee3 ../Libs/lib_basic.a(mo_V12V.o)
- .debug_info    0x0001fb61      0xc11 ../Libs/lib_basic.a(mo_V3V3_ext.o)
- .debug_info    0x00020772      0x197 ../Libs/lib_basic.a(mo_VBat.o)
- .debug_info    0x00020909      0xf34 ../Libs/lib_basic.a(mo_VP.o)
- .debug_info    0x0002183d      0xee8 ../Libs/lib_basic.a(mo_VREF.o)
- .debug_info    0x00022725     0x1af7 ../Libs/lib_basic.a(mo_VSS.o)
- .debug_info    0x0002421c     0x12c1 ../Libs/lib_basic.a(out.o)
- .debug_info    0x000254dd     0x7b07 ../Libs/lib_basic.a(po.o)
- .debug_info    0x0002cfe4     0x1aa7 ../Libs/lib_basic.a(safout.o)
- .debug_info    0x0002ea8b      0xa92 ../Libs/lib_basic.a(sys_afterrun_cy141.o)
- .debug_info    0x0002f51d      0xab4 ../Libs/lib_basic.a(sys_cy141.o)
- .debug_info    0x0002ffd1     0x692e ../Libs/lib_basic.a(system.o)
- .debug_info    0x000368ff     0x336e ../Libs/lib_basic.a(adcmux.o)
- .debug_info    0x00039c6d     0x2228 ../Libs/lib_basic.a(can_auto_conf.o)
- .debug_info    0x0003be95     0x1119 ../Libs/lib_basic.a(can_busoffintr.o)
- .debug_info    0x0003cfae     0x1093 ../Libs/lib_basic.a(can_changebaudrate.o)
- .debug_info    0x0003e041     0x1008 ../Libs/lib_basic.a(can_changemsgid.o)
- .debug_info    0x0003f049      0xfa8 ../Libs/lib_basic.a(can_disablemsg.o)
- .debug_info    0x0003fff1      0xfb5 ../Libs/lib_basic.a(can_disablemsgintr.o)
- .debug_info    0x00040fa6      0xfa6 ../Libs/lib_basic.a(can_enablemsg.o)
- .debug_info    0x00041f4c      0xfb3 ../Libs/lib_basic.a(can_enablemsgintr.o)
- .debug_info    0x00042eff     0x1048 ../Libs/lib_basic.a(can_getnodestatus.o)
- .debug_info    0x00043f47     0x14d6 ../Libs/lib_basic.a(can_init.o)
- .debug_info    0x0004541d     0x10b4 ../Libs/lib_basic.a(can_receivemsg.o)
- .debug_info    0x000464d1     0x1007 ../Libs/lib_basic.a(can_startnode.o)
- .debug_info    0x000474d8      0xff9 ../Libs/lib_basic.a(can_stopnode.o)
- .debug_info    0x000484d1     0x112d ../Libs/lib_basic.a(can_transmitmsg.o)
- .debug_info    0x000495fe      0xaf6 ../Libs/lib_basic.a(cpu_endinit.o)
- .debug_info    0x0004a0f4      0xbfe ../Libs/lib_basic.a(cpu_setwatchdogtimeout.o)
- .debug_info    0x0004acf2      0xa93 ../Libs/lib_basic.a(cpu_watchdog_proc.o)
- .debug_info    0x0004b785      0xcc2 ../Libs/lib_basic.a(cy141_read.o)
- .debug_info    0x0004c447      0xcc4 ../Libs/lib_basic.a(cy141_write.o)
- .debug_info    0x0004d10b      0xf4c ../Libs/lib_basic.a(cy320.o)
- .debug_info    0x0004e057     0x178b ../Libs/lib_basic.a(cy320_auto_conf.o)
- .debug_info    0x0004f7e2     0x1007 ../Libs/lib_basic.a(cy320_diag_sequence.o)
- .debug_info    0x000507e9      0xffa ../Libs/lib_basic.a(cy320_diag_testimpulse.o)
- .debug_info    0x000517e3      0xcb1 ../Libs/lib_basic.a(cy320_getwdanow.o)
- .debug_info    0x00052494     0x1094 ../Libs/lib_basic.a(cy320_monitoring.o)
- .debug_info    0x00053528     0x118c ../Libs/lib_basic.a(cy320_power.o)
- .debug_info    0x000546b4     0x1877 ../Libs/lib_basic.a(dfc_auto_conf.o)
- .debug_info    0x00055f2b     0x10a3 ../Libs/lib_basic.a(eepoa_interface.o)
- .debug_info    0x00056fce      0xa18 ../Libs/lib_basic.a(memlay_cacheinit.o)
- .debug_info    0x000579e6      0xb57 ../Libs/lib_basic.a(memlay_getinfo.o)
- .debug_info    0x0005853d      0xed3 ../Libs/lib_basic.a(pcp_mon_ini.o)
- .debug_info    0x00059410     0x1d77 ../Libs/lib_basic.a(pwmout.o)
- .debug_info    0x0005b187     0x27f9 ../Libs/lib_basic.a(pwmout_auto_conf.o)
- .debug_info    0x0005d980     0x1316 ../Libs/lib_basic.a(pwmout_hbridge.o)
- .debug_info    0x0005ec96     0x106f ../Libs/lib_basic.a(reset_swresetrequest.o)
- .debug_info    0x0005fd05     0x11ba ../Libs/lib_basic.a(spi_actvtx.o)
- .debug_info    0x00060ebf      0xe02 ../Libs/lib_basic.a(spi_auto_conf.o)
- .debug_info    0x00061cc1      0xe89 ../Libs/lib_basic.a(spi_ini.o)
- .debug_info    0x00062b4a      0xb4a ../Libs/lib_basic.a(spi_mon.o)
- .debug_info    0x00063694      0xa8e ../Libs/lib_basic.a(srvb_div64.o)
- .debug_info    0x00064122      0xad1 ../Libs/lib_basic.a(srvb_muldiv16.o)
- .debug_info    0x00064bf3     0x35f2 ../Libs/lib_basic.a(ai.o)
- .debug_info    0x000681e5     0x13dd ../Libs/lib_basic.a(ci.o)
- .debug_info    0x000695c2     0x112a ../Libs/lib_basic.a(core.o)
- .debug_info    0x0006a6ec      0x1f3 ../Libs/lib_basic.a(crc.o)
- .debug_info    0x0006a8df     0x5444 ../Libs/lib_basic.a(dfi.o)
- .debug_info    0x0006fd23     0x11bc ../Libs/lib_basic.a(di.o)
- .debug_info    0x00070edf      0xe88 ../Libs/lib_basic.a(doh.o)
- .debug_info    0x00071d67     0x2d57 ../Libs/lib_basic.a(intr.o)
- .debug_info    0x00074abe     0x1dd5 ../Libs/lib_basic.a(mo_cgpta.o)
- .debug_info    0x00076893     0x1163 ../Libs/lib_basic.a(mo_cpcp.o)
- .debug_info    0x000779f6      0xc3d ../Libs/lib_basic.a(mo_crom.o)
- .debug_info    0x00078633     0x1a3b ../Libs/lib_basic.a(sys_isr.o)
- .debug_info    0x0007a06e      0xa10 ../Libs/lib_basic.a(sys_kl15_cy141.o)
- .debug_info    0x0007aa7e     0x1008 ../Libs/lib_basic.a(sys_swadap_core.o)
- .debug_info    0x0007ba86      0xa08 ../Libs/lib_basic.a(adchal_ini.o)
- .debug_info    0x0007c48e     0x10b1 ../Libs/lib_basic.a(adci_proc_auto_conf.o)
- .debug_info    0x0007d53f     0x110e ../Libs/lib_basic.a(can_receiveintr.o)
- .debug_info    0x0007e64d     0x108b ../Libs/lib_basic.a(can_transmitintr.o)
- .debug_info    0x0007f6d8      0xc2c ../Libs/lib_basic.a(can_txqueue.o)
- .debug_info    0x00080304     0x1e16 ../Libs/lib_basic.a(cpu_auto_conf.o)
- .debug_info    0x0008211a     0x11ef ../Libs/lib_basic.a(cy141_auto_conf.o)
- .debug_info    0x00083309      0xcbc ../Libs/lib_basic.a(cy141_ini.o)
- .debug_info    0x00083fc5     0x1072 ../Libs/lib_basic.a(cy320_ini.o)
- .debug_info    0x00085037      0xc66 ../Libs/lib_basic.a(dio_proc_ini.o)
- .debug_info    0x00085c9d      0xd1e ../Libs/lib_basic.a(dma.o)
- .debug_info    0x000869bb      0xfb8 ../Libs/lib_basic.a(eepoa.o)
- .debug_info    0x00087973     0x1132 ../Libs/lib_basic.a(eepoa_conf.o)
- .debug_info    0x00088aa5      0xd93 ../Libs/lib_basic.a(eepoa_initram.o)
- .debug_info    0x00089838      0x75b ../Libs/lib_basic.a(eru_auto_conf.o)
- .debug_info    0x00089f93      0xa4a ../Libs/lib_basic.a(execon.o)
- .debug_info    0x0008a9dd     0x20f5 ../Libs/lib_basic.a(gpta.o)
- .debug_info    0x0008cad2     0x1eef ../Libs/lib_basic.a(gpta_auto_conf.o)
- .debug_info    0x0008e9c1      0xad5 ../Libs/lib_basic.a(msc_ini.o)
- .debug_info    0x0008f496      0xb04 ../Libs/lib_basic.a(pcp_esr.o)
- .debug_info    0x0008ff9a      0xb5d ../Libs/lib_basic.a(pcp_ini.o)
- .debug_info    0x00090af7     0x44a9 ../Libs/lib_basic.a(phase.o)
- .debug_info    0x00094fa0      0x9c9 ../Libs/lib_basic.a(port_dioset.o)
- .debug_info    0x00095969     0x1a4c ../Libs/lib_basic.a(port_proc_ini.o)
- .debug_info    0x000973b5      0xb06 ../Libs/lib_basic.a(port_restoreiocr.o)
- .debug_info    0x00097ebb      0x9ff ../Libs/lib_basic.a(port_setiocrgpio.o)
- .debug_info    0x000988ba      0xf58 ../Libs/lib_basic.a(pwmhal_inxt.o)
- .debug_info    0x00099812     0x220f ../Libs/lib_basic.a(pwmin_auto_conf.o)
- .debug_info    0x0009ba21     0x11a7 ../Libs/lib_basic.a(pwmin_dcmirq.o)
- .debug_info    0x0009cbc8     0x1ab7 ../Libs/lib_basic.a(pwmin_gtcirqxt.o)
- .debug_info    0x0009e67f     0x113c ../Libs/lib_basic.a(pwmin_ltcirq.o)
- .debug_info    0x0009f7bb     0x10f5 ../Libs/lib_basic.a(reset_swreset.o)
- .debug_info    0x000a08b0     0x4943 ../Libs/lib_basic.a(spi_ssc0qh.o)
- .debug_info    0x000a51f3      0xaed ../Libs/lib_basic.a(srvb_muldiv32.o)
- .debug_info    0x000a5ce0      0xa30 ../Libs/lib_basic.a(adc_auto_conf.o)
- .debug_info    0x000a6710      0xa1b ../Libs/lib_basic.a(adchal.o)
- .debug_info    0x000a712b      0xb1f ../Libs/lib_basic.a(cpu_detectdebugger.o)
- .debug_info    0x000a7c4a      0xc0a ../Libs/lib_basic.a(memlay_auto_conf.o)
- .debug_info    0x000a8854     0x58e6 ../Libs/lib_basic.a(pcp_auto_conf.o)
- .debug_info    0x000ae13a      0x94e ../Libs/lib_basic.a(pcp_load_pcp.o)
- .debug_info    0x000aea88      0xbd7 ../Libs/lib_basic.a(port_auto_conf.o)
- .debug_info    0x000af65f      0x9c8 ../Libs/lib_basic.a(port_dioget.o)
- .debug_info    0x000b0027      0xa12 ../Libs/lib_basic.a(pwmoutirq_pcp.o)
- .debug_info    0x000b0a39      0xcd6 ../Libs/lib_basic.a(reset_auto_conf.o)
- .debug_info    0x000b170f     0x25fe ../Libs/lib_diag.a(api_diagnostic.o)
- .debug_info    0x000b3d0d     0x1e5c ../Libs/lib_diag.a(dia_main.o)
- .debug_info    0x000b5b69     0x170b ../Libs/lib_diag.a(dia_rtsCom.o)
- .debug_info    0x000b7274      0xcf7 ../Libs/lib_diag.a(dia_scanning.o)
- .debug_info    0x000b7f6b     0x574a ../Libs/lib_diag.a(dia_Services.o)
- .debug_info    0x000bd6b5     0x1c2d ../Libs/lib_uds.a(uds_main.o)
- .debug_info    0x000bf2e2      0x9ef ../Libs/lib_uds.a(uds_transLayer.o)
+ .debug_info    0x00000000     0x5324 obj/application.o
+ .debug_info    0x00005324      0x333 obj/RC_DiagFuncs.o
+ .debug_info    0x00005657     0x4021 ../Libs/lib_basic.a(can.o)
+ .debug_info    0x00009678     0x1dea ../Libs/lib_basic.a(eep_Func.o)
+ .debug_info    0x0000b462     0x14e1 ../Libs/lib_basic.a(eepr_Server.o)
+ .debug_info    0x0000c943      0xb78 ../Libs/lib_basic.a(emcy_api.o)
+ .debug_info    0x0000d4bb     0x15c4 ../Libs/lib_basic.a(emcy_main.o)
+ .debug_info    0x0000ea7f     0x1a35 ../Libs/lib_basic.a(in.o)
+ .debug_info    0x000104b4     0x1aea ../Libs/lib_basic.a(main.o)
+ .debug_info    0x00011f9e     0x10ce ../Libs/lib_basic.a(mo_ccom.o)
+ .debug_info    0x0001306c      0xe62 ../Libs/lib_basic.a(mo_ccpu.o)
+ .debug_info    0x00013ece     0x12c3 ../Libs/lib_basic.a(mo_cerror.o)
+ .debug_info    0x00015191     0x12fb ../Libs/lib_basic.a(mo_cmem.o)
+ .debug_info    0x0001648c      0xd54 ../Libs/lib_basic.a(mo_cpfc.o)
+ .debug_info    0x000171e0     0x3c55 ../Libs/lib_basic.a(mo_csop.o)
+ .debug_info    0x0001ae35      0xe48 ../Libs/lib_basic.a(mo_exe.o)
+ .debug_info    0x0001bc7d      0x15c ../Libs/lib_basic.a(mo_startup.o)
+ .debug_info    0x0001bdd9     0x20c5 ../Libs/lib_basic.a(mo_system.o)
+ .debug_info    0x0001de9e      0xda1 ../Libs/lib_basic.a(mo_tempHw.o)
+ .debug_info    0x0001ec3f      0xee3 ../Libs/lib_basic.a(mo_V12V.o)
+ .debug_info    0x0001fb22      0xc11 ../Libs/lib_basic.a(mo_V3V3_ext.o)
+ .debug_info    0x00020733      0x197 ../Libs/lib_basic.a(mo_VBat.o)
+ .debug_info    0x000208ca      0xf34 ../Libs/lib_basic.a(mo_VP.o)
+ .debug_info    0x000217fe      0xee8 ../Libs/lib_basic.a(mo_VREF.o)
+ .debug_info    0x000226e6     0x1af7 ../Libs/lib_basic.a(mo_VSS.o)
+ .debug_info    0x000241dd     0x12c1 ../Libs/lib_basic.a(out.o)
+ .debug_info    0x0002549e     0x7b07 ../Libs/lib_basic.a(po.o)
+ .debug_info    0x0002cfa5     0x1aa7 ../Libs/lib_basic.a(safout.o)
+ .debug_info    0x0002ea4c      0xa92 ../Libs/lib_basic.a(sys_afterrun_cy141.o)
+ .debug_info    0x0002f4de      0xab4 ../Libs/lib_basic.a(sys_cy141.o)
+ .debug_info    0x0002ff92     0x692e ../Libs/lib_basic.a(system.o)
+ .debug_info    0x000368c0     0x336e ../Libs/lib_basic.a(adcmux.o)
+ .debug_info    0x00039c2e     0x2228 ../Libs/lib_basic.a(can_auto_conf.o)
+ .debug_info    0x0003be56     0x1119 ../Libs/lib_basic.a(can_busoffintr.o)
+ .debug_info    0x0003cf6f     0x1093 ../Libs/lib_basic.a(can_changebaudrate.o)
+ .debug_info    0x0003e002     0x1008 ../Libs/lib_basic.a(can_changemsgid.o)
+ .debug_info    0x0003f00a      0xfa8 ../Libs/lib_basic.a(can_disablemsg.o)
+ .debug_info    0x0003ffb2      0xfb5 ../Libs/lib_basic.a(can_disablemsgintr.o)
+ .debug_info    0x00040f67      0xfa6 ../Libs/lib_basic.a(can_enablemsg.o)
+ .debug_info    0x00041f0d      0xfb3 ../Libs/lib_basic.a(can_enablemsgintr.o)
+ .debug_info    0x00042ec0     0x1048 ../Libs/lib_basic.a(can_getnodestatus.o)
+ .debug_info    0x00043f08     0x14d6 ../Libs/lib_basic.a(can_init.o)
+ .debug_info    0x000453de     0x10b4 ../Libs/lib_basic.a(can_receivemsg.o)
+ .debug_info    0x00046492     0x1007 ../Libs/lib_basic.a(can_startnode.o)
+ .debug_info    0x00047499      0xff9 ../Libs/lib_basic.a(can_stopnode.o)
+ .debug_info    0x00048492     0x112d ../Libs/lib_basic.a(can_transmitmsg.o)
+ .debug_info    0x000495bf      0xaf6 ../Libs/lib_basic.a(cpu_endinit.o)
+ .debug_info    0x0004a0b5      0xbfe ../Libs/lib_basic.a(cpu_setwatchdogtimeout.o)
+ .debug_info    0x0004acb3      0xa93 ../Libs/lib_basic.a(cpu_watchdog_proc.o)
+ .debug_info    0x0004b746      0xcc2 ../Libs/lib_basic.a(cy141_read.o)
+ .debug_info    0x0004c408      0xcc4 ../Libs/lib_basic.a(cy141_write.o)
+ .debug_info    0x0004d0cc      0xf4c ../Libs/lib_basic.a(cy320.o)
+ .debug_info    0x0004e018     0x178b ../Libs/lib_basic.a(cy320_auto_conf.o)
+ .debug_info    0x0004f7a3     0x1007 ../Libs/lib_basic.a(cy320_diag_sequence.o)
+ .debug_info    0x000507aa      0xffa ../Libs/lib_basic.a(cy320_diag_testimpulse.o)
+ .debug_info    0x000517a4      0xcb1 ../Libs/lib_basic.a(cy320_getwdanow.o)
+ .debug_info    0x00052455     0x1094 ../Libs/lib_basic.a(cy320_monitoring.o)
+ .debug_info    0x000534e9     0x118c ../Libs/lib_basic.a(cy320_power.o)
+ .debug_info    0x00054675     0x1877 ../Libs/lib_basic.a(dfc_auto_conf.o)
+ .debug_info    0x00055eec     0x10a3 ../Libs/lib_basic.a(eepoa_interface.o)
+ .debug_info    0x00056f8f      0xa18 ../Libs/lib_basic.a(memlay_cacheinit.o)
+ .debug_info    0x000579a7      0xb57 ../Libs/lib_basic.a(memlay_getinfo.o)
+ .debug_info    0x000584fe      0xed3 ../Libs/lib_basic.a(pcp_mon_ini.o)
+ .debug_info    0x000593d1     0x1d77 ../Libs/lib_basic.a(pwmout.o)
+ .debug_info    0x0005b148     0x27f9 ../Libs/lib_basic.a(pwmout_auto_conf.o)
+ .debug_info    0x0005d941     0x1316 ../Libs/lib_basic.a(pwmout_hbridge.o)
+ .debug_info    0x0005ec57     0x106f ../Libs/lib_basic.a(reset_swresetrequest.o)
+ .debug_info    0x0005fcc6     0x11ba ../Libs/lib_basic.a(spi_actvtx.o)
+ .debug_info    0x00060e80      0xe02 ../Libs/lib_basic.a(spi_auto_conf.o)
+ .debug_info    0x00061c82      0xe89 ../Libs/lib_basic.a(spi_ini.o)
+ .debug_info    0x00062b0b      0xb4a ../Libs/lib_basic.a(spi_mon.o)
+ .debug_info    0x00063655      0xa8e ../Libs/lib_basic.a(srvb_div64.o)
+ .debug_info    0x000640e3      0xad1 ../Libs/lib_basic.a(srvb_muldiv16.o)
+ .debug_info    0x00064bb4     0x35f2 ../Libs/lib_basic.a(ai.o)
+ .debug_info    0x000681a6     0x13dd ../Libs/lib_basic.a(ci.o)
+ .debug_info    0x00069583     0x112a ../Libs/lib_basic.a(core.o)
+ .debug_info    0x0006a6ad      0x1f3 ../Libs/lib_basic.a(crc.o)
+ .debug_info    0x0006a8a0     0x5444 ../Libs/lib_basic.a(dfi.o)
+ .debug_info    0x0006fce4     0x11bc ../Libs/lib_basic.a(di.o)
+ .debug_info    0x00070ea0      0xe88 ../Libs/lib_basic.a(doh.o)
+ .debug_info    0x00071d28     0x2d57 ../Libs/lib_basic.a(intr.o)
+ .debug_info    0x00074a7f     0x1dd5 ../Libs/lib_basic.a(mo_cgpta.o)
+ .debug_info    0x00076854     0x1163 ../Libs/lib_basic.a(mo_cpcp.o)
+ .debug_info    0x000779b7      0xc3d ../Libs/lib_basic.a(mo_crom.o)
+ .debug_info    0x000785f4     0x1a3b ../Libs/lib_basic.a(sys_isr.o)
+ .debug_info    0x0007a02f      0xa10 ../Libs/lib_basic.a(sys_kl15_cy141.o)
+ .debug_info    0x0007aa3f     0x1008 ../Libs/lib_basic.a(sys_swadap_core.o)
+ .debug_info    0x0007ba47      0xa08 ../Libs/lib_basic.a(adchal_ini.o)
+ .debug_info    0x0007c44f     0x10b1 ../Libs/lib_basic.a(adci_proc_auto_conf.o)
+ .debug_info    0x0007d500     0x110e ../Libs/lib_basic.a(can_receiveintr.o)
+ .debug_info    0x0007e60e     0x108b ../Libs/lib_basic.a(can_transmitintr.o)
+ .debug_info    0x0007f699      0xc2c ../Libs/lib_basic.a(can_txqueue.o)
+ .debug_info    0x000802c5     0x1e16 ../Libs/lib_basic.a(cpu_auto_conf.o)
+ .debug_info    0x000820db     0x11ef ../Libs/lib_basic.a(cy141_auto_conf.o)
+ .debug_info    0x000832ca      0xcbc ../Libs/lib_basic.a(cy141_ini.o)
+ .debug_info    0x00083f86     0x1072 ../Libs/lib_basic.a(cy320_ini.o)
+ .debug_info    0x00084ff8      0xc66 ../Libs/lib_basic.a(dio_proc_ini.o)
+ .debug_info    0x00085c5e      0xd1e ../Libs/lib_basic.a(dma.o)
+ .debug_info    0x0008697c      0xfb8 ../Libs/lib_basic.a(eepoa.o)
+ .debug_info    0x00087934     0x1132 ../Libs/lib_basic.a(eepoa_conf.o)
+ .debug_info    0x00088a66      0xd93 ../Libs/lib_basic.a(eepoa_initram.o)
+ .debug_info    0x000897f9      0x75b ../Libs/lib_basic.a(eru_auto_conf.o)
+ .debug_info    0x00089f54      0xa4a ../Libs/lib_basic.a(execon.o)
+ .debug_info    0x0008a99e     0x20f5 ../Libs/lib_basic.a(gpta.o)
+ .debug_info    0x0008ca93     0x1eef ../Libs/lib_basic.a(gpta_auto_conf.o)
+ .debug_info    0x0008e982      0xad5 ../Libs/lib_basic.a(msc_ini.o)
+ .debug_info    0x0008f457      0xb04 ../Libs/lib_basic.a(pcp_esr.o)
+ .debug_info    0x0008ff5b      0xb5d ../Libs/lib_basic.a(pcp_ini.o)
+ .debug_info    0x00090ab8     0x44a9 ../Libs/lib_basic.a(phase.o)
+ .debug_info    0x00094f61      0x9c9 ../Libs/lib_basic.a(port_dioset.o)
+ .debug_info    0x0009592a     0x1a4c ../Libs/lib_basic.a(port_proc_ini.o)
+ .debug_info    0x00097376      0xb06 ../Libs/lib_basic.a(port_restoreiocr.o)
+ .debug_info    0x00097e7c      0x9ff ../Libs/lib_basic.a(port_setiocrgpio.o)
+ .debug_info    0x0009887b      0xf58 ../Libs/lib_basic.a(pwmhal_inxt.o)
+ .debug_info    0x000997d3     0x220f ../Libs/lib_basic.a(pwmin_auto_conf.o)
+ .debug_info    0x0009b9e2     0x11a7 ../Libs/lib_basic.a(pwmin_dcmirq.o)
+ .debug_info    0x0009cb89     0x1ab7 ../Libs/lib_basic.a(pwmin_gtcirqxt.o)
+ .debug_info    0x0009e640     0x113c ../Libs/lib_basic.a(pwmin_ltcirq.o)
+ .debug_info    0x0009f77c     0x10f5 ../Libs/lib_basic.a(reset_swreset.o)
+ .debug_info    0x000a0871     0x4943 ../Libs/lib_basic.a(spi_ssc0qh.o)
+ .debug_info    0x000a51b4      0xaed ../Libs/lib_basic.a(srvb_muldiv32.o)
+ .debug_info    0x000a5ca1      0xa30 ../Libs/lib_basic.a(adc_auto_conf.o)
+ .debug_info    0x000a66d1      0xa1b ../Libs/lib_basic.a(adchal.o)
+ .debug_info    0x000a70ec      0xb1f ../Libs/lib_basic.a(cpu_detectdebugger.o)
+ .debug_info    0x000a7c0b      0xc0a ../Libs/lib_basic.a(memlay_auto_conf.o)
+ .debug_info    0x000a8815     0x58e6 ../Libs/lib_basic.a(pcp_auto_conf.o)
+ .debug_info    0x000ae0fb      0x94e ../Libs/lib_basic.a(pcp_load_pcp.o)
+ .debug_info    0x000aea49      0xbd7 ../Libs/lib_basic.a(port_auto_conf.o)
+ .debug_info    0x000af620      0x9c8 ../Libs/lib_basic.a(port_dioget.o)
+ .debug_info    0x000affe8      0xa12 ../Libs/lib_basic.a(pwmoutirq_pcp.o)
+ .debug_info    0x000b09fa      0xcd6 ../Libs/lib_basic.a(reset_auto_conf.o)
+ .debug_info    0x000b16d0     0x25fe ../Libs/lib_diag.a(api_diagnostic.o)
+ .debug_info    0x000b3cce     0x1e5c ../Libs/lib_diag.a(dia_main.o)
+ .debug_info    0x000b5b2a     0x170b ../Libs/lib_diag.a(dia_rtsCom.o)
+ .debug_info    0x000b7235      0xcf7 ../Libs/lib_diag.a(dia_scanning.o)
+ .debug_info    0x000b7f2c     0x574a ../Libs/lib_diag.a(dia_Services.o)
+ .debug_info    0x000bd676     0x1c2d ../Libs/lib_uds.a(uds_main.o)
+ .debug_info    0x000bf2a3      0x9ef ../Libs/lib_uds.a(uds_transLayer.o)
 
 .debug_abbrev   0x00000000     0xbb77
  *(.debug_abbrev)
@@ -10669,146 +10669,146 @@ LOAD C:/HighTec/TriCore/bin/../lib/gcc/tricore/3.4.5\libgcc.a
  .debug_abbrev  0x0000b787      0x2a2 ../Libs/lib_uds.a(uds_main.o)
  .debug_abbrev  0x0000ba29      0x14e ../Libs/lib_uds.a(uds_transLayer.o)
 
-.debug_line     0x00000000    0x22f7f
+.debug_line     0x00000000    0x22f80
  *(.debug_line)
- .debug_line    0x00000000     0x12d3 obj/application.o
- .debug_line    0x000012d3       0xa2 obj/RC_DiagFuncs.o
- .debug_line    0x00001375      0xfa1 ../Libs/lib_basic.a(can.o)
- .debug_line    0x00002316      0x770 ../Libs/lib_basic.a(eep_Func.o)
- .debug_line    0x00002a86      0x52f ../Libs/lib_basic.a(eepr_Server.o)
- .debug_line    0x00002fb5      0x176 ../Libs/lib_basic.a(emcy_api.o)
- .debug_line    0x0000312b      0x5a8 ../Libs/lib_basic.a(emcy_main.o)
- .debug_line    0x000036d3     0x1216 ../Libs/lib_basic.a(in.o)
- .debug_line    0x000048e9      0x46a ../Libs/lib_basic.a(main.o)
- .debug_line    0x00004d53      0x344 ../Libs/lib_basic.a(mo_ccom.o)
- .debug_line    0x00005097      0x237 ../Libs/lib_basic.a(mo_ccpu.o)
- .debug_line    0x000052ce      0x1ee ../Libs/lib_basic.a(mo_cerror.o)
- .debug_line    0x000054bc      0x269 ../Libs/lib_basic.a(mo_cmem.o)
- .debug_line    0x00005725      0x1dd ../Libs/lib_basic.a(mo_cpfc.o)
- .debug_line    0x00005902      0xdb1 ../Libs/lib_basic.a(mo_csop.o)
- .debug_line    0x000066b3      0x176 ../Libs/lib_basic.a(mo_exe.o)
- .debug_line    0x00006829       0x3d ../Libs/lib_basic.a(mo_startup.o)
- .debug_line    0x00006866      0x4e7 ../Libs/lib_basic.a(mo_system.o)
- .debug_line    0x00006d4d      0x243 ../Libs/lib_basic.a(mo_tempHw.o)
- .debug_line    0x00006f90      0x26b ../Libs/lib_basic.a(mo_V12V.o)
- .debug_line    0x000071fb      0x1a4 ../Libs/lib_basic.a(mo_V3V3_ext.o)
- .debug_line    0x0000739f       0xa8 ../Libs/lib_basic.a(mo_VBat.o)
- .debug_line    0x00007447      0x29b ../Libs/lib_basic.a(mo_VP.o)
- .debug_line    0x000076e2      0x270 ../Libs/lib_basic.a(mo_VREF.o)
- .debug_line    0x00007952      0x675 ../Libs/lib_basic.a(mo_VSS.o)
- .debug_line    0x00007fc7      0x638 ../Libs/lib_basic.a(out.o)
- .debug_line    0x000085ff     0x1ed5 ../Libs/lib_basic.a(po.o)
- .debug_line    0x0000a4d4      0xbd2 ../Libs/lib_basic.a(safout.o)
- .debug_line    0x0000b0a6      0x184 ../Libs/lib_basic.a(sys_afterrun_cy141.o)
- .debug_line    0x0000b22a      0x160 ../Libs/lib_basic.a(sys_cy141.o)
- .debug_line    0x0000b38a     0x1600 ../Libs/lib_basic.a(system.o)
- .debug_line    0x0000c98a      0x8b7 ../Libs/lib_basic.a(adcmux.o)
- .debug_line    0x0000d241      0x19f ../Libs/lib_basic.a(can_auto_conf.o)
- .debug_line    0x0000d3e0      0x2b4 ../Libs/lib_basic.a(can_busoffintr.o)
- .debug_line    0x0000d694      0x2b0 ../Libs/lib_basic.a(can_changebaudrate.o)
- .debug_line    0x0000d944      0x26d ../Libs/lib_basic.a(can_changemsgid.o)
- .debug_line    0x0000dbb1      0x2a3 ../Libs/lib_basic.a(can_disablemsg.o)
- .debug_line    0x0000de54      0x263 ../Libs/lib_basic.a(can_disablemsgintr.o)
- .debug_line    0x0000e0b7      0x2a2 ../Libs/lib_basic.a(can_enablemsg.o)
- .debug_line    0x0000e359      0x262 ../Libs/lib_basic.a(can_enablemsgintr.o)
- .debug_line    0x0000e5bb      0x2d5 ../Libs/lib_basic.a(can_getnodestatus.o)
- .debug_line    0x0000e890      0x385 ../Libs/lib_basic.a(can_init.o)
- .debug_line    0x0000ec15      0x2c9 ../Libs/lib_basic.a(can_receivemsg.o)
- .debug_line    0x0000eede      0x2aa ../Libs/lib_basic.a(can_startnode.o)
- .debug_line    0x0000f188      0x2a3 ../Libs/lib_basic.a(can_stopnode.o)
- .debug_line    0x0000f42b      0x2fb ../Libs/lib_basic.a(can_transmitmsg.o)
- .debug_line    0x0000f726      0x247 ../Libs/lib_basic.a(cpu_endinit.o)
- .debug_line    0x0000f96d      0x29e ../Libs/lib_basic.a(cpu_setwatchdogtimeout.o)
- .debug_line    0x0000fc0b      0x21c ../Libs/lib_basic.a(cpu_watchdog_proc.o)
- .debug_line    0x0000fe27      0x30c ../Libs/lib_basic.a(cy141_read.o)
- .debug_line    0x00010133      0x2f5 ../Libs/lib_basic.a(cy141_write.o)
- .debug_line    0x00010428      0x3a5 ../Libs/lib_basic.a(cy320.o)
- .debug_line    0x000107cd      0x37c ../Libs/lib_basic.a(cy320_auto_conf.o)
- .debug_line    0x00010b49      0x428 ../Libs/lib_basic.a(cy320_diag_sequence.o)
- .debug_line    0x00010f71      0x453 ../Libs/lib_basic.a(cy320_diag_testimpulse.o)
- .debug_line    0x000113c4      0x30d ../Libs/lib_basic.a(cy320_getwdanow.o)
- .debug_line    0x000116d1      0x40b ../Libs/lib_basic.a(cy320_monitoring.o)
- .debug_line    0x00011adc      0x3ac ../Libs/lib_basic.a(cy320_power.o)
- .debug_line    0x00011e88      0x325 ../Libs/lib_basic.a(dfc_auto_conf.o)
- .debug_line    0x000121ad      0x301 ../Libs/lib_basic.a(eepoa_interface.o)
- .debug_line    0x000124ae      0x216 ../Libs/lib_basic.a(memlay_cacheinit.o)
- .debug_line    0x000126c4      0x1c5 ../Libs/lib_basic.a(memlay_getinfo.o)
- .debug_line    0x00012889      0x24c ../Libs/lib_basic.a(pcp_mon_ini.o)
- .debug_line    0x00012ad5      0x56d ../Libs/lib_basic.a(pwmout.o)
- .debug_line    0x00013042      0x45d ../Libs/lib_basic.a(pwmout_auto_conf.o)
- .debug_line    0x0001349f      0x467 ../Libs/lib_basic.a(pwmout_hbridge.o)
- .debug_line    0x00013906      0x46a ../Libs/lib_basic.a(reset_swresetrequest.o)
- .debug_line    0x00013d70      0x325 ../Libs/lib_basic.a(spi_actvtx.o)
- .debug_line    0x00014095      0x23b ../Libs/lib_basic.a(spi_auto_conf.o)
- .debug_line    0x000142d0      0x2a6 ../Libs/lib_basic.a(spi_ini.o)
- .debug_line    0x00014576      0x20e ../Libs/lib_basic.a(spi_mon.o)
- .debug_line    0x00014784      0x212 ../Libs/lib_basic.a(srvb_div64.o)
- .debug_line    0x00014996      0x219 ../Libs/lib_basic.a(srvb_muldiv16.o)
- .debug_line    0x00014baf      0xc3f ../Libs/lib_basic.a(ai.o)
- .debug_line    0x000157ee      0x3cc ../Libs/lib_basic.a(ci.o)
- .debug_line    0x00015bba      0x223 ../Libs/lib_basic.a(core.o)
- .debug_line    0x00015ddd       0x6b ../Libs/lib_basic.a(crc.o)
- .debug_line    0x00015e48      0xd43 ../Libs/lib_basic.a(dfi.o)
- .debug_line    0x00016b8b      0x2b3 ../Libs/lib_basic.a(di.o)
- .debug_line    0x00016e3e      0x21c ../Libs/lib_basic.a(doh.o)
- .debug_line    0x0001705a      0x2d9 ../Libs/lib_basic.a(intr.o)
- .debug_line    0x00017333      0x1ca ../Libs/lib_basic.a(mo_cgpta.o)
- .debug_line    0x000174fd      0x193 ../Libs/lib_basic.a(mo_cpcp.o)
- .debug_line    0x00017690      0x153 ../Libs/lib_basic.a(mo_crom.o)
- .debug_line    0x000177e3      0x45c ../Libs/lib_basic.a(sys_isr.o)
- .debug_line    0x00017c3f      0x15d ../Libs/lib_basic.a(sys_kl15_cy141.o)
- .debug_line    0x00017d9c      0x230 ../Libs/lib_basic.a(sys_swadap_core.o)
- .debug_line    0x00017fcc      0x25d ../Libs/lib_basic.a(adchal_ini.o)
- .debug_line    0x00018229      0x3d2 ../Libs/lib_basic.a(adci_proc_auto_conf.o)
- .debug_line    0x000185fb      0x2eb ../Libs/lib_basic.a(can_receiveintr.o)
- .debug_line    0x000188e6      0x2cb ../Libs/lib_basic.a(can_transmitintr.o)
- .debug_line    0x00018bb1      0x203 ../Libs/lib_basic.a(can_txqueue.o)
- .debug_line    0x00018db4      0x37a ../Libs/lib_basic.a(cpu_auto_conf.o)
- .debug_line    0x0001912e      0x2db ../Libs/lib_basic.a(cy141_auto_conf.o)
- .debug_line    0x00019409      0x2ec ../Libs/lib_basic.a(cy141_ini.o)
- .debug_line    0x000196f5      0x412 ../Libs/lib_basic.a(cy320_ini.o)
- .debug_line    0x00019b07      0x2e8 ../Libs/lib_basic.a(dio_proc_ini.o)
- .debug_line    0x00019def      0x1c6 ../Libs/lib_basic.a(dma.o)
- .debug_line    0x00019fb5      0x28a ../Libs/lib_basic.a(eepoa.o)
- .debug_line    0x0001a23f      0x23d ../Libs/lib_basic.a(eepoa_conf.o)
- .debug_line    0x0001a47c      0x242 ../Libs/lib_basic.a(eepoa_initram.o)
- .debug_line    0x0001a6be      0x119 ../Libs/lib_basic.a(eru_auto_conf.o)
- .debug_line    0x0001a7d7      0x1b1 ../Libs/lib_basic.a(execon.o)
- .debug_line    0x0001a988      0x470 ../Libs/lib_basic.a(gpta.o)
- .debug_line    0x0001adf8      0x2dc ../Libs/lib_basic.a(gpta_auto_conf.o)
- .debug_line    0x0001b0d4      0x203 ../Libs/lib_basic.a(msc_ini.o)
- .debug_line    0x0001b2d7      0x1fc ../Libs/lib_basic.a(pcp_esr.o)
- .debug_line    0x0001b4d3      0x263 ../Libs/lib_basic.a(pcp_ini.o)
- .debug_line    0x0001b736      0x801 ../Libs/lib_basic.a(phase.o)
- .debug_line    0x0001bf37      0x1c3 ../Libs/lib_basic.a(port_dioset.o)
- .debug_line    0x0001c0fa      0x871 ../Libs/lib_basic.a(port_proc_ini.o)
- .debug_line    0x0001c96b      0x22a ../Libs/lib_basic.a(port_restoreiocr.o)
- .debug_line    0x0001cb95      0x1c9 ../Libs/lib_basic.a(port_setiocrgpio.o)
- .debug_line    0x0001cd5e      0x2ba ../Libs/lib_basic.a(pwmhal_inxt.o)
- .debug_line    0x0001d018      0x345 ../Libs/lib_basic.a(pwmin_auto_conf.o)
- .debug_line    0x0001d35d      0x345 ../Libs/lib_basic.a(pwmin_dcmirq.o)
- .debug_line    0x0001d6a2      0x3bb ../Libs/lib_basic.a(pwmin_gtcirqxt.o)
- .debug_line    0x0001da5d      0x31c ../Libs/lib_basic.a(pwmin_ltcirq.o)
- .debug_line    0x0001dd79      0x4a2 ../Libs/lib_basic.a(reset_swreset.o)
- .debug_line    0x0001e21b      0x43b ../Libs/lib_basic.a(spi_ssc0qh.o)
- .debug_line    0x0001e656      0x26c ../Libs/lib_basic.a(srvb_muldiv32.o)
- .debug_line    0x0001e8c2      0x29d ../Libs/lib_basic.a(adc_auto_conf.o)
- .debug_line    0x0001eb5f      0x249 ../Libs/lib_basic.a(adchal.o)
- .debug_line    0x0001eda8      0x20b ../Libs/lib_basic.a(cpu_detectdebugger.o)
- .debug_line    0x0001efb3      0x1a5 ../Libs/lib_basic.a(memlay_auto_conf.o)
- .debug_line    0x0001f158      0x612 ../Libs/lib_basic.a(pcp_auto_conf.o)
- .debug_line    0x0001f76a      0x1cf ../Libs/lib_basic.a(pcp_load_pcp.o)
- .debug_line    0x0001f939      0x2a1 ../Libs/lib_basic.a(port_auto_conf.o)
- .debug_line    0x0001fbda      0x1b5 ../Libs/lib_basic.a(port_dioget.o)
- .debug_line    0x0001fd8f      0x29e ../Libs/lib_basic.a(pwmoutirq_pcp.o)
- .debug_line    0x0002002d      0x28c ../Libs/lib_basic.a(reset_auto_conf.o)
- .debug_line    0x000202b9      0x539 ../Libs/lib_diag.a(api_diagnostic.o)
- .debug_line    0x000207f2      0x48c ../Libs/lib_diag.a(dia_main.o)
- .debug_line    0x00020c7e      0x309 ../Libs/lib_diag.a(dia_rtsCom.o)
- .debug_line    0x00020f87      0x221 ../Libs/lib_diag.a(dia_scanning.o)
- .debug_line    0x000211a8     0x17b8 ../Libs/lib_diag.a(dia_Services.o)
- .debug_line    0x00022960      0x38b ../Libs/lib_uds.a(uds_main.o)
- .debug_line    0x00022ceb      0x294 ../Libs/lib_uds.a(uds_transLayer.o)
+ .debug_line    0x00000000     0x12d4 obj/application.o
+ .debug_line    0x000012d4       0xa2 obj/RC_DiagFuncs.o
+ .debug_line    0x00001376      0xfa1 ../Libs/lib_basic.a(can.o)
+ .debug_line    0x00002317      0x770 ../Libs/lib_basic.a(eep_Func.o)
+ .debug_line    0x00002a87      0x52f ../Libs/lib_basic.a(eepr_Server.o)
+ .debug_line    0x00002fb6      0x176 ../Libs/lib_basic.a(emcy_api.o)
+ .debug_line    0x0000312c      0x5a8 ../Libs/lib_basic.a(emcy_main.o)
+ .debug_line    0x000036d4     0x1216 ../Libs/lib_basic.a(in.o)
+ .debug_line    0x000048ea      0x46a ../Libs/lib_basic.a(main.o)
+ .debug_line    0x00004d54      0x344 ../Libs/lib_basic.a(mo_ccom.o)
+ .debug_line    0x00005098      0x237 ../Libs/lib_basic.a(mo_ccpu.o)
+ .debug_line    0x000052cf      0x1ee ../Libs/lib_basic.a(mo_cerror.o)
+ .debug_line    0x000054bd      0x269 ../Libs/lib_basic.a(mo_cmem.o)
+ .debug_line    0x00005726      0x1dd ../Libs/lib_basic.a(mo_cpfc.o)
+ .debug_line    0x00005903      0xdb1 ../Libs/lib_basic.a(mo_csop.o)
+ .debug_line    0x000066b4      0x176 ../Libs/lib_basic.a(mo_exe.o)
+ .debug_line    0x0000682a       0x3d ../Libs/lib_basic.a(mo_startup.o)
+ .debug_line    0x00006867      0x4e7 ../Libs/lib_basic.a(mo_system.o)
+ .debug_line    0x00006d4e      0x243 ../Libs/lib_basic.a(mo_tempHw.o)
+ .debug_line    0x00006f91      0x26b ../Libs/lib_basic.a(mo_V12V.o)
+ .debug_line    0x000071fc      0x1a4 ../Libs/lib_basic.a(mo_V3V3_ext.o)
+ .debug_line    0x000073a0       0xa8 ../Libs/lib_basic.a(mo_VBat.o)
+ .debug_line    0x00007448      0x29b ../Libs/lib_basic.a(mo_VP.o)
+ .debug_line    0x000076e3      0x270 ../Libs/lib_basic.a(mo_VREF.o)
+ .debug_line    0x00007953      0x675 ../Libs/lib_basic.a(mo_VSS.o)
+ .debug_line    0x00007fc8      0x638 ../Libs/lib_basic.a(out.o)
+ .debug_line    0x00008600     0x1ed5 ../Libs/lib_basic.a(po.o)
+ .debug_line    0x0000a4d5      0xbd2 ../Libs/lib_basic.a(safout.o)
+ .debug_line    0x0000b0a7      0x184 ../Libs/lib_basic.a(sys_afterrun_cy141.o)
+ .debug_line    0x0000b22b      0x160 ../Libs/lib_basic.a(sys_cy141.o)
+ .debug_line    0x0000b38b     0x1600 ../Libs/lib_basic.a(system.o)
+ .debug_line    0x0000c98b      0x8b7 ../Libs/lib_basic.a(adcmux.o)
+ .debug_line    0x0000d242      0x19f ../Libs/lib_basic.a(can_auto_conf.o)
+ .debug_line    0x0000d3e1      0x2b4 ../Libs/lib_basic.a(can_busoffintr.o)
+ .debug_line    0x0000d695      0x2b0 ../Libs/lib_basic.a(can_changebaudrate.o)
+ .debug_line    0x0000d945      0x26d ../Libs/lib_basic.a(can_changemsgid.o)
+ .debug_line    0x0000dbb2      0x2a3 ../Libs/lib_basic.a(can_disablemsg.o)
+ .debug_line    0x0000de55      0x263 ../Libs/lib_basic.a(can_disablemsgintr.o)
+ .debug_line    0x0000e0b8      0x2a2 ../Libs/lib_basic.a(can_enablemsg.o)
+ .debug_line    0x0000e35a      0x262 ../Libs/lib_basic.a(can_enablemsgintr.o)
+ .debug_line    0x0000e5bc      0x2d5 ../Libs/lib_basic.a(can_getnodestatus.o)
+ .debug_line    0x0000e891      0x385 ../Libs/lib_basic.a(can_init.o)
+ .debug_line    0x0000ec16      0x2c9 ../Libs/lib_basic.a(can_receivemsg.o)
+ .debug_line    0x0000eedf      0x2aa ../Libs/lib_basic.a(can_startnode.o)
+ .debug_line    0x0000f189      0x2a3 ../Libs/lib_basic.a(can_stopnode.o)
+ .debug_line    0x0000f42c      0x2fb ../Libs/lib_basic.a(can_transmitmsg.o)
+ .debug_line    0x0000f727      0x247 ../Libs/lib_basic.a(cpu_endinit.o)
+ .debug_line    0x0000f96e      0x29e ../Libs/lib_basic.a(cpu_setwatchdogtimeout.o)
+ .debug_line    0x0000fc0c      0x21c ../Libs/lib_basic.a(cpu_watchdog_proc.o)
+ .debug_line    0x0000fe28      0x30c ../Libs/lib_basic.a(cy141_read.o)
+ .debug_line    0x00010134      0x2f5 ../Libs/lib_basic.a(cy141_write.o)
+ .debug_line    0x00010429      0x3a5 ../Libs/lib_basic.a(cy320.o)
+ .debug_line    0x000107ce      0x37c ../Libs/lib_basic.a(cy320_auto_conf.o)
+ .debug_line    0x00010b4a      0x428 ../Libs/lib_basic.a(cy320_diag_sequence.o)
+ .debug_line    0x00010f72      0x453 ../Libs/lib_basic.a(cy320_diag_testimpulse.o)
+ .debug_line    0x000113c5      0x30d ../Libs/lib_basic.a(cy320_getwdanow.o)
+ .debug_line    0x000116d2      0x40b ../Libs/lib_basic.a(cy320_monitoring.o)
+ .debug_line    0x00011add      0x3ac ../Libs/lib_basic.a(cy320_power.o)
+ .debug_line    0x00011e89      0x325 ../Libs/lib_basic.a(dfc_auto_conf.o)
+ .debug_line    0x000121ae      0x301 ../Libs/lib_basic.a(eepoa_interface.o)
+ .debug_line    0x000124af      0x216 ../Libs/lib_basic.a(memlay_cacheinit.o)
+ .debug_line    0x000126c5      0x1c5 ../Libs/lib_basic.a(memlay_getinfo.o)
+ .debug_line    0x0001288a      0x24c ../Libs/lib_basic.a(pcp_mon_ini.o)
+ .debug_line    0x00012ad6      0x56d ../Libs/lib_basic.a(pwmout.o)
+ .debug_line    0x00013043      0x45d ../Libs/lib_basic.a(pwmout_auto_conf.o)
+ .debug_line    0x000134a0      0x467 ../Libs/lib_basic.a(pwmout_hbridge.o)
+ .debug_line    0x00013907      0x46a ../Libs/lib_basic.a(reset_swresetrequest.o)
+ .debug_line    0x00013d71      0x325 ../Libs/lib_basic.a(spi_actvtx.o)
+ .debug_line    0x00014096      0x23b ../Libs/lib_basic.a(spi_auto_conf.o)
+ .debug_line    0x000142d1      0x2a6 ../Libs/lib_basic.a(spi_ini.o)
+ .debug_line    0x00014577      0x20e ../Libs/lib_basic.a(spi_mon.o)
+ .debug_line    0x00014785      0x212 ../Libs/lib_basic.a(srvb_div64.o)
+ .debug_line    0x00014997      0x219 ../Libs/lib_basic.a(srvb_muldiv16.o)
+ .debug_line    0x00014bb0      0xc3f ../Libs/lib_basic.a(ai.o)
+ .debug_line    0x000157ef      0x3cc ../Libs/lib_basic.a(ci.o)
+ .debug_line    0x00015bbb      0x223 ../Libs/lib_basic.a(core.o)
+ .debug_line    0x00015dde       0x6b ../Libs/lib_basic.a(crc.o)
+ .debug_line    0x00015e49      0xd43 ../Libs/lib_basic.a(dfi.o)
+ .debug_line    0x00016b8c      0x2b3 ../Libs/lib_basic.a(di.o)
+ .debug_line    0x00016e3f      0x21c ../Libs/lib_basic.a(doh.o)
+ .debug_line    0x0001705b      0x2d9 ../Libs/lib_basic.a(intr.o)
+ .debug_line    0x00017334      0x1ca ../Libs/lib_basic.a(mo_cgpta.o)
+ .debug_line    0x000174fe      0x193 ../Libs/lib_basic.a(mo_cpcp.o)
+ .debug_line    0x00017691      0x153 ../Libs/lib_basic.a(mo_crom.o)
+ .debug_line    0x000177e4      0x45c ../Libs/lib_basic.a(sys_isr.o)
+ .debug_line    0x00017c40      0x15d ../Libs/lib_basic.a(sys_kl15_cy141.o)
+ .debug_line    0x00017d9d      0x230 ../Libs/lib_basic.a(sys_swadap_core.o)
+ .debug_line    0x00017fcd      0x25d ../Libs/lib_basic.a(adchal_ini.o)
+ .debug_line    0x0001822a      0x3d2 ../Libs/lib_basic.a(adci_proc_auto_conf.o)
+ .debug_line    0x000185fc      0x2eb ../Libs/lib_basic.a(can_receiveintr.o)
+ .debug_line    0x000188e7      0x2cb ../Libs/lib_basic.a(can_transmitintr.o)
+ .debug_line    0x00018bb2      0x203 ../Libs/lib_basic.a(can_txqueue.o)
+ .debug_line    0x00018db5      0x37a ../Libs/lib_basic.a(cpu_auto_conf.o)
+ .debug_line    0x0001912f      0x2db ../Libs/lib_basic.a(cy141_auto_conf.o)
+ .debug_line    0x0001940a      0x2ec ../Libs/lib_basic.a(cy141_ini.o)
+ .debug_line    0x000196f6      0x412 ../Libs/lib_basic.a(cy320_ini.o)
+ .debug_line    0x00019b08      0x2e8 ../Libs/lib_basic.a(dio_proc_ini.o)
+ .debug_line    0x00019df0      0x1c6 ../Libs/lib_basic.a(dma.o)
+ .debug_line    0x00019fb6      0x28a ../Libs/lib_basic.a(eepoa.o)
+ .debug_line    0x0001a240      0x23d ../Libs/lib_basic.a(eepoa_conf.o)
+ .debug_line    0x0001a47d      0x242 ../Libs/lib_basic.a(eepoa_initram.o)
+ .debug_line    0x0001a6bf      0x119 ../Libs/lib_basic.a(eru_auto_conf.o)
+ .debug_line    0x0001a7d8      0x1b1 ../Libs/lib_basic.a(execon.o)
+ .debug_line    0x0001a989      0x470 ../Libs/lib_basic.a(gpta.o)
+ .debug_line    0x0001adf9      0x2dc ../Libs/lib_basic.a(gpta_auto_conf.o)
+ .debug_line    0x0001b0d5      0x203 ../Libs/lib_basic.a(msc_ini.o)
+ .debug_line    0x0001b2d8      0x1fc ../Libs/lib_basic.a(pcp_esr.o)
+ .debug_line    0x0001b4d4      0x263 ../Libs/lib_basic.a(pcp_ini.o)
+ .debug_line    0x0001b737      0x801 ../Libs/lib_basic.a(phase.o)
+ .debug_line    0x0001bf38      0x1c3 ../Libs/lib_basic.a(port_dioset.o)
+ .debug_line    0x0001c0fb      0x871 ../Libs/lib_basic.a(port_proc_ini.o)
+ .debug_line    0x0001c96c      0x22a ../Libs/lib_basic.a(port_restoreiocr.o)
+ .debug_line    0x0001cb96      0x1c9 ../Libs/lib_basic.a(port_setiocrgpio.o)
+ .debug_line    0x0001cd5f      0x2ba ../Libs/lib_basic.a(pwmhal_inxt.o)
+ .debug_line    0x0001d019      0x345 ../Libs/lib_basic.a(pwmin_auto_conf.o)
+ .debug_line    0x0001d35e      0x345 ../Libs/lib_basic.a(pwmin_dcmirq.o)
+ .debug_line    0x0001d6a3      0x3bb ../Libs/lib_basic.a(pwmin_gtcirqxt.o)
+ .debug_line    0x0001da5e      0x31c ../Libs/lib_basic.a(pwmin_ltcirq.o)
+ .debug_line    0x0001dd7a      0x4a2 ../Libs/lib_basic.a(reset_swreset.o)
+ .debug_line    0x0001e21c      0x43b ../Libs/lib_basic.a(spi_ssc0qh.o)
+ .debug_line    0x0001e657      0x26c ../Libs/lib_basic.a(srvb_muldiv32.o)
+ .debug_line    0x0001e8c3      0x29d ../Libs/lib_basic.a(adc_auto_conf.o)
+ .debug_line    0x0001eb60      0x249 ../Libs/lib_basic.a(adchal.o)
+ .debug_line    0x0001eda9      0x20b ../Libs/lib_basic.a(cpu_detectdebugger.o)
+ .debug_line    0x0001efb4      0x1a5 ../Libs/lib_basic.a(memlay_auto_conf.o)
+ .debug_line    0x0001f159      0x612 ../Libs/lib_basic.a(pcp_auto_conf.o)
+ .debug_line    0x0001f76b      0x1cf ../Libs/lib_basic.a(pcp_load_pcp.o)
+ .debug_line    0x0001f93a      0x2a1 ../Libs/lib_basic.a(port_auto_conf.o)
+ .debug_line    0x0001fbdb      0x1b5 ../Libs/lib_basic.a(port_dioget.o)
+ .debug_line    0x0001fd90      0x29e ../Libs/lib_basic.a(pwmoutirq_pcp.o)
+ .debug_line    0x0002002e      0x28c ../Libs/lib_basic.a(reset_auto_conf.o)
+ .debug_line    0x000202ba      0x539 ../Libs/lib_diag.a(api_diagnostic.o)
+ .debug_line    0x000207f3      0x48c ../Libs/lib_diag.a(dia_main.o)
+ .debug_line    0x00020c7f      0x309 ../Libs/lib_diag.a(dia_rtsCom.o)
+ .debug_line    0x00020f88      0x221 ../Libs/lib_diag.a(dia_scanning.o)
+ .debug_line    0x000211a9     0x17b8 ../Libs/lib_diag.a(dia_Services.o)
+ .debug_line    0x00022961      0x38b ../Libs/lib_uds.a(uds_main.o)
+ .debug_line    0x00022cec      0x294 ../Libs/lib_uds.a(uds_transLayer.o)
 
 .debug_frame    0x00000000     0x5534
  *(.debug_frame)

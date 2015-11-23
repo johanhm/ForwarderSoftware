@@ -3,23 +3,6 @@
  All periodic running tasks
  */
 
-/*
-  FUNCTION:      actuate
-
-//brief         Unique actuation function, only function that control the solenoid current outputs
-#define RefZero 0 //Number taken as valve closed Zero output on both solenoids
-#define RefMin -400 //Min Ref Equivalent to Max output on Solenoid B Deadband+ -RefMin
-#define RefMax 400 //Max Ref Equivalent to Max output on Solenoid A  Deadband+ Refmax
-#define FR 0
-#define FL 1
-#define MR 2
-#define ML 3
-#define BR 4
-#define BL 5
-#define CAN_TEST_ON							1	// Set to 1 when outputting values to CAN
-#define ANALOG_OUTPUT_ON					0	// Set to 1 when outputting values to pins
-
- */
 
 #include "ActiveDamping.h"
 

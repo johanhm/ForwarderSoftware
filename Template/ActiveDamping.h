@@ -3,7 +3,7 @@
 #define _ACTIVEDAMPENING_H_
 
 /**** include files ********************************************************************************
-* List of include files needed in this module.                                                    */
+ * List of include files needed in this module.                                                    */
 
 #include "application.h"
 #include "api_lib_basic.h"
@@ -19,47 +19,40 @@
 
 //------------------------Testing defines----------------------------
 
-
 //Testing variables changeable through CAN message configuration
 
-volatile uint8 SEND_SCALED_POS=1;
-volatile uint8  ANALOG_OUTPUT_ON=1;			// Set to 1 when outputting values to pins
+volatile uint8 SEND_SCALED_POS = 1;
+volatile uint8  ANALOG_OUTPUT_ON = 1;			// Set to 1 when outputting values to pins
 
 
-volatile sint16 FORCE_REF=0;
+volatile sint16 FORCE_REF = 0;
 
-volatile uint8 CAN_TEST_ON=1;				// Set to 1 when outputting values to CAN
-volatile uint8 SEND_ACTUAL_CURRENT_CAN=1; //Set to 1 to send read output current out through can
-volatile uint8 SEND_PRESSURE=1;          // 1=Send  0= Do not send
-volatile uint8 SEND_POS_AND_VEL=1;
-volatile uint8 SEND_FORCE=1;
-volatile uint8 SEND_FLOW=0;
-
-//volatile uint8  Cyl_limit[INDEX_SIZE_WHEELS]={0,0,0,0,1,1};  //Individual cylinder limits  (Defined below so size is defined)
+volatile uint8 CAN_TEST_ON = 1;				// Set to 1 when outputting values to CAN
+volatile uint8 SEND_ACTUAL_CURRENT_CAN = 1; //Set to 1 to send read output current out through can
+volatile uint8 SEND_PRESSURE = 1;          // 1=Send  0= Do not send
+volatile uint8 SEND_POS_AND_VEL = 1;
+volatile uint8 SEND_FORCE = 1;
+volatile uint8 SEND_FLOW = 0;
 
 
-
-
-
-///////////////////////////////////////////////
 #define CAN_3_CHANNEL						CAN_1
-	#define CAN_ID_TEST_CYLINDERS_FRONT				0x17FE0001	//Made up for testing purposes
-	#define CAN_ID_TEST_CYLINDERS_MID				0x17FE0002
-	#define CAN_ID_TEST_CYLINDERS_REAR				0x17FE0003
+#define CAN_ID_TEST_CYLINDERS_FRONT				0x17FE0001	//Made up for testing purposes
+#define CAN_ID_TEST_CYLINDERS_MID				0x17FE0002
+#define CAN_ID_TEST_CYLINDERS_REAR				0x17FE0003
 
 
-	#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_1		0
-	#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_2		1
-	#define INDEX_CAN_TEST_CYLINDER_RIGHT_B_1		2
-	#define INDEX_CAN_TEST_CYLINDER_RIGHT_B_2		3
-	#define INDEX_CAN_TEST_CYLINDER_LEFT_A_1		4
-	#define INDEX_CAN_TEST_CYLINDER_LEFT_A_2		5
-	#define INDEX_CAN_TEST_CYLINDER_LEFT_B_1		6
-	#define INDEX_CAN_TEST_CYLINDER_LEFT_B_2		7
+#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_1		0
+#define INDEX_CAN_TEST_CYLINDER_RIGHT_A_2		1
+#define INDEX_CAN_TEST_CYLINDER_RIGHT_B_1		2
+#define INDEX_CAN_TEST_CYLINDER_RIGHT_B_2		3
+#define INDEX_CAN_TEST_CYLINDER_LEFT_A_1		4
+#define INDEX_CAN_TEST_CYLINDER_LEFT_A_2		5
+#define INDEX_CAN_TEST_CYLINDER_LEFT_B_1		6
+#define INDEX_CAN_TEST_CYLINDER_LEFT_B_2		7
 
 
 /*** Reference input thorugh can messages ***************************************************************************************
-*                                                     */
+ *                                                     */
 #define TESTING_COMMAND_ID             	    0x17FE0004
 #define	TESTING_COMMAND_ID_ID_OUT			0x17FE0005
 #define CAN_ID_REF_CURRENT_FRONT 			0x17FE0006
@@ -77,83 +70,6 @@ volatile uint8 SEND_FLOW=0;
 
 #define GYRO_FILTER_COUNTER					5
 #define ANGLE_CONSTANT 						0.005455056
-
-/*** Defines ***************************************************************************************
-* List of defines needed only in this module.                                                     */
-
-#define rMin_DU16    2000    /* [mOhm] */
-#define rMax_DU16    19000
-
-//BOSCH preferred
-#define cfg_minLoad		5000//7400	/* [mOhm] */
-#define cfg_maxLoad		30000//21700
-#define cfg_frequency	f_200Hz_DU16		/* [Hz] */
-#define cfg_debounce	100		/* [ms] */
-
-/*** Defines for TASKS **************************************************************************** */
-#define TASK_1_PRIO_DU8      				20
-#define TASK_1_TIME_MS_DU32  				50
-#define TASK_1_OFFS_MS_DU32   				0
-
-#define MANUAL_CONTROl_TASK_PRIO_DU8      	10
-#define MANUAL_CONTROl_TASK_TIME_MS_DU32  	6
-#define MANUAL_CONTROl_TASK_OFFS_MS_DU32  	0
-
-#define READ_SENSOR_TASK1_PRIO_DU8      		5
-#define READ_SENSOR_TASK1_TIME_MS_DU32  		1   //READ_SENSOR_Task1 reads the pressure sensors at 1000hz
-#define READ_SENSOR_TASK1_OFFS_MS_DU32  		0
-
-#define READ_SENSOR_TASK2_PRIO_DU8      		5
-#define READ_SENSOR_TASK2_TIME_MS_DU32  		20  //Read position sensors
-#define READ_SENSOR_TASK2_OFFS_MS_DU32  		0
-
-#define SEND_CAN_SENSORS_VALUES_TASK_PRIO_DU8      		5
-#define SEND_CAN_SENSORS_VALUES_TASK_TIME_MS_DU32  		20
-#define SEND_CAN_SENSORS_VALUES_TASK_OFFS_MS_DU32  		0
-
-#define TEST_TASK_PRIO_DU8      		5
-#define TEST_TASK_TIME_MS_DU32  		20
-#define TEST_TASK_OFFS_MS_DU32  		0
-
-#define FORCE_CONTROL_TASK_PRIO_DU8      	1
-#define FORCE_CONTROL_TIME_MS_DU32  		10
-#define FORCE_CONTROL_OFFS_MS_DU32  		1
-
-#define DYNAMIC_TASK_PRIO_DU8      	5
-#define DYNAMIC_TIME_MS_DU32  		10
-#define DYNAMIC_OFFS_MS_DU32  		0
-
-#define ACTUATE_TASK_PRIO_DU8      	6
-#define ACTUATE_TIME_MS_DU32  		1
-#define ACTUATE_OFFS_MS_DU32  		0
-
-#define TASK_EMERGENCY_TIME_MS_DU32 		50
-
-/*** Defines for CAN  init functions *************************************************************** */
-//tx
-#define CAN_1_TX_BUF_LEN_DU8            	500	//Buffer length for CAN1
-#define CAN_1_NUM_TX_DATABOXES_DU16     	 500
-//rx
-#define CAN_1_RX_BUF_LEN_DU8            	5
-#define CAN_1_NUM_RX_DATABOXES_DU16    		15
-
-#define CAN_1_RX_DATABOX_1_BUF_LEN_DU8  	5
-//tx
-#define CAN_2_TX_BUF_LEN_DU8 				40
-#define CAN_2_RX_BUF_LEN_DU8 				15
-//rx
-#define CAN_2_RX_BUF_LEN_DU8            	15
-#define CAN_2_NUM_RX_DATABOXES_DU16    		100
-#define CAN_2_RX_DATABOX_1_BUF_LEN_DU8  	5
-#define CAN_2_RX_DATABOX_2_BUF_LEN_DU8  	25
-//tx
-#define CAN_3_TX_BUF_LEN_DU8            	25
-#define CAN_3_NUM_TX_DATABOXES_DU16     	 6
-//rx
-#define CAN_3_RX_BUF_LEN_DU8            	15
-#define CAN_3_NUM_RX_DATABOXES_DU16    		100
-#define CAN_3_RX_DATABOX_3_BUF_LEN_DU8  	5
-#define CAN_3_RX_DATABOX_4_BUF_LEN_DU8  	5
 
 // CAN ID's retrieved
 #define CAN_ID_LEFT_EXCIPAD_BUTTONS	 		0x18FE030B
@@ -195,47 +111,6 @@ volatile uint8 SEND_FLOW=0;
 #define CAN_ID_DEBUG_MSG_5					0x18FE1054
 #define CAN_ID_DEBUG_MSG_6					0x18FE1055
 
-
-//---------------CAN MESSAGE IDENTIFIER IN HEX-------------
-#define MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT 0x10 //16	 //Byte 4, bit 5
-#define MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT 	0x01 //1	 //Byte 4, bit 1
-#define MSG_ENABLE_PENDULUM_ARM_MID_RIGHT	0x04 //4     //Byte 5, bit 3
-#define MSG_ENABLE_PENDULUM_ARM_MID_LEFT	0x40 //64	 //Byte 4, bit 7
-#define MSG_ENABLE_PENDULUM_ARM_REAR_RIGHT	0x01 //1	 //Byte 6, bit 1
-#define MSG_ENABLE_PENDULUM_ARM_REAR_LEFT	0x10 //16	 //Byte 5, bit 5
-#define MSG_ENABLE_PENDULUM_ARM_ALL_DOWN	0x40 //64	 //Byte 3, bit 3
-#define MSG_ENABLE_PENDULUM_ARM_ALL_UP		0x04 //4	 //Byte 3, bit 7
-#define MSG_ENABLE_PENDULUM_ARM_TILT_Y		0x10 //16	 //Byte 2, bit 5
-#define MSG_ENABLE_PENDULUM_ARM_TILT_X		0x40 //64	 //Byte 2, bit 7
-#define MSG_ENABLE_SIMPLE_CONTROL			0x01 //1 	 //Byte 3, bit 1
-
-/*** Defines for manual functions *************************************************************** */
-//----------------------JOYSTICK CONTROL----------------------
-#define JOYSTICK_Y_HIGH_POINT				4300
-#define JOYSTICK_Y_MID_POINT				2350
-#define JOYSTICK_Y_LOW_POINT				350
-#define JOYSTICK_Y_DEADBAND					200
-#define JOYSTICK_Y_HIGH_DEADBAND			JOYSTICK_Y_MID_POINT+JOYSTICK_Y_DEADBAND
-#define JOYSTICK_Y_LOW_DEADBAND				JOYSTICK_Y_MID_POINT-JOYSTICK_Y_DEADBAND
-
-//---------------------DEFINES FOR buttonStatus------------------
-// Index_Cylinder_Left/Right_Front/Mid/Rear
-#define INDEX_CYLINDER_FRONT_RIGHT 			0
-#define INDEX_CYLINDER_FRONT_LEFT			1
-#define INDEX_CYLINDER_MID_RIGHT	 		2
-#define INDEX_CYLINDER_MID_LEFT 			3
-#define INDEX_CYLINDER_REAR_RIGHT	 		4
-#define INDEX_CYLINDER_REAR_LEFT	 		5
-#define INDEX_CYLINDER_ALL_DOWN				6
-#define INDEX_CYLINDER_ALL_UP				7
-#define INDEX_CYLINDER_TILT_Y				8
-#define INDEX_CYLINDER_TILT_X				9
-#define INDEX_SIMPLE_CONTROL		        10
-#define INDEX_SIZE_BUTTONSTATUS				11
-
-//------------------------Solenoids----------------------------
-#define SOLENOID_OFF						0	//Used for solenoid valve (off)
-
 /*** Defines for global variables *************************************************************** */
 //---------------------DEFINES index for the global variable angleData -------------------
 #define ANALOG_RIGHT_FRONT_PENDULUMARM	 	0
@@ -275,30 +150,6 @@ volatile uint8 SEND_FLOW=0;
 #define OUT_PENDELURM_REAR_LEFT_A		OUT_11_POH_CL
 #define OUT_PENDELURM_REAR_LEFT_B		OUT_12_POH_CL
 
-//------------------------- Simple Controll -----------------------------------------
-#define FRONT_RIGHT_PENDULUM_A			0
-#define FRONT_RIGHT_PENDULUM_B			1
-#define FRONT_LEFT_PENDULUM_A			2
-#define FRONT_LEFT_PENDULUM_B			3
-#define MID_RIGHT_PENDULUM_A			4
-#define MID_RIGHT_PENDULUM_B			5
-#define MID_LEFT_PENDULUM_A				6
-#define MID_LEFT_PENDULUM_B				7
-#define REAR_RIGHT_PENDULUM_A			8
-#define REAR_RIGHT_PENDULUM_B			9
-#define REAR_LEFT_PENDULUM_A			10
-#define REAR_LEFT_PENDULUM_B			11
-#define SUM_VALVES   					12
-#define SUM_PENDELURM_ARMS				6
-
-
-
-//Valve flow curve parameters
-#define VALVE_FLOW_FIT_PARAMETER_CP1  0.0000117254976
-#define VALVE_FLOW_FIT_PARAMETER_CP2  -0.0020898157818
-#define VALVE_FLOW_FIT_PARAMETER_CP3  0.1025966561449
-#define VALVE_FLOW_FIT_PARAMETER_CP4  2.2459943305454
-#define VALVE_FLOW_FIT_PARAMETER_CP5  410  //416.9941090504642
 
 //Force relationship constants
 #define bx 0.165
@@ -311,31 +162,23 @@ volatile uint8 SEND_FLOW=0;
 #define theta2 .3370
 #define pi 3.14159265358979323846
 /**** data global variabels *****************************************************************************************
-* Definitions of variables used only in this module. Memory class "static" has to be used for      *
-* each variable.                                                                                  */
-//--- Manual control----------------------------
-volatile bool buttonStatus[INDEX_SIZE_BUTTONSTATUS] = {0};
-
-const uint8 sizeofButtonStatus = sizeof(buttonStatus)/sizeof(buttonStatus[0]);
-volatile uint16 zButtonCounter = 1;
-volatile uint8 zButton = 0;
-volatile uint16 zRampUp = 20;
-volatile uint16 preStatusExcipad = 0;
+ * Definitions of variables used only in this module. Memory class "static" has to be used for      *
+ * each variable.                                                                                  */
 
 //--- Global sensor variabels control----------------------------
 volatile uint16 angleData[INDEX_SIZE_WHEELS] = {0};
 volatile uint16 posData_mV[INDEX_SIZE_WHEELS] = {0};
 volatile uint16 posData[INDEX_SIZE_WHEELS] = {0};
-											//Max and min voltage limits for cylinder stroke
-											// RF,  LF,  RM,  LM,  RB,  LB
+//Max and min voltage limits for cylinder stroke
+// RF,  LF,  RM,  LM,  RB,  LB
 static uint16 minPos[INDEX_SIZE_WHEELS] = {1061,1199,1115,1108,1105,1068}; //current mV
 static uint16 maxPos[INDEX_SIZE_WHEELS] = {3864,4200,4126,4039,4096,4046}; //current mV
 volatile uint8  Cyl_limit[INDEX_SIZE_WHEELS]={1,1,1,1,1,1};  //Individual cylinder limits
 volatile uint8  Force_control_cylinders[INDEX_SIZE_WHEELS]={1,1,1,1,1,1};  //Individual cylinder limits
 
 volatile uint16 posData_last[INDEX_SIZE_WHEELS] = {0};
-volatile uint16 Zc=0; //Avg chassis height from arms average
-volatile sint16 Zcdot=0; //Avg chassis velocity from arms average
+volatile uint16 Zc = 0; //Avg chassis height from arms average
+volatile sint16 Zcdot = 0; //Avg chassis velocity from arms average
 volatile sint16 velData[INDEX_SIZE_WHEELS] = {0};
 volatile sint16 velData_last[INDEX_SIZE_WHEELS] = {0};
 volatile uint8 Cyl_flow[INDEX_SIZE_WHEELS] = {0};
@@ -346,8 +189,7 @@ volatile sint16 Zi_vel_last[INDEX_SIZE_WHEELS] = {0}; //Velocity estimated of ea
 static sint16 a_geo[INDEX_SIZE_WHEELS] = {1000, 1000, -1000, -1000, -3200, -3200};    //{1000,1000,-1000,-1000,-2225,-2225};
 static sint16 b_geo[INDEX_SIZE_WHEELS] = {500, -500, 500, -500, 500, -500};
 #define kf 5//Filter coefficient for velocity calculation lower value is more filtering
-#define Ts .02// x mS sensor read sampling time
-
+#define Ts 0.02// x mS sensor read sampling time
 
 float a_vel = 1 / (1 + kf * Ts);
 
@@ -384,7 +226,6 @@ float alphav = Tfv/(Tfv + 0.02);
 #define Tfpos 1.0/(2.0*3.1415)
 float alphapos = Tfpos/(Tfpos + 0.02);
 
-
 volatile uint16 angle_acc_counter = 0;
 volatile sint32 angleDataX = 0;
 volatile sint32 angleDataY = 0;
@@ -412,8 +253,6 @@ volatile sint16 ACCELZ_RAW = 0;
 //#define Area_B 0.00589 // Cylinder pull area (m^2) B side
 #define CYLINDER_PUSH_AREA_SIDE_A1_m2 0.00785 // Cylinder push area (m^2) A side
 #define CYLINDER_PUSH_AREA_SIDE_B2_m2 0.00589 // Cylinder pull area (m^2) B side
-
-
 
 //Hydraulic Force Controller defines and variables
 
@@ -471,55 +310,20 @@ volatile sint16 To_ground_ref[INDEX_SIZE_WHEELS] = {0};
 //Decoupling matrix 1.5m .5m 2.75m
 
 float moore_inverse[6][3] = { {0.2339, 0.3333, 0.1152},  //Startup moore inverse assuming 6 wheels in contacts with ground
-							  {0.2339,-0.3333, 0.1152},
-							  { 0.1694 , 0.3333, 0.0046},
-							  { 0.1694 ,-0.3333, 0.0046 },
-							  { 0.0968, 0.3333,-0.1198 },
-							  { 0.0968,-0.3333,-0.1198} };
-/*
-float moore_inverse[6][3] = { {0.0, 0.0, 0.0},  //Startup moore inverse assuming FR doesnt work wheels in contacts with ground
-							  {0.3654,-0.1458, 0.1800},
-							  {0.3573  ,  0.6013, 0.0972},
-							  {0.1746 ,-0.3258, 0.0072 },
-							  { 0.1427 , 0.3987,-0.0972 },
-							  { -0.0401,-0.5284,-0.1872} };
-*/
-
-
-
-//volatile float moore_inverse_modified[6][3] = { {0.2339, 0.3333, 0.1152},  //Startup moore inverse assuming 6 wheels in contacts with ground
-	//						  {0.2339,-0.3333, 0.1152},
-	//						  { 0.1694 , 0.3333, 0.0046},
-	//						  { 0.1694 ,-0.3333, 0.0046 },
-	//						  { 0.0968, 0.3333,-0.1198 },
-	//						  { 0.0968,-0.3333,-0.1198} };
+		{0.2339,-0.3333, 0.1152},
+		{ 0.1694 , 0.3333, 0.0046},
+		{ 0.1694 ,-0.3333, 0.0046 },
+		{ 0.0968, 0.3333,-0.1198 },
+		{ 0.0968,-0.3333,-0.1198} };
 
 // I hcanged to constnat on z for better control behavior johan
 volatile float moore_inverse_modified[6][3] = { {0.1694, 0.3333, 0.1152},  //Startup moore inverse assuming 6 wheels in contacts with ground
-							  {0.1694,-0.3333, 0.1152},
-							  { 0.1694 , 0.3333, 0.0046},
-							  { 0.1694 ,-0.3333, 0.0046 },
-							  { 0.1694, 0.3333,-0.1198 },
-							  { 0.1694,-0.3333,-0.1198} };
+		{0.1694,-0.3333, 0.1152},
+		{ 0.1694 , 0.3333, 0.0046},
+		{ 0.1694 ,-0.3333, 0.0046 },
+		{ 0.1694, 0.3333,-0.1198 },
+		{ 0.1694,-0.3333,-0.1198} };
 
-/*1m 1m 3.25
-
-float moore_inverse[6][3] = { {0.2915, 0.3333, 0.1152},
-							  {0.2915,-0.3333, 0.1152},
-							  {0.1717, 0.3333, 0.0046},
-							  {0.1717,-0.3333, 0.0046 },
-							  {0.0369, 0.3333,-0.1198 },
-							  {0.0369,-0.3333,-0.1198} };
-*/
-/*  Inverse with  a_geo[]={1000,1000,-1000,-1000,-3200,-3200};
-					b_geo[]={500,-500,500,-500,500,-500};
-   0.2915    0.3333    0.1152
-   0.2915   -0.3333    0.1152
-   0.1717    0.3333    0.0046
-   0.1717   -0.3333    0.0046
-   0.0369    0.3333   -0.1198
-   0.0369   -0.3333   -0.1198
-*/
 volatile uint16 BS = 0;
 volatile uint16 KS = 0;
 //PI controller variables and defines
@@ -528,8 +332,6 @@ volatile uint16 KS = 0;
 #define T 0.005
 volatile sint32 error_old = 0;
 volatile float u_old = 0;
-
-
 
 // --- test sensor stuff ---
 volatile uint8 defaultSafety = 0;
@@ -553,8 +355,8 @@ volatile sint16 Ref_B[6] = {REFERENCE_CURRENT_ZERO};
 
 
 /**** prototypes ***********************************************************************************
-* Prototypes of functions defined and used only in this module. Memory class "static" has to be    *
-* used for each function.                                                                         */
+ * Prototypes of functions defined and used only in this module. Memory class "static" has to be    *
+ * used for each function.                                                                         */
 
 //--- Tasks prototypes ----------------------------
 //tasks.c relic

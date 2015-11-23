@@ -1,18 +1,14 @@
 
-//--Manual controll prototypes ----------------
+#include "XT28ManualControlPrivate.h"
 
-//private functions used only by manual control
-void setXT28ControllState(void);
-void actuateXT28CurrentControlState(void);
+//--- Manual control private global variabels
+volatile bool buttonStatus[INDEX_SIZE_BUTTONSTATUS] = {0};
+const 	 uint8 sizeofButtonStatus = sizeof(buttonStatus) / sizeof(buttonStatus[0]);
+volatile uint16 zButtonCounter = 1;
+volatile uint8 zButton = 0;
+volatile uint16 zRampUp = 20;
+volatile uint16 preStatusExcipad = 0;
 
-void modes(can_Message_ts* msg_s);
-void setPassiveDampeningState(uint16 passiveState);
-void caseSwitch(can_Message_ts* msg_s);
-bool toggleVariable(bool toggleTarget);
-void setVariablesZero(void);
-
-//debugg function
-void mirrorCANMessageForDebug(void);
 
 void manual_Control_Task(void)
 {
@@ -129,15 +125,15 @@ void modes(can_Message_ts* msg_s)
 	uint8 i       = 0;
 	uint8 counter = 0;
 
-	for(i = 0; i < sizeofButtonStatus; i++)
-	{
-		if(buttonStatus[i])
-		{
+	for (i = 0; i < sizeofButtonStatus; i++) {
+		if (buttonStatus[i]) {
 			mode = i;
 			++counter;
 		}
 	}
-	if(counter == 0) mode = DEFAULT_MODE;
+	if (counter == 0) {
+		mode = DEFAULT_MODE;
+	}
 
 	uint16 joystickInput = JOYSTICK_Y_MID_POINT;
 	if(msg_s->id_u32 == CAN_ID_JOYSTICK_Y) {
@@ -145,26 +141,30 @@ void modes(can_Message_ts* msg_s)
 	}
 	// joystickInput is between 350-4300.
 	sint32 xLow = 24,  xHigh = -23, cLow = -28200, cHigh = 83167, scaling = 100;
-	if((joystickInput < JOYSTICK_Y_LOW_POINT) || (joystickInput > JOYSTICK_Y_HIGH_POINT))
-	{
+	if ((joystickInput < JOYSTICK_Y_LOW_POINT) || (joystickInput > JOYSTICK_Y_HIGH_POINT)) {
 		joystickInput = JOYSTICK_Y_MID_POINT;		// Set mid-point
 	}
-	sint32 scaledJoystickInputLow = (joystickInput*xLow+cLow)/scaling;				// Scaling x to avoid float (c = 885, x = -0,33)
-	sint32 scaledJoystickInputHigh = (joystickInput*xHigh+cHigh)/scaling;			// Scaling x to avoid float (c = -58, x = 19)
-	if(scaledJoystickInputHigh > 750) scaledJoystickInputHigh = 750;				//Sanity check input value
-	if(scaledJoystickInputHigh < 330) scaledJoystickInputHigh = 330;				//Sanity check input value
-	if(scaledJoystickInputLow > 750)  scaledJoystickInputLow = 750;					//Sanity check input value
-	if(scaledJoystickInputLow < 330) scaledJoystickInputLow = 330;					//Sanity check input value
+	sint32 scaledJoystickInputLow = (joystickInput*xLow+cLow) / scaling;				// Scaling x to avoid float (c = 885, x = -0,33)
+	sint32 scaledJoystickInputHigh = (joystickInput*xHigh+cHigh) / scaling;			// Scaling x to avoid float (c = -58, x = 19)
+	if(scaledJoystickInputHigh > 750) {
+		scaledJoystickInputHigh = 750;				//Sanity check input value
+	}
+	if(scaledJoystickInputHigh < 330) {
+		scaledJoystickInputHigh = 330;				//Sanity check input value
+	}
+	if(scaledJoystickInputLow > 750) {
+		scaledJoystickInputLow = 750;					//Sanity check input value
+	}
+	if(scaledJoystickInputLow < 330) {
+		scaledJoystickInputLow = 330;					//Sanity check input value
+	}
 
 	sint16 JoyREF=0;
 
-	//JOYSTICK_Y_HIGH_POINT-JOYSTICK_Y_HIGH_DEADBAND=4300-2550=1750
-
 	//Scale Joystick input for new actuate function Joystick 350 to 4300  to -300 to 300 signal
-	if((joystickInput<JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput>JOYSTICK_Y_LOW_DEADBAND)) {
+	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
 		JoyREF = 0;
 	}
-
 	else if (joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {
 		JoyREF = ((float)(joystickInput-JOYSTICK_Y_HIGH_DEADBAND) / (4300-JOYSTICK_Y_HIGH_DEADBAND) * (float)300);
 	}  //Linear scaling
@@ -175,20 +175,19 @@ void modes(can_Message_ts* msg_s)
 	sint16 REFINV = 0;
 	REFINV = JoyREF - (2 * JoyREF);
 
-	switch(mode)
-	{
+	switch(mode) {
 	case INDEX_CYLINDER_FRONT_RIGHT:								//----1----
 		defaultSafety = 0;
 		referenceSoleonidOutputCurrent_ma[FR] = JoyREF;
-
+		// passiveDampening special test onlt for FL and FR
 		uint16 passiveStateOn = 1;
 		setPassiveDampeningState(passiveStateOn);
 		break;
 
-	case INDEX_CYLINDER_FRONT_LEFT:								//----2----
+	case INDEX_CYLINDER_FRONT_LEFT:								    //----2----
 		defaultSafety = 0;
 		referenceSoleonidOutputCurrent_ma[FL] = JoyREF;
-
+		// passiveDampening special test only for FR and FR
 		uint16 passiveStateOff = 0;
 		setPassiveDampeningState(passiveStateOff);
 		break;
@@ -215,23 +214,23 @@ void modes(can_Message_ts* msg_s)
 
 	case INDEX_CYLINDER_ALL_DOWN:									//----7----
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[FR]=zRampUp;
-		referenceSoleonidOutputCurrent_ma[MR]=zRampUp;
-		referenceSoleonidOutputCurrent_ma[BR]=zRampUp;
-		referenceSoleonidOutputCurrent_ma[FL]=zRampUp;
-		referenceSoleonidOutputCurrent_ma[ML]=zRampUp;
-		referenceSoleonidOutputCurrent_ma[BL]=zRampUp;
+		referenceSoleonidOutputCurrent_ma[FR] = zRampUp;
+		referenceSoleonidOutputCurrent_ma[MR] = zRampUp;
+		referenceSoleonidOutputCurrent_ma[BR] = zRampUp;
+		referenceSoleonidOutputCurrent_ma[FL] = zRampUp;
+		referenceSoleonidOutputCurrent_ma[ML] = zRampUp;
+		referenceSoleonidOutputCurrent_ma[BL] = zRampUp;
 		break;
 
 	case INDEX_CYLINDER_ALL_UP:										//----8----
 
 		defaultSafety=0;
-		referenceSoleonidOutputCurrent_ma[FR]=-zRampUp;
-		referenceSoleonidOutputCurrent_ma[MR]=-zRampUp;
-		referenceSoleonidOutputCurrent_ma[BR]=-zRampUp;
-		referenceSoleonidOutputCurrent_ma[FL]=-zRampUp;
-		referenceSoleonidOutputCurrent_ma[ML]=-zRampUp;
-		referenceSoleonidOutputCurrent_ma[BL]=-zRampUp;
+		referenceSoleonidOutputCurrent_ma[FR] = -zRampUp;
+		referenceSoleonidOutputCurrent_ma[MR] = -zRampUp;
+		referenceSoleonidOutputCurrent_ma[BR] = -zRampUp;
+		referenceSoleonidOutputCurrent_ma[FL] = -zRampUp;
+		referenceSoleonidOutputCurrent_ma[ML] = -zRampUp;
+		referenceSoleonidOutputCurrent_ma[BL] = -zRampUp;
 		break;
 
 	case INDEX_CYLINDER_TILT_Y:										//----9---- (Pitch)
@@ -301,17 +300,17 @@ void modes(can_Message_ts* msg_s)
 void caseSwitch(can_Message_ts* msg_s)
 {
 	volatile bool status = 0;
-	uint8 i=0;
+	uint8 i = 0;
 	if(msg_s->id_u32 == CAN_ID_LEFT_EXCIPAD_BUTTONS) 						//Check CAN ID
 	{
 		if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT) 		//MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT
 		{
 			status = toggleVariable(INDEX_CYLINDER_FRONT_RIGHT);
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;}											//Set all PWM-outputs (to solenoids) to zero
+			for(i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i] = 0;}					//Set all PWM-outputs (to solenoids) to zero
 			setVariablesZero();												//Reset buttonStatus to ensure only one is active
 			buttonStatus[INDEX_CYLINDER_FRONT_RIGHT] = status;				//Set active bit for buttonStatus
-			ACTIVE_FORCE_CONTROL=0; //disable controller
+			ACTIVE_FORCE_CONTROL = 0; //disable controller
 		}
 		else if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT)	//MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT
 		{

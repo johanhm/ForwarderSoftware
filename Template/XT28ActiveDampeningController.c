@@ -8,9 +8,14 @@
 #include "ActiveDamping.h"
 
 
+//Valve flow curve parameters
+#define VALVE_FLOW_FIT_PARAMETER_CP1  0.0000117254976
+#define VALVE_FLOW_FIT_PARAMETER_CP2  -0.0020898157818
+#define VALVE_FLOW_FIT_PARAMETER_CP3  0.1025966561449
+#define VALVE_FLOW_FIT_PARAMETER_CP4  2.2459943305454
+#define VALVE_FLOW_FIT_PARAMETER_CP5  410  //416.9941090504642
+
 //---- Control Prototypes private functions
-
-
 // Related to Dynamic controll task
 void heightControllAddToAllocationMatrix(void);
 void hightControllSkyhookForceAddition(void);
