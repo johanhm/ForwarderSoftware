@@ -11,7 +11,19 @@
 
 #define _APPLICATION_         /* replace it with the filename in capital letters */
 
-#include "ForwarderDrivers.h"
+// The forwarder software drivers
+#include "ActiveDamping.h"  /* Function Definitions */
+
+#include "XT28ActiveDampeningController.h"
+#include "XT28ActiveDampeningController.c"
+#include "XT28ReadSensors.h"
+#include "XT28ReadSensors.c"
+#include "XT28ManualControl.h"
+#include "XT28ManualControl.c"  /*Manual pendulum arm control functions */
+
+#include "tasks.c"			/*Periodic tasks */
+#include "CAN_callbacks.c"	/*CAN receive callback functions */
+#include "functions.c"		/*Extra user support functions */
 
 /***************************************************************************************************
 *  FUNCTION:      sys_main

@@ -1,3 +1,7 @@
+
+#ifndef _ACTIVEDAMPENING_H_
+#define _ACTIVEDAMPENING_H_
+
 /**** include files ********************************************************************************
 * List of include files needed in this module.                                                    */
 
@@ -563,33 +567,11 @@ bool appl_setVpOnFirst(void);
 //--- Tasks prototypes ----------------------------
 void appl_Task_1(void);
 void manual_Control_Task(void);
-void read_Sensor_Task1(void);  //Read pressure sensors
-void read_Sensor_Task2(void);  //Read position sensors
-void send_CAN_sensors_values_Task(void);
 void test_Task(void);
-void massCenterLocationDataToCAN(void);
-void FORCE_ControlTask(void);
-void Dynamic_control_Task(void);
 
 void appl_EmergencyTask(void);
 void appl_IdleTask_1(void);
 void actuate(void);
-
-//---- Control Prototypes
-void massCenterLocationAndSendOnCAN(void);
-void calculateOptimalForceForAllWheelsAndSendOnCAN(void);
-
-void heightControllAddToAllocationMatrix(void);
-void hightControllSkyhookForceAddition(void);
-void rollPhiControllAddToAllocationMatrix(void);
-void pitchThetaControllAddToAllocationMatrix(void);
-void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
-void calculateForceReferenceForAllWheels(void);
-sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter);
-void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
-void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
-void calculateForceErrorPercentageAndSendOnCAN1(void);
-void sendSupplyVoltageOnCAN1(void);
 
 //--- CAN prototypes ----------------------------
 void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8);
@@ -636,5 +618,8 @@ void solenoidDown(uint16 solenoidOnValue);
 void solenoidUp(uint16 solenoidOnValue);
 void rampDownSolenoids(void);
 void setPassiveDampeningState(uint16 passiveState);
+
+
+#endif
 
 
