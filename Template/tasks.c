@@ -91,20 +91,6 @@ void actuate(void) {
 	}
 }
 
-/***************************************************************************************************
- *  FUNCTION:      read_Sensor_Task
- */
-/**\brief         this function reads the position and pressure sensors as well as calculate velocity from the position and corresponding cylinder forces
- */
-/**************************************************************************************************/
-
-/***************************************************************************************************
-  FUNCTION:      Function for controller allocation and supervisor
-      Allocation
-
- **************************************************************************************************/
-
-
 //Ground contact controller
 void test_Task(void) {
 

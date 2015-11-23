@@ -5,6 +5,8 @@
  *      Author: ladmin
  */
 
+#include "ActiveDamping.h"
+
 //Calculate force relationship Fg/Fl for a certain cylinder position
 float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 	float stroke = 0.82 + (cylinderPoss_mm / 1000.0);

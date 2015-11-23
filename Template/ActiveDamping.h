@@ -556,21 +556,9 @@ volatile sint16 Ref_B[6] = {REFERENCE_CURRENT_ZERO};
 * Prototypes of functions defined and used only in this module. Memory class "static" has to be    *
 * used for each function.                                                                         */
 
-void sys_main(void);
-
-void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8);
-void appl_setDefaults(void);
-void appl_AfterRunFunc(void);
-void appl_updateDiagData(void);
-bool appl_setVpOnFirst(void);
-
 //--- Tasks prototypes ----------------------------
-void appl_Task_1(void);
-void manual_Control_Task(void);
+//tasks.c relic
 void test_Task(void);
-
-void appl_EmergencyTask(void);
-void appl_IdleTask_1(void);
 void actuate(void);
 
 //--- CAN prototypes ----------------------------
@@ -581,19 +569,12 @@ void can_1_RxDatabox_3_Callback(void);
 void can_1_RxDatabox_4_Callback(void);
 void can_1_RxDatabox_7_Callback(void);
 
-
 void can_2_RxDatabox_1_Callback(void);
 void can_2_RxDatabox_2_Callback(void);
+
 void can_1_BusOffCallback(uint16 status_u16);
 void can_3_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8);
 void can_3_RxDatabox_3_Callback(void);
-void can_1_BusOffCallback(uint16 status_u16);
-void can_3_BusOffCallback(uint16 status_u16);
-
-//--- In / Out ----------------------------
-void appl_configOutputs(void);
-void appl_configInputs(void);
-
 
 //Supporting functions prototypes
 //float F_REL(uint16 x); //Calculate force relationship Fg/Fl for a certain cylinder position
@@ -605,20 +586,6 @@ sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical
 void SEND_ARRAY_CAN1(uint32 ID1,uint32 ID2,volatile sint16 data[],uint8 size_array); //Send whole 6x16bit array on two CAN messages
 void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D);  //Send up to 4x16bit Variables on CAN1 msg
 void sendCAN1_uint16(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D);
-
-
-
-//--Manual controll prototypes ----------------
-bool toggleVariable(bool toggleTarget);
-void setVariablesZero(void);
-void caseSwitch(can_Message_ts* msg_s);
-void modes(can_Message_ts* msg_s);
-void turnOffSolenoids(void);
-void solenoidDown(uint16 solenoidOnValue);
-void solenoidUp(uint16 solenoidOnValue);
-void rampDownSolenoids(void);
-void setPassiveDampeningState(uint16 passiveState);
-
 
 #endif
 

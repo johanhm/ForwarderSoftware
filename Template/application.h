@@ -42,7 +42,7 @@
 /**** public functions *****************************************************************************
 * Declarations of functions to be made available to other modules. Use SCOPE in front of each      *
 * line.                                                                                           */
-
+void sys_main(void);
 
 /**************************************************************************************************/
 

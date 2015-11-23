@@ -21,6 +21,10 @@
 #include "XT28ManualControl.h"
 #include "XT28ManualControl.c"  /*Manual pendulum arm control functions */
 
+#include "applicationSystemIncludes.h"
+#include "applicationSystemIncludes.c"
+#include "application.h"
+
 #include "tasks.c"			/*Periodic tasks */
 #include "CAN_callbacks.c"	/*CAN receive callback functions */
 #include "functions.c"		/*Extra user support functions */
@@ -31,6 +35,9 @@
 /**\brief         Configuration of application tasks.
 */
 /**************************************************************************************************/
+
+
+
 
 void sys_main(void)
 {

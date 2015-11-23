@@ -250,11 +250,6 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	sigma = sigma / 200;
 	sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
-	//float filterValue = 500000.00;
-	//float filterValue = (float)forceReferenceOptimalDistrubution_N[wheelCounter] * 110.0;
-	//sgn = ((float)sigma / (labs(sigma) + filterValue));   //	sgn=((float)sigma/((float)labs(sigma)+1000.0));
-
-
 	if (sl_uold[wheelCounter] >= 0) {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
 	} else {
@@ -270,25 +265,6 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 		sl_u = -1;
 	}
 	sl_uold[wheelCounter] = sl_u;
-}
-
-void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
-	float absoluteFlowInPercent = fabs(sl_u * 100.0);
-	if (sl_u < 0.025 && sl_u > -0.025) {
-		sl_current = 400;
-	} else if (fabs(sl_u) > 0.97) {
-		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
-	} else {
-		sl_current = (sl_u/fabs(sl_u)) * (VALVE_FLOW_FIT_PARAMETER_CP1*pow(absoluteFlowInPercent,4) + VALVE_FLOW_FIT_PARAMETER_CP2*pow(absoluteFlowInPercent,3) + VALVE_FLOW_FIT_PARAMETER_CP3*pow(absoluteFlowInPercent,2) + VALVE_FLOW_FIT_PARAMETER_CP4 * absoluteFlowInPercent + VALVE_FLOW_FIT_PARAMETER_CP5);
-	}
-
-	sl_debug_current = sl_current - (sl_current / labs(sl_current)) * 400;  //Valve current to output in CAN for debugging
-
-	//Set reference to valves only if control is active generally and per cylinder
-	if ((ACTIVE_FORCE_CONTROL == 1) & (Force_control_cylinders[wheelCounter] == 1)) {
-		referenceSoleonidOutputCurrent_ma[wheelCounter] = -1 * sl_debug_current - To_ground_ref[wheelCounter];
-		defaultSafety = 0;
-	}
 }
 
 sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
@@ -323,4 +299,23 @@ sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forc
 	sigmaOld[wheelCounter] = errorSigma;
 
 	return errorSigma;
+}
+
+void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
+	float absoluteFlowInPercent = fabs(sl_u * 100.0);
+	if (sl_u < 0.025 && sl_u > -0.025) {
+		sl_current = 400;
+	} else if (fabs(sl_u) > 0.97) {
+		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
+	} else {
+		sl_current = (sl_u/fabs(sl_u)) * (VALVE_FLOW_FIT_PARAMETER_CP1*pow(absoluteFlowInPercent,4) + VALVE_FLOW_FIT_PARAMETER_CP2*pow(absoluteFlowInPercent,3) + VALVE_FLOW_FIT_PARAMETER_CP3*pow(absoluteFlowInPercent,2) + VALVE_FLOW_FIT_PARAMETER_CP4 * absoluteFlowInPercent + VALVE_FLOW_FIT_PARAMETER_CP5);
+	}
+
+	sl_debug_current = sl_current - (sl_current / labs(sl_current)) * 400;  //Valve current to output in CAN for debugging
+
+	//Set reference to valves only if control is active generally and per cylinder
+	if ((ACTIVE_FORCE_CONTROL == 1) & (Force_control_cylinders[wheelCounter] == 1)) {
+		referenceSoleonidOutputCurrent_ma[wheelCounter] = -1 * sl_debug_current - To_ground_ref[wheelCounter];
+		defaultSafety = 0;
+	}
 }

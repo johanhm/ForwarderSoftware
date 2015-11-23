@@ -10,17 +10,20 @@
 
 //private functions
 
+// Used by pressure sensor task read
+void lowPassFilterPressureSensor(void);
+void calculateForceOnCylinderChambers(void);
+void calculateLoadForceOnCylinderWheel(void);
+
 // Related to calculating the optimal reference force
 void massCenterLocationAndSendOnCAN(void);
 void calculateOptimalForceForAllWheelsAndSendOnCAN(void);
 void calculateForceErrorPercentageAndSendOnCAN1(void);
 void sendSupplyVoltageOnCAN1(void);
 
-
+// Pressure sensor task and related functions
 void read_Sensor_Task1(void)  //Read Pressure sensors at 1000hz
 {
-	uint8 x = 0; //index used in FOR loops
-
 	//read Pressure sensors and calculate Cylinder Forces
 	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A] = in(IN_8_AIV);
 	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_B] = in(IN_7_AIV);
@@ -36,18 +39,32 @@ void read_Sensor_Task1(void)  //Read Pressure sensors at 1000hz
 	pressureData_mV[ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B]   = in(IN_16_AIV); //changed from 18
 
 	//Scale pressures into KiloPascals for sending  [KPa]
+	uint8 x = 0;
 	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
 		pressureData[x] = (float)pressureData_mV[x] * 6.25 -3125;
 	}
 
 	//Low pass filter pressure signals
-	/*for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
-		pressureData[x]      = alpha * pressureData_last[x] + (1-alpha) * pressureData[x];
-		pressureData_last[x] = pressureData[x];
-	}*/
-
+	lowPassFilterPressureSensor();
 
 	//Calculate corresponding forces at cylinder chambers and total
+	calculateForceOnCylinderChambers();
+
+	//Calculate Load force Fa-Fb decaN  (N/10)
+	calculateLoadForceOnCylinderWheel();
+
+}//end read_Sensor_task
+
+void lowPassFilterPressureSensor(void) {
+	uint8 x = 0;
+	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
+		pressureData[x]      = alpha * pressureData_last[x] + (1-alpha) * pressureData[x];
+		pressureData_last[x] = pressureData[x];
+	}
+}
+
+void calculateForceOnCylinderChambers(void) {
+	uint8 x = 0;
 	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++)
 	{
 		if(x % 2 == 0) {
@@ -57,22 +74,24 @@ void read_Sensor_Task1(void)  //Read Pressure sensors at 1000hz
 			forceData[x] = 100 * pressureData[x] * (float)CYLINDER_PUSH_AREA_SIDE_B2_m2;
 		}//100*KPa*m^2= deca N  (N/10)
 	}
+}
 
-
+void calculateLoadForceOnCylinderWheel(void) {
+	uint8 x = 0;
 	uint8 i = 0;
-	//Calculate Load force Fa-Fb decaN  (N/10)
 	for(x = 0; x <INDEX_SIZE_WHEELS; x++)
 	{
 		//Load_force[x] = (forceData[i] - forceData[i+1]);
 		messuredForceCylinderLoad_deciN[x] = (forceData[i] - forceData[i+1]);
 		i = i + 2;
 	}
+}
 
-}//end read_Sensor_task
 
+//Pos sensor task and related functions
 void read_Sensor_Task2(void)  //Read position sensors at 20hz
 {
-	uint8 x=0; //index used in FOR loops
+	uint8 x = 0; //index used in FOR loops
 
 	//////////////////////read Position sensors  and calculate velocities
 	//Save Pos(k-1)
@@ -129,11 +148,11 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 	Phi_deg_last   = Phi_deg;
 
 
-	Theta_rad = (float)Theta_deg*pi/1800.0;		//Convert to radians
-	Phi_rad   = (float)Phi_deg*pi/1800.0;			//Convert to radians
+	Theta_rad = (float)Theta_deg * pi / 1800.0;			//Convert to radians
+	Phi_rad   = (float)Phi_deg * pi / 1800.0;			//Convert to radians
 
 	Gyro_Phi_deg   = Gyro_Phi_RAW / 50;				//Angular velocity in deg/s from gyroscope  (Note:Divide RAW by 50 to get deg/s , negative sign to keep vehicle sign convention)
-	Gyro_Theta_deg = Gyro_Theta_RAW / 50; 		//Angular velocity in deg/s from gyroscope
+	Gyro_Theta_deg = Gyro_Theta_RAW / 50; 			//Angular velocity in deg/s from gyroscope
 	Gyro_Phi_rad   = (float)Gyro_Phi_deg * pi / 180.0;				//convert to rad/s
 	Gyro_Theta_rad = (float)Gyro_Theta_deg * pi / 180.0;	     	//convert to rad/s
 
@@ -147,15 +166,10 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 
 	//Low pass filter chassiss velocities signals, low pass filter chassis position signals
 	for(x = 0; x <INDEX_SIZE_WHEELS; x++) {
-		//Zi_vel[x]=alphav*Zi_vel_last[x]+(1-alphav)*Zi_vel[x];  //Low pass filter vel
-		//Zi_vel_last[x]=Zi_vel[x];
-
 		Zi_pos[x]      = alphapos * Zi_pos_last[x] + (1-alphapos) * Zi_pos[x]; //Low pass filter positions
 		Zi_pos_last[x] = Zi_pos[x];
-
 	}
 
-	///////////////////////////////////////////////////////
 	//Calculate cylinder flows in L/min and send
 	for (x = 0; x < 6; x++) {
 		if (velData[x]>=0) {
@@ -166,6 +180,7 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 		}
 	}
 }
+
 
 void sendSupplyVoltageOnCAN1(void) {
 	sint16 batterySupplyVoltage = sys_getSupply(VB);
@@ -178,6 +193,7 @@ void sendSupplyVoltageOnCAN1(void) {
 }
 
 
+// Send all sensor values on CAN
 
 void send_CAN_sensors_values_Task(void)
 {
@@ -600,6 +616,9 @@ void send_CAN_sensors_values_Task(void)
 
 }
 
+
+
+// Mass center functions
 void massCenterLocationAndSendOnCAN(void) {
 	float lengthOfForwarder_m = 6.05;
 	float lengthToMidOfForwarder_m = 3.70;
@@ -622,6 +641,7 @@ void massCenterLocationAndSendOnCAN(void) {
 
 }
 
+
 void calculateForceErrorPercentageAndSendOnCAN1(void) {
 	sint16 wheel = 0;
 	sint16 forceErrorInPercent[INDEX_SIZE_WHEELS] = {0};
@@ -633,6 +653,7 @@ void calculateForceErrorPercentageAndSendOnCAN1(void) {
 	sendCAN1_sint16(0x18FF1005, forceErrorInPercent[BL], forceErrorInPercent[BR], 0, 0);
 
 }
+
 
 void calculateOptimalForceForAllWheelsAndSendOnCAN(void) {
 	float lengthOfForwarder_m      = 6.05;
