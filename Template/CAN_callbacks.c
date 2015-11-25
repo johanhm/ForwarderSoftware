@@ -138,8 +138,6 @@ void can_1_RxDatabox_2_Callback(void)
 
 } // can_1_RxDatabox_2_Callback
 
-
-
 void can_1_RxDatabox_3_Callback(void)
 {
 	uint8 confData_au8[8];
@@ -201,8 +199,6 @@ void can_1_RxDatabox_7_Callback(void)
 	B_Zc    = confData_au8[4];
 }
 
-
-
 void can_2_RxDatabox_1_Callback(void)
 {
 	//Save gyro data
@@ -212,7 +208,7 @@ void can_2_RxDatabox_1_Callback(void)
 
 	can_getDatabox(CAN_2, 1, angleMessageData_au8, &angleMessageNumBytes_u8);
 	Gyro_Theta_RAW = (angleMessageData_au8[1] << 8 | angleMessageData_au8[0]);  //Gyro around IMU x axis
-	Gyro_Phi_RAW   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]); //Gyro around IMU y axis
+	Gyro_Phi_RAW   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);  //Gyro around IMU y axis
 
 }
 void can_2_RxDatabox_2_Callback(void)

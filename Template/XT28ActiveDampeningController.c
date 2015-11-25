@@ -134,9 +134,9 @@ void rollPhiControllAddToAllocationMatrix(void) {
 		Phi_sky = -BSky_phi * Gyro_Phi_deg;
 		F_REF_Phi = Phi_k + Phi_sky + Idel;//Phi_I; //Sum phi moment
 		F_matrix[1] = F_REF_Phi;  //Assign to force vector
-		sl_debug_1=Idel;
-		sl_debug_2=intergratorPart;
-		sl_debug_3=Phi_I;
+		sl_debug_1 = Idel;
+		sl_debug_2 = intergratorPart;
+		sl_debug_3 = Phi_I;
 	}
 	else {
 		F_matrix[1] = 0;
@@ -146,7 +146,7 @@ void rollPhiControllAddToAllocationMatrix(void) {
 }
 
 void pitchThetaControllAddToAllocationMatrix(void) {
-	if(ACTIVE_THETA_CONTROL == 1){
+	if(ACTIVE_THETA_CONTROL == 1) {
 
 		Theta_error = 0 - Theta_deg; //Reference is 0
 		if(Theta_error < 0.5 && Theta_error > -0.5){  //Error tolerance of 1 degree when the value was set to 5
@@ -180,10 +180,10 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 	for (i = 0; i <= 5; i++) {  //Moore row counter
 		sum = 0;
 		for (k = 0; k <= 2; k++) {  //Moore column counter
-			if (Control_allocation_on==0) {
+			if (Control_allocation_on == 0) {
 				sum = sum + (float)moore_inverse[i][k] * F_matrix[k];
 			}
-			if (Control_allocation_on==1) {
+			if (Control_allocation_on == 1) {
 				sum = sum + (float)moore_inverse_modified[i][k] * F_matrix[k];
 			}
 		}
@@ -244,7 +244,7 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	sl_Fl = messuredForceCylinderLoad_deciN[wheelCounter] * 10; //Load force in [N]
 
 	if ((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {
-		sl_Vel=0;
+		sl_Vel = 0;
 	} else {
 		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
@@ -258,9 +258,8 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	if (sl_uold[wheelCounter] >= 0) {
 		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
 	} else {
-		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * sqrt(abs(sl_P1 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar) + CYLINDER_PUSH_AREA_SIDE_B2_m2 * MAXIMUM_FLOW_QMAX_m3s;
+		L = CYLINDER_PUSH_AREA_SIDE_B2_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_A1_m2 * sqrt(abs(sl_P1 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
 	}
-
 	sl_u = 1.0 / L * ((pow(CYLINDER_PUSH_AREA_SIDE_A1_m2,2) + pow(CYLINDER_PUSH_AREA_SIDE_B2_m2,2)) * ((float)sl_Vel/1000.0) - SLIDING_MODE_CONTROL_PARAMETER_Kt * sgn);  //Requested flow in percentage
 
 	//Saturate requested flow % between -1 and 1  (100% full flow on both directions)
@@ -274,18 +273,16 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 
 sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
 
-	static volatile sint32 sigmaOld[5] = {0};
-	static volatile uint8  forcecontrollerwindow[5] = {0};
+	static volatile sint32 sigmaOld[5]              = {0};
+	static volatile uint8  forceControllerWindowCase[5] = {0};
 
 	sint32 errorSigma = currentCylinderForce - forceReferenceCylinder;
-
-
 	float errorChangedSign = 0;
 
-	switch (forcecontrollerwindow[wheelCounter]) {
+	switch (forceControllerWindowCase[wheelCounter]) {
 	case 0:
 		if (abs(errorSigma) > ((float)forceReferenceCylinder * 0.1)) {
-			forcecontrollerwindow[wheelCounter] = 1;
+			forceControllerWindowCase[wheelCounter] = 1;
 		}
 		errorSigma = 0;
 		break;
@@ -293,16 +290,12 @@ sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forc
 	case 1:
 		errorChangedSign = errorSigma - sigmaOld[wheelCounter];
 		if (fabs(errorChangedSign) > fabs(errorSigma)) {
-			forcecontrollerwindow[wheelCounter] = 0;
-
+			forceControllerWindowCase[wheelCounter] = 0;
 		}
-		errorSigma = currentCylinderForce - forceReferenceCylinder; //dont commet this you retard
+		errorSigma = currentCylinderForce - forceReferenceCylinder;
 		break;
 	}
-
-
 	sigmaOld[wheelCounter] = errorSigma;
-
 	return errorSigma;
 }
 

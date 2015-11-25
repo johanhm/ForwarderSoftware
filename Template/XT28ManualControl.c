@@ -337,8 +337,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 			zButton = 1;
 			zButtonCounter = 0;
 			++zRampUp;
-			if(zRampUp > 50)
-			{
+			if(zRampUp > 50) {
 				zRampUp = 50;
 			}
 		}
@@ -365,7 +364,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_X) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 			status = toggleVariable(INDEX_CYLINDER_TILT_X);
 			for(i = 0; i < 6; i++) {
-				referenceSoleonidOutputCurrent_ma[i]=0;
+				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL = 0; //disable controller
@@ -375,7 +374,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 			status = toggleVariable(INDEX_SIMPLE_CONTROL);
 			ACTIVE_FORCE_CONTROL = status;  //Enable or disable force control
 			for(i = 0 ; i < 6; i++) {
-				referenceSoleonidOutputCurrent_ma[i]=0;
+				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
 			buttonStatus[INDEX_SIMPLE_CONTROL] = status;

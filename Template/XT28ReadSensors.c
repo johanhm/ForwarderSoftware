@@ -42,7 +42,7 @@ void read_Sensor_Task1(void)  //Read Pressure sensors at 1000hz
 	//Scale pressures into KiloPascals for sending  [KPa]
 	uint8 x = 0;
 	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
-		pressureData[x] = (float)pressureData_mV[x] * 6.25 -3125;
+		pressureData[x] = (float)pressureData_mV[x] * 6.25 - 3125;
 	}
 
 	//Low pass filter pressure signals
@@ -112,8 +112,6 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 		posData[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 500;
 	} //scale to mm
 
-
-
 	//Save Vel(k-1);
 	for (x = 0; x < 6; x++) {
 		velData_last[x] = velData[x];
@@ -122,7 +120,6 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 	for (x = 0; x < 6; x++) {
 		velData[x] = a_vel * velData_last[x] + a_vel * kf * Ts * (posData[x] - posData_last[x]) / Ts;
 	}
-
 
 	//Observer for average chassis height
 	Zc = 0;
@@ -166,7 +163,7 @@ void read_Sensor_Task2(void)  //Read position sensors at 20hz
 
 
 	//Low pass filter chassiss velocities signals, low pass filter chassis position signals
-	for(x = 0; x <INDEX_SIZE_WHEELS; x++) {
+	for (x = 0; x <INDEX_SIZE_WHEELS; x++) {
 		Zi_pos[x]      = alphapos * Zi_pos_last[x] + (1-alphapos) * Zi_pos[x]; //Low pass filter positions
 		Zi_pos_last[x] = Zi_pos[x];
 	}
