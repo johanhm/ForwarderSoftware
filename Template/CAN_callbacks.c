@@ -5,8 +5,7 @@
  *      Author: ladmin
  */
 
-void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8)
-{
+void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8) {
 	static uint8 tempFormat_u8;
 	static uint32 tempId_u32;
 	static uint8 tempNumBytes_u8;
@@ -18,8 +17,7 @@ void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *
 	tempData_u8     = data_pu8[0];
 } // can_1_RxCallback
 
-void can_3_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8)
-{
+void can_3_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8) {
 	static uint8  tempFormat_u8;
 	static uint32 tempId_u32;
 	static uint8  tempNumBytes_u8;
@@ -43,8 +41,7 @@ void can_3_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *
  */
 /**************************************************************************************************/
 
-void can_1_RxDatabox_1_Callback(void)
-{
+void can_1_RxDatabox_1_Callback(void) {
 	defaultSafety = 0; //Record a command was sent through CAN, reset safety shut off counter
 
 	uint8 i    = 0; //loop index
@@ -61,9 +58,9 @@ void can_1_RxDatabox_1_Callback(void)
 	//uint8 ML_REF = posSensTestData_au8[3];
 	//uint8 BR_REF = posSensTestData_au8[4];
 	//uint8 BL_REF = posSensTestData_au8[5];
-	sint16 Ref_CYL[6]={0};
+	sint16 Ref_CYL[6] = {0};
 	//Double check that we assign non-zero value only to cylinders which were specified
-	for(i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++) {
 
 		//Ref_CYL[i]=(posSensTestData_au8[i]-100)*4;
 		if((mode & 1 << i) >= 1) {
@@ -71,14 +68,13 @@ void can_1_RxDatabox_1_Callback(void)
 		}  //Scale to -400 to 400
 	}
 	//Call function to update global reference variables
-	for(i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++) {
 		referenceSoleonidOutputCurrent_ma[i] = Ref_CYL[i];
 	}
 
 } // can_1_RxDatabox_1_Callback
 
-void can_1_RxDatabox_2_Callback(void)
-{
+void can_1_RxDatabox_2_Callback(void) {
 	// uint8 i=0; //loop index
 	uint8 confData_au8[8];
 	uint8 confNumBytes_u8;
@@ -138,8 +134,7 @@ void can_1_RxDatabox_2_Callback(void)
 
 } // can_1_RxDatabox_2_Callback
 
-void can_1_RxDatabox_3_Callback(void)
-{
+void can_1_RxDatabox_3_Callback(void) {
 	uint8 confData_au8[8];
 	uint8 confNumBytes_u8;
 
@@ -160,8 +155,7 @@ void can_1_RxDatabox_3_Callback(void)
 
 }
 
-void can_1_RxDatabox_4_Callback(void)
-{
+void can_1_RxDatabox_4_Callback(void) {
 	uint8 confData_au8[8];
 	uint8 confNumBytes_u8;
 
@@ -178,8 +172,7 @@ void can_1_RxDatabox_4_Callback(void)
 
 }
 
-void can_1_RxDatabox_7_Callback(void)
-{
+void can_1_RxDatabox_7_Callback(void) {
 	uint8 i = 0;
 	uint8 confData_au8[8];
 	uint8 confNumBytes_u8;
@@ -187,7 +180,7 @@ void can_1_RxDatabox_7_Callback(void)
 	if (0 == can_getDatabox(CAN_1, 7, confData_au8, &confNumBytes_u8)){}
 
 	//Individual Cylinder force control on or off
-	for(i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++) {
 		Force_control_cylinders[i] = ((confData_au8[0] >> (i)) & 1);
 	}
 	To_ground_active      = ((confData_au8[0] >> (6)) & 1);
@@ -199,8 +192,7 @@ void can_1_RxDatabox_7_Callback(void)
 	B_Zc    = confData_au8[4];
 }
 
-void can_2_RxDatabox_1_Callback(void)
-{
+void can_2_RxDatabox_1_Callback(void) {
 	//Save gyro data
 
 	uint8 angleMessageData_au8[6];
@@ -211,8 +203,7 @@ void can_2_RxDatabox_1_Callback(void)
 	Gyro_Phi_RAW   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);  //Gyro around IMU y axis
 
 }
-void can_2_RxDatabox_2_Callback(void)
-{
+void can_2_RxDatabox_2_Callback(void) {
 	//Save accelerometer data
 	uint8 angleMessageData_au8[6];
 	uint8 angleMessageNumBytes_u8;
@@ -223,8 +214,7 @@ void can_2_RxDatabox_2_Callback(void)
 	ACCELZ_RAW = (angleMessageData_au8[5] << 8 | angleMessageData_au8[4]);
 }
 
-void can_3_RxDatabox_3_Callback(void)
-{
+void can_3_RxDatabox_3_Callback(void) {
 	//uint8 status_msg[8] = {0};
 	//if (0 == can_sendData(CAN_1, 0x565658, CAN_EXD_DU8, 8, status_msg)){}
 

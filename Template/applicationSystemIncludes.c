@@ -23,13 +23,11 @@
  * \return         -
  */
 /**************************************************************************************************/
-void appl_updateDiagData(void)
-{
+void appl_updateDiagData(void) {
 
 } //appl_updateDiagData(void)
 
-void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8)
-{
+void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8) {
 	static uint16 tempErrCode_u16;
 	static uint8  tempErrParam_u8;
 
@@ -37,17 +35,15 @@ void appl_ErrorHandler(uint16 errorCode_u16, uint8 errorParam_u8)
 	tempErrParam_u8 = errorParam_u8;
 } // appl_ErrorHandler
 
-void appl_setDefaults(void)
-{
+void appl_setDefaults(void) {
 
 } // appl_setDefaults
 
-void appl_AfterRunFunc(void)
-{
+void appl_AfterRunFunc(void) {
+	//nothing
 } // appl_AfterRunFunc
 
-void appl_Task_1(void)
-{
+void appl_Task_1(void) {
 	uint16 diag_u16;
 	safout_ts safout_s;
 	uint16 appl_moError_u16;
@@ -59,8 +55,7 @@ void appl_Task_1(void)
 
 	/* switch on VP's (power supplies for outputs) for the first time */
 	appl_VpFirstOnStatus_l = appl_setVpOnFirst();
-	if (FALSE != appl_VpFirstOnStatus_l)
-	{
+	if (FALSE != appl_VpFirstOnStatus_l) {
 
 	}
 
@@ -71,16 +66,12 @@ void appl_Task_1(void)
 
 	diag_u16 = safout_getStatus (SAFOUT_41_POH);
 
-	if (SDT_EXECUTE_DU16 == (diag_u16 & SDT_EXECUTE_DU16))
-	{
+	if (SDT_EXECUTE_DU16 == (diag_u16 & SDT_EXECUTE_DU16)) {
 		// execution from a shut down test pending (no power supply for the outputs) or
 		// still running - channel is not available
 		// ...
-	}
-	else
-	{
-		if (SDT_FAILED_DU16 == (diag_u16 & SDT_FAILED_DU16))
-		{
+	} else {
+		if (SDT_FAILED_DU16 == (diag_u16 & SDT_FAILED_DU16)) {
 			// shut down failed - channel is not available
 
 			// short circuits to the supply side from the shut down switch(es) could be ignored
@@ -90,17 +81,13 @@ void appl_Task_1(void)
 			// ...
 		}
 
-		if (SDT_CURRENT_TIMEOUT_DU16 == (diag_u16 & SDT_CURRENT_TIMEOUT_DU16))
-		{
+		if (SDT_CURRENT_TIMEOUT_DU16 == (diag_u16 & SDT_CURRENT_TIMEOUT_DU16)) {
 			// no current flow through the shut down switch(es)within the stated time (open load etc.)
 			//
 			// ...
 		}
 	}
-
-
 	// ...
-
 
 	/*
 	 * shut down test is finished, channel is available - evaluation from the diagnosis status
@@ -108,8 +95,7 @@ void appl_Task_1(void)
 
 	diag_u16 = safout_getStatusxt (SAFOUT_41_POH, &safout_s);
 
-	if (NO_AVAILABILITY_DU16 == (diag_u16 & NO_AVAILABILITY_DU16))
-	{
+	if (NO_AVAILABILITY_DU16 == (diag_u16 & NO_AVAILABILITY_DU16)) {
 		// channel is deactivated - check the extended information for the error evaluation
 
 		// ...
@@ -120,9 +106,7 @@ void appl_Task_1(void)
 
 		// ...
 
-	}
-	else
-	{
+	} else {
 		// channel is available
 		safout (SAFOUT_41_POH, OUT_1_POH_CL, 400);
 
@@ -131,15 +115,13 @@ void appl_Task_1(void)
 
 	// Check if there is a hardware monitor error
 	appl_moError_u16 = mo_getError();
-	if (0 != appl_moError_u16)
-	{
+	if (0 != appl_moError_u16) {
 		// There is a harware monitor error
 
 		// Inform the User by using CAN_1 (note: Transmitter of CAN_2, CAN_3 and CAN_4 are disabled
 		// at several errors)
 
-		switch (appl_moError_u16)
-		{
+		switch (appl_moError_u16) {
 		case MOF_VSS_1_DU16:
 		{
 			// sensor supply 1: voltage is out of range
@@ -177,22 +159,19 @@ void appl_Task_1(void)
 	// ...
 } // appl_Task_1
 
-void can_1_BusOffCallback(uint16 status_u16)
-{
+void can_1_BusOffCallback(uint16 status_u16) {
 	static uint16 temp_u16;
 
 	temp_u16 = status_u16;
 } // can_1_BusOffCallback
 
-void can_3_BusOffCallback(uint16 status_u16)
-{
+void can_3_BusOffCallback(uint16 status_u16) {
 	static uint16 temp_u16;
 
 	temp_u16 = status_u16;
 } // can_3_BusOffCallback
 
-void appl_configOutputs(void)
-{
+void appl_configOutputs(void) {
 	/* POH's */
 	out_cfg(OUT_1_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
 	out_cfg(OUT_2_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
@@ -208,18 +187,18 @@ void appl_configOutputs(void)
 	out_cfg(OUT_12_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
 
 
-	out_cfgPI(OUT_1_POH_CL,157,136);
-	out_cfgPI(OUT_2_POH_CL,157,136);
-	out_cfgPI(OUT_3_POH_CL,157,136);
-	out_cfgPI(OUT_4_POH_CL,157,136);
-	out_cfgPI(OUT_5_POH_CL,157,136);
-	out_cfgPI(OUT_6_POH_CL,157,136);
-	out_cfgPI(OUT_7_POH_CL,157,136);
-	out_cfgPI(OUT_8_POH_CL,157,136);
-	out_cfgPI(OUT_9_POH_CL,157,136);
-	out_cfgPI(OUT_10_POH_CL,157,136);
-	out_cfgPI(OUT_11_POH_CL,157,136);
-	out_cfgPI(OUT_12_POH_CL,157,136);
+	out_cfgPI(OUT_1_POH_CL, 157, 136);
+	out_cfgPI(OUT_2_POH_CL, 157, 136);
+	out_cfgPI(OUT_3_POH_CL, 157, 136);
+	out_cfgPI(OUT_4_POH_CL, 157, 136);
+	out_cfgPI(OUT_5_POH_CL, 157, 136);
+	out_cfgPI(OUT_6_POH_CL, 157, 136);
+	out_cfgPI(OUT_7_POH_CL, 157, 136);
+	out_cfgPI(OUT_8_POH_CL, 157, 136);
+	out_cfgPI(OUT_9_POH_CL, 157, 136);
+	out_cfgPI(OUT_10_POH_CL, 157, 136);
+	out_cfgPI(OUT_11_POH_CL, 157, 136);
+	out_cfgPI(OUT_12_POH_CL, 157, 136);
 
 
 	out_cfg(OUT_19_DOH, 100, f_100Hz_DU16, 4000, 18000);
@@ -232,8 +211,7 @@ void appl_configOutputs(void)
 
 } // appl_configOutputs
 
-void appl_configInputs(void)
-{
+void appl_configInputs(void) {
 	/* inputs angle sensors 1-6 */
 	in_cfgVoltageInput(IN_1_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front right
 	in_cfgVoltageInput(IN_2_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front left
@@ -276,17 +254,14 @@ void appl_configInputs(void)
  *                 FALSE: Setting VPs on was not finished.
  */
 
-bool appl_setVpOnFirst(void)
-{
+bool appl_setVpOnFirst(void) {
 	static uint8 firstVpOnState_u8 = 0;
 	uint16 status_u16;
 	bool returnValue_l = TRUE;
 
-	if (0xFF != firstVpOnState_u8)
-	{
+	if (0xFF != firstVpOnState_u8) {
 		returnValue_l = FALSE;
-		switch (firstVpOnState_u8)
-		{
+		switch (firstVpOnState_u8) {
 		case 0:
 		{
 			status_u16 = sys_setVP(VP_1, ON);
@@ -398,12 +373,10 @@ bool appl_setVpOnFirst(void)
 	return returnValue_l;
 } // appl_setVpOnFirst
 
-void appl_EmergencyTask(void)
-{
+void appl_EmergencyTask(void) {
 	sys_triggerTC(0);
 } // appl_EmergencyTask
 
-void appl_IdleTask_1(void)
-{
+void appl_IdleTask_1(void) {
 
 } // appl_IdleTask_1

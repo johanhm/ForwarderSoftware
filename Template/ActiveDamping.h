@@ -136,20 +136,6 @@ volatile uint8 SEND_FLOW = 0;
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B			11
 #define INDEX_SIZE_PRESSURESENS							12
 
-//-----------------------Defines for pendelurm outputs --------------------------------------
-#define OUT_PENDELURM_FRONT_RIGHT_A		OUT_1_POH_CL
-#define OUT_PENDELURM_FRONT_RIGHT_B		OUT_2_POH_CL
-#define OUT_PENDELURM_FRONT_LEFT_A		OUT_3_POH_CL
-#define OUT_PENDELURM_FRONT_LEFT_B		OUT_4_POH_CL
-#define OUT_PENDELURM_MID_RIGHT_A		OUT_5_POH_CL
-#define OUT_PENDELURM_MID_RIGHT_B		OUT_6_POH_CL
-#define OUT_PENDELURM_MID_LEFT_A		OUT_7_POH_CL
-#define OUT_PENDELURM_MID_LEFT_B		OUT_8_POH_CL
-#define OUT_PENDELURM_REAR_RIGHT_A		OUT_9_POH_CL
-#define OUT_PENDELURM_REAR_RIGHT_B		OUT_10_POH_CL
-#define OUT_PENDELURM_REAR_LEFT_A		OUT_11_POH_CL
-#define OUT_PENDELURM_REAR_LEFT_B		OUT_12_POH_CL
-
 
 //Force relationship constants
 #define bx 0.165
@@ -166,28 +152,26 @@ volatile uint8 SEND_FLOW = 0;
  * each variable.                                                                                  */
 
 //--- Global sensor variabels control----------------------------
-volatile uint16 angleData[INDEX_SIZE_WHEELS] = {0};
+volatile uint16 angleData[INDEX_SIZE_WHEELS]  = {0};
 volatile uint16 posData_mV[INDEX_SIZE_WHEELS] = {0};
-volatile uint16 posData[INDEX_SIZE_WHEELS] = {0};
+volatile uint16 posData[INDEX_SIZE_WHEELS]    = {0};
 //Max and min voltage limits for cylinder stroke
 // RF,  LF,  RM,  LM,  RB,  LB
-static uint16 minPos[INDEX_SIZE_WHEELS] = {1061,1199,1115,1108,1105,1068}; //current mV
-static uint16 maxPos[INDEX_SIZE_WHEELS] = {3864,4200,4126,4039,4096,4046}; //current mV
-volatile uint8  Cyl_limit[INDEX_SIZE_WHEELS]={1,1,1,1,1,1};  //Individual cylinder limits
-volatile uint8  Force_control_cylinders[INDEX_SIZE_WHEELS]={1,1,1,1,1,1};  //Individual cylinder limits
+volatile uint8  Cyl_limit[INDEX_SIZE_WHEELS]               = {1, 1, 1, 1, 1, 1};  //Individual cylinder limits
+volatile uint8  Force_control_cylinders[INDEX_SIZE_WHEELS] = {1 ,1 ,1 ,1 ,1 ,1};  //Individual cylinder limits
 
-volatile uint16 posData_last[INDEX_SIZE_WHEELS] = {0};
-volatile uint16 Zc = 0; //Avg chassis height from arms average
+volatile uint16 Zc    = 0; //Avg chassis height from arms average
 volatile sint16 Zcdot = 0; //Avg chassis velocity from arms average
-volatile sint16 velData[INDEX_SIZE_WHEELS] = {0};
+volatile uint16 posData_last[INDEX_SIZE_WHEELS] = {0};
+volatile sint16 velData[INDEX_SIZE_WHEELS]      = {0};
 volatile sint16 velData_last[INDEX_SIZE_WHEELS] = {0};
-volatile uint8 Cyl_flow[INDEX_SIZE_WHEELS] = {0};
-volatile sint16 Zi_pos[INDEX_SIZE_WHEELS] = {0}; //Position estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
-volatile sint16 Zi_pos_last[INDEX_SIZE_WHEELS] = {0}; //Position last of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
-volatile sint16 Zi_vel[INDEX_SIZE_WHEELS] = {0}; //Velocity estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
-volatile sint16 Zi_vel_last[INDEX_SIZE_WHEELS] = {0}; //Velocity estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
-static sint16 a_geo[INDEX_SIZE_WHEELS] = {1000, 1000, -1000, -1000, -3200, -3200};    //{1000,1000,-1000,-1000,-2225,-2225};
-static sint16 b_geo[INDEX_SIZE_WHEELS] = {500, -500, 500, -500, 500, -500};
+volatile uint8 Cyl_flow[INDEX_SIZE_WHEELS]      = {0};
+volatile sint16 Zi_pos[INDEX_SIZE_WHEELS]       = {0}; //Position estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
+volatile sint16 Zi_pos_last[INDEX_SIZE_WHEELS]  = {0}; //Position last of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
+volatile sint16 Zi_vel[INDEX_SIZE_WHEELS]       = {0}; //Velocity estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
+volatile sint16 Zi_vel_last[INDEX_SIZE_WHEELS]  = {0}; //Velocity estimated of each cylinder mounting chassis point FR_FL_MR_ML_BR_BL
+static sint16 a_geo[INDEX_SIZE_WHEELS]          = {1000, 1000, -1000, -1000, -3200, -3200};    //{1000,1000,-1000,-1000,-2225,-2225};
+static sint16 b_geo[INDEX_SIZE_WHEELS]          = {500, -500, 500, -500, 500, -500};
 #define kf 5//Filter coefficient for velocity calculation lower value is more filtering
 #define Ts 0.02// x mS sensor read sampling time
 
@@ -223,7 +207,7 @@ float alpha = Tfp/(Tfp + 0.001);
 float alphav = Tfv/(Tfv + 0.02);
 
 //Chassis position filtering
-#define Tfpos 1.0/(2.0*3.1415)
+#define Tfpos 1.0 / (2.0 * 3.1415)
 float alphapos = Tfpos/(Tfpos + 0.02);
 
 volatile uint16 angle_acc_counter = 0;
@@ -256,9 +240,6 @@ volatile sint16 ACCELZ_RAW = 0;
 
 //Hydraulic Force Controller defines and variables
 
-#define DELTA_PRESSURE_8bar 800000  //8 bar pressure compensator setting
-#define MAXIMUM_FLOW_QMAX_m3s  100/1000/60  // maximum flow  (m^3/s)
-#define SLIDING_MODE_CONTROL_PARAMETER_Kt 0.000077 //orginalvalue is 0.000077
 volatile sint32 sl_Ref[INDEX_SIZE_WHEELS] = {0};
 volatile float sl_uold[INDEX_SIZE_WHEELS] = {0};
 volatile float sl_u = 0;
@@ -280,7 +261,7 @@ volatile sint32 F_REF_Phi = 0;
 volatile sint32 F_REF_Theta = 0;
 volatile sint32 F_REF[INDEX_SIZE_WHEELS] = {0};  //Vertical Force reference calculated by the dynamic controllers
 volatile sint32 F_matrix[3] = {0,0,0};
-volatile sint32 sum=0;
+volatile sint32 sum = 0;
 
 volatile sint16 Zc_error  = 0;
 volatile sint32 Z_k       = 0;
@@ -296,11 +277,6 @@ volatile sint32 Theta_I   = 0;
 volatile sint32 Theta_sky = 0;
 volatile uint8 CONTROL_STATUS = 0;
 
-volatile float massCenterLocationX_m = 0;
-volatile float massCenterLocationY_m = 0;
-volatile sint16 forceReferenceOptimalDistrubution_N[INDEX_SIZE_WHEELS] = {0};
-
-
 volatile uint16 ARM_REF   = 200;
 volatile sint16 ARM_ERROR = 0;
 
@@ -310,11 +286,11 @@ volatile sint16 To_ground_ref[INDEX_SIZE_WHEELS] = {0};
 //Decoupling matrix 1.5m .5m 2.75m
 
 float moore_inverse[6][3] = { {0.2339, 0.3333, 0.1152},  //Startup moore inverse assuming 6 wheels in contacts with ground
-		{0.2339,-0.3333, 0.1152},
-		{ 0.1694 , 0.3333, 0.0046},
-		{ 0.1694 ,-0.3333, 0.0046 },
-		{ 0.0968, 0.3333,-0.1198 },
-		{ 0.0968,-0.3333,-0.1198} };
+							  {0.2339,-0.3333, 0.1152},
+							  {0.1694, 0.3333, 0.0046},
+							  {0.1694,-0.3333, 0.0046},
+							  {0.0968, 0.3333,-0.1198},
+							  {0.0968,-0.3333,-0.1198}};
 
 // I hcanged to constnat on z for better control behavior johan
 volatile float moore_inverse_modified[6][3] = { {0.1694, 0.3333, 0.1152},  //Startup moore inverse assuming 6 wheels in contacts with ground
@@ -329,29 +305,17 @@ volatile uint16 KS = 0;
 //PI controller variables and defines
 #define kp 0.0001
 #define ki 0.005
-#define T 0.005
+#define T  0.005
 volatile sint32 error_old = 0;
 volatile float u_old = 0;
 
-// --- test sensor stuff ---
-volatile uint8 defaultSafety = 0;
-
 ///Global actuation task defines and variables
-#define REFERENCE_CURRENT_ZERO 0 //Number taken as valve closed Zero output on both solenoids
-#define REFERENCE_CURRENT_MAXIMUM_B_mA -200 //Min Ref Equivalent to Max output on Solenoid B Deadband+ -RefMin
-#define REFERENCE_CURRENT_MAXIMUM_A_mA 200 //400 //Max Ref Equivalent to Max output on Solenoid A  Deadband+ Refmax
-#define DEADZONE_FOR_SOLEONID_CURRENT_mA 390
 #define FR 0
 #define FL 1
 #define MR 2
 #define ML 3
 #define BR 4
 #define BL 5
-
-volatile sint16 referenceSoleonidOutputCurrent_ma[6] = {REFERENCE_CURRENT_ZERO};
-volatile sint16 Ref_A[6] = {REFERENCE_CURRENT_ZERO};
-volatile sint16 Ref_B[6] = {REFERENCE_CURRENT_ZERO};
-
 
 
 /**** prototypes ***********************************************************************************
@@ -361,7 +325,6 @@ volatile sint16 Ref_B[6] = {REFERENCE_CURRENT_ZERO};
 //--- Tasks prototypes ----------------------------
 //tasks.c relic
 void test_Task(void);
-void actuate(void);
 
 //--- CAN prototypes ----------------------------
 void can_1_RxCallback(uint8 format_u8, uint32 id_u32, uint8 numBytes_u8, uint8 *data_pu8);

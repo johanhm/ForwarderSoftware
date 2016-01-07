@@ -43,6 +43,7 @@ AS_INCLUDES      =
 # c compiler include directories
 CC_INCLUDES      = -I$(PLATFORM_PATH)/Includes/core\
 									 -I$(PLATFORM_PATH)/Includes\
+									 -I(PLATFORM_PATH)/XT28API\
 									 -I.
 
 ####################################################################################################

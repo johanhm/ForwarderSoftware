@@ -13,17 +13,18 @@
 
 // The forwarder software drivers
 #include "ActiveDamping.h"  /* Function Definitions */
-
-#include "XT28ActiveDampeningController.h"
-#include "XT28ActiveDampeningController.c"
-#include "XT28ReadSensors.h"
-#include "XT28ReadSensors.c"
-#include "XT28ManualControl.h"
-#include "XT28ManualControl.c"  /*Manual pendulum arm control functions */
-
-#include "applicationSystemIncludes.h"
-#include "applicationSystemIncludes.c"
 #include "application.h"
+#include "applicationSystemIncludes.h"
+#include "../XT28API/XT28ActiveDampeningController.h"
+#include "../XT28API/XT28ReadSensors.h"
+#include "../XT28API/XT28ManualControl.h"
+#include "../XT28API/XT28ActuateDriver.h"
+
+#include "../XT28API/XT28ActuateDriver.c"
+#include "../XT28API/XT28ActiveDampeningController.c"
+#include "../XT28API/XT28ReadSensors.c"
+#include "../XT28API/XT28ManualControl.c"  /*Manual pendulum arm control functions */
+#include "applicationSystemIncludes.c"
 
 #include "tasks.c"			/*Periodic tasks */
 #include "CAN_callbacks.c"	/*CAN receive callback functions */
@@ -85,14 +86,14 @@ void sys_main(void)
   sys_registerTask(appl_Task_1, TASK_1_PRIO_DU8, TASK_1_TIME_MS_DU32, TASK_1_OFFS_MS_DU32, 0);
 
   sys_registerTask(manual_Control_Task, MANUAL_CONTROl_TASK_PRIO_DU8, MANUAL_CONTROl_TASK_TIME_MS_DU32, MANUAL_CONTROl_TASK_OFFS_MS_DU32, 0);
-  sys_registerTask(read_Sensor_Task1, READ_SENSOR_TASK1_PRIO_DU8, READ_SENSOR_TASK1_TIME_MS_DU32, READ_SENSOR_TASK1_OFFS_MS_DU32, 0);
-  sys_registerTask(read_Sensor_Task2, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
+  sys_registerTask(readPressureSensorsTask, READ_SENSOR_TASK1_PRIO_DU8, READ_SENSOR_TASK1_TIME_MS_DU32, READ_SENSOR_TASK1_OFFS_MS_DU32, 0);
+  sys_registerTask(readPositionSensorsTask, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
   sys_registerTask(send_CAN_sensors_values_Task, SEND_CAN_SENSORS_VALUES_TASK_PRIO_DU8, SEND_CAN_SENSORS_VALUES_TASK_TIME_MS_DU32, SEND_CAN_SENSORS_VALUES_TASK_OFFS_MS_DU32, 0);
   //sys_registerTask(test_Task,TEST_TASK_PRIO_DU8, TEST_TASK_TIME_MS_DU32, TEST_TASK_OFFS_MS_DU32, 0);
 
   sys_registerTask(FORCE_ControlTask,FORCE_CONTROL_TASK_PRIO_DU8, FORCE_CONTROL_TIME_MS_DU32, FORCE_CONTROL_OFFS_MS_DU32, 0);
   sys_registerTask(Dynamic_control_Task, DYNAMIC_TASK_PRIO_DU8, DYNAMIC_TIME_MS_DU32, DYNAMIC_OFFS_MS_DU32, 0);
-  sys_registerTask(actuate, ACTUATE_TASK_PRIO_DU8, ACTUATE_TIME_MS_DU32, ACTUATE_OFFS_MS_DU32, 0);
+  sys_registerTask(actuatePendelumArmsTask, ACTUATE_TASK_PRIO_DU8, ACTUATE_TIME_MS_DU32, ACTUATE_OFFS_MS_DU32, 0);
 
   // Register emergency task.
   sys_registerEmergencyTask(appl_EmergencyTask, TASK_EMERGENCY_TIME_MS_DU32);
@@ -154,7 +155,7 @@ void sys_main(void)
                         CAN_1_RX_DATABOX_1_BUF_LEN_DU8, can_1_RxDatabox_7_Callback);
 
   //Init the databoxes for can 3
-  can_initRxDatabox(CAN_3, 3,CAN_ID_LEFT_EXCIPAD_BUTTONS, CAN_EXD_DU8, 8, can_3_RxDatabox_3_Buf_as,
+  can_initRxDatabox(CAN_3, 3, CAN_ID_LEFT_EXCIPAD_BUTTONS, CAN_EXD_DU8, 8, can_3_RxDatabox_3_Buf_as,
                       CAN_3_RX_DATABOX_3_BUF_LEN_DU8, can_3_RxDatabox_3_Callback);
   can_initRxDatabox(CAN_3, 4,CAN_ID_JOYSTICK_Y, CAN_EXD_DU8, 8, can_3_RxDatabox_4_Buf_as,
                       CAN_3_RX_DATABOX_3_BUF_LEN_DU8, can_3_RxDatabox_3_Callback);

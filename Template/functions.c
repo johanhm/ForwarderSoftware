@@ -18,18 +18,18 @@ float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 	float Load_force  = 1;
 	float forceGroundRelationshipConstant = 0;
 
-	if(beta1 < pi/2 + theta2) {
-		gamma = pi/2 - (beta1 - theta2);
+	if (beta1 < pi / 2 + theta2) {
+		gamma = pi / 2 - (beta1 - theta2);
 	} else {
 		gamma = -(beta1 - (pi / 2 + theta2));
 	}
 
 	if (theta1 > pi/2) {
-		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(theta1-pi/2) - cos(gamma) * sin(theta1-pi/2)) / (l1 * cos(theta - pi / 2)));
+		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(theta1 - pi / 2) - cos(gamma) * sin(theta1 - pi / 2)) / (l1 * cos(theta - pi / 2)));
 	} else if (gamma > 0) {
-		forceGroundRelationshipConstant = Load_force*l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
+		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
 	} else {
-		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi/2 - theta1)) / (l1 * cos(pi / 2 - theta)));
+		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
 	}
 	return forceGroundRelationshipConstant;  // FG/FL Relationship
 }
@@ -54,7 +54,7 @@ sint32 forceCylinderLoadFromForceOnWheel(uint16 cylinderPoss_mm, sint32 Vertical
 }
 
 
-void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D){  //Send up to 4x16bit Variables on CAN1 msg
+void sendCAN1_sint16(uint32 ID, sint16 A, sint16 B, sint16 C, sint16 D) {  //Send up to 4x16bit Variables on CAN1 msg
 	uint8 data_au8_sms[8] = {0};
 	data_au8_sms[0] = A;
 	data_au8_sms[1] = A >> 8;
@@ -68,7 +68,7 @@ void sendCAN1_sint16(uint32 ID,sint16 A,sint16 B,sint16 C,sint16 D){  //Send up 
 	if (0 == can_sendData(CAN_1, ID, CAN_EXD_DU8, 8, data_au8_sms)) {}
 }
 
-void sendCAN1_uint16(uint32 ID,uint16 A,uint16 B,uint16 C,uint16 D) {  //Send up to 4x16bit Variables on CAN1 msg
+void sendCAN1_uint16(uint32 ID, uint16 A, uint16 B, uint16 C, uint16 D) {  //Send up to 4x16bit Variables on CAN1 msg
 	uint8 data_au8_sms[8] = {0};
 	data_au8_sms[0] = A;
 	data_au8_sms[1] = A >> 8;
@@ -89,15 +89,15 @@ void SEND_ARRAY_CAN1(uint32 ID1, uint32 ID2, volatile sint16 data[], uint8 size_
 	uint8 data_au8_sms_2[8] = {0};  //Array for message sending 2
 
 	//Prepare data for first message
-	for(x = 0; x < 4; x++) {
+	for (x = 0; x < 4; x++) {
 		data_au8_sms_1[i]   = data[x];
 		data_au8_sms_1[i+1] = data[x] >> 8;
 		i = i + 2;
 	}
 
-	if(size_array > 4) {  //If there is enough data then send it on second CAN message
-		i=0;
-		for(x = 4; x < size_array; x++) {
+	if (size_array > 4) {  //If there is enough data then send it on second CAN message
+		i = 0;
+		for (x = 4; x < size_array; x++) {
 			data_au8_sms_2[i]   = data[x];
 			data_au8_sms_2[i+1] = data[x] >> 8;
 			i = i + 2;
