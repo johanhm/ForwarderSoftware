@@ -1,4 +1,4 @@
-/*! \defgroup Sensors
+/*! \defgroup Sensors XT28 Sensors
  *  \brief The sensors that exists on the forwarder.
  *  This group conatains the API related to sensors on the forwarder. The
  *  installed sensors on the forwarder are:
@@ -7,7 +7,7 @@
  *  - \ref Pos
  */
 
-/** \defgroup IMU
+/** \defgroup IMU Inertial measurement unit
  * \ingroup Sensors
  * \brief This modules handels the configuration of the IMU and IMU Data.
  *
@@ -29,6 +29,15 @@
  * \param[in] gyroDataboxNumber The databox the gyro should be registerd to.
  * \param[in] acceleometerDataboxNumber The databox the acceleometer data should be registerd to.
  *
+ #### Example code: ###
+ ~~~~~~~~~~{.c}
+ #include "api_lib_basic.h"
+
+ uint16 gyroBoxNr = 1;
+ uint16 accBoxNr  = 2;
+ IMUConfigure(CAN_2, gyroBoxNr, accBoxNr);
+ ~~~~~~~~~~
+ *
  */
 void IMUConfigure(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber);
 
@@ -39,6 +48,11 @@ void IMUConfigure(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleomete
  *
  * \return Phi Returns the lates value of Phi
  *
+ #### Example code: ###
+ ~~~~~~~~~~{.c}
+float phiDegree = IMUGetTheta();
+ ~~~~~~~~~~
+ *
  */
 float IMUGetPhi(void);
 
@@ -48,8 +62,21 @@ float IMUGetPhi(void);
  *
  * \return Phi Returns the lates value of Theta
  *
+ #### Example code: ###
+ ~~~~~~~~~~{.c}
+float thetaDegree = IMUGetTheta();
+ ~~~~~~~~~~
+ *
  */
 float IMUGetTheta(void);
+
+/*! \Brief This function will send out the raw values on corresponding can ID when called.
+ *
+ * \param[in] gyroID
+ * \param[in] accID
+ *
+ */
+void IMUSendIMURawValuesOnCAN(uint32 gyroID, uint32 accID);
 
 
 

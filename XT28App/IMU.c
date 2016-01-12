@@ -129,6 +129,20 @@ float IMUGetTheta(void) {
 	return thetaInDegree;
 }
 
+void IMUSendIMURawValuesOnCAN(uint32 gyroID, uint32 accID) {
+	//to be implemented when CAN support exists.
+	gyroID = 1;
+	accID = 1;
+}
+
+
+
+
+
+
+
+
+
 
 
 
