@@ -15,15 +15,16 @@
 #include "ActiveDamping.h"  /* Function Definitions */
 #include "application.h"
 #include "applicationSystemIncludes.h"
-#include "../XT28API/XT28ActiveDampeningController.h"
-#include "../XT28API/XT28ReadSensors.h"
-#include "../XT28API/XT28ManualControl.h"
-#include "../XT28API/XT28ActuateDriver.h"
+#include "XT28ActiveDampeningController.h"
+#include "XT28ReadSensors.h"
+#include "XT28ManualControl.h"
+#include "XT28ActuateDriver.h"
 
-#include "../XT28API/XT28ActuateDriver.c"
-#include "../XT28API/XT28ActiveDampeningController.c"
-#include "../XT28API/XT28ReadSensors.c"
-#include "../XT28API/XT28ManualControl.c"  /*Manual pendulum arm control functions */
+// C code should NOT! be included, this is temporary
+#include "XT28ActuateDriver.c"
+#include "XT28ActiveDampeningController.c"
+#include "XT28ReadSensors.c"
+#include "XT28ManualControl.c"  /*Manual pendulum arm control functions */
 #include "applicationSystemIncludes.c"
 
 #include "tasks.c"			/*Periodic tasks */
@@ -87,7 +88,7 @@ void sys_main(void)
 
   sys_registerTask(manual_Control_Task, MANUAL_CONTROl_TASK_PRIO_DU8, MANUAL_CONTROl_TASK_TIME_MS_DU32, MANUAL_CONTROl_TASK_OFFS_MS_DU32, 0);
   sys_registerTask(readPressureSensorsTask, READ_SENSOR_TASK1_PRIO_DU8, READ_SENSOR_TASK1_TIME_MS_DU32, READ_SENSOR_TASK1_OFFS_MS_DU32, 0);
-  sys_registerTask(readPositionSensorsTask, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
+  sys_registerTask(readPositionSensorsAndIMUTask, READ_SENSOR_TASK2_PRIO_DU8, READ_SENSOR_TASK2_TIME_MS_DU32, READ_SENSOR_TASK2_OFFS_MS_DU32, 0);
   sys_registerTask(send_CAN_sensors_values_Task, SEND_CAN_SENSORS_VALUES_TASK_PRIO_DU8, SEND_CAN_SENSORS_VALUES_TASK_TIME_MS_DU32, SEND_CAN_SENSORS_VALUES_TASK_OFFS_MS_DU32, 0);
   //sys_registerTask(test_Task,TEST_TASK_PRIO_DU8, TEST_TASK_TIME_MS_DU32, TEST_TASK_OFFS_MS_DU32, 0);
 
@@ -160,7 +161,7 @@ void sys_main(void)
   can_initRxDatabox(CAN_3, 4,CAN_ID_JOYSTICK_Y, CAN_EXD_DU8, 8, can_3_RxDatabox_4_Buf_as,
                       CAN_3_RX_DATABOX_3_BUF_LEN_DU8, can_3_RxDatabox_3_Callback);
   //for CAN 2 gyro
-  can_initRxDatabox(CAN_2, 1,CAN_ID_GYRODATA_DATA, CAN_STD_DU8, 4, can_2_RxDatabox_1_Buf_as,
+  can_initRxDatabox(CAN_2, 1, CAN_ID_GYRODATA_DATA, CAN_STD_DU8, 4, can_2_RxDatabox_1_Buf_as,
                       CAN_2_RX_DATABOX_1_BUF_LEN_DU8, can_2_RxDatabox_1_Callback);
   can_initRxDatabox(CAN_2, 2,CAN_ID_ACCELOMETER_DATA, CAN_STD_DU8, 6, can_2_RxDatabox_2_Buf_as,
                       CAN_2_RX_DATABOX_2_BUF_LEN_DU8, can_2_RxDatabox_2_Callback);

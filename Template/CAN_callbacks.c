@@ -203,6 +203,7 @@ void can_2_RxDatabox_1_Callback(void) {
 	Gyro_Phi_RAW   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);  //Gyro around IMU y axis
 
 }
+
 void can_2_RxDatabox_2_Callback(void) {
 	//Save accelerometer data
 	uint8 angleMessageData_au8[6];

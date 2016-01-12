@@ -214,12 +214,12 @@ volatile uint16 angle_acc_counter = 0;
 volatile sint32 angleDataX = 0;
 volatile sint32 angleDataY = 0;
 volatile sint32 angleDataZ = 0;
-volatile sint16 Theta_deg  = 0;
-volatile sint16 Theta_deg_last = 0;
+volatile sint32 Theta_deg  = 0;
+volatile sint32 Theta_deg_last = 0;
 
 volatile float Theta_rad = 0;
-volatile sint16 Phi_deg  = 0;
-volatile sint16 Phi_deg_last = 0;
+volatile sint32 Phi_deg  = 0;
+volatile sint32 Phi_deg_last = 0;
 volatile float Phi_rad       = 0;
 volatile sint16 Gyro_Phi_deg = 0;
 volatile float Gyro_Phi_rad  = 0;
