@@ -658,11 +658,11 @@ void send_CAN_sensors_values_Task(void)
 	data_au8_sms_OBS[0] = Zc;
 	data_au8_sms_OBS[1] = Zc>>8;
 	data_au8_sms_OBS[2] = Zcdot;
-	data_au8_sms_OBS[3] = Zcdot>>8;
+	data_au8_sms_OBS[3] = Zcdot >>8;
 	data_au8_sms_OBS[4] = Theta_deg;
-	data_au8_sms_OBS[5] = Theta_deg>>8;
+	data_au8_sms_OBS[5] = Theta_deg >> 8;
 	data_au8_sms_OBS[6] = Phi_deg;
-	data_au8_sms_OBS[7] = Phi_deg>>8;
+	data_au8_sms_OBS[7] = Phi_deg >> 8;
 
 	if (0 == can_sendData(CAN_1, CAN_ID_SENSOR_INFO_SMS_16, CAN_EXD_DU8, 8, data_au8_sms_OBS)) {}
 

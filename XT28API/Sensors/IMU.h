@@ -41,6 +41,13 @@
  */
 void IMUConfigure(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber);
 
+/*!
+ *  This function sends the start init message to the IMU. It has to be called after the CAN channels have been initilazied.
+ *
+ *  \return Returns 0 if everything went ok. If it returns something else something went wrong.
+ */
+uint16 IMUInit(void);
+
 
 /*! \Brief Call to get lates value of Phi
  *
@@ -72,11 +79,17 @@ float IMUGetTheta(void);
 
 /*! \Brief This function will send out the raw values on corresponding can ID when called.
  *
- * \param[in] gyroID
+ * \param[in] CANChannel The channel the message should be sent on
+ * \param[in] gyroID The id for IMU message. In short format
  * \param[in] accID
  *
  */
-void IMUSendIMURawValuesOnCAN(uint32 gyroID, uint32 accID);
+void IMUSendIMURawValuesOnCAN(uint8 CANChannel, uint32 gyroID, uint32 accID);
+
+/*!
+ * Sends the filterd angles on CAN
+ */
+void IMUSendFilterdAngleDataOnCAN(uint CANChannel, sint32 ID);
 
 
 
