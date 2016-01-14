@@ -46,6 +46,7 @@ CC_INCLUDES      = -I$(PLATFORM_PATH)/Includes/core\
 									 -I$(PLATFORM_PATH)/XT28API\
 									 -I$(PLATFORM_PATH)/XT28API\Sensors\
 									 -I$(PLATFORM_PATH)/XT28API\Constants\
+									 -I$(PLATFORM_PATH)/XT28API\Actuate\
 									 -I.
 									 
 									 
@@ -60,6 +61,7 @@ OBJECTS          = $(OUTPUT_PATH)/App.o\
 									 $(OUTPUT_PATH)/XT28CANSupport.o\
 									 $(OUTPUT_PATH)/PendelumArmPressure.o\
 									 $(OUTPUT_PATH)/PendelumArmPosition.o\
+									 $(OUTPUT_PATH)/PendelumArmActuate.o\
 									 
 ####################################################################################################
 # Path to libraries which should be included

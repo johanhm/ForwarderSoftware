@@ -15,7 +15,7 @@
 static void uppdateForwarderAvrageHeightAndVelocity(void);
 
 
-void PAPOSConfigurePositionSensors(void) {
+void PAPOSConfigurePositionSensorsVoltageInput(void) {
 	// configure pos sensors
 	in_cfgVoltageInput(IN_1_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front right
 	in_cfgVoltageInput(IN_2_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front left

@@ -48,6 +48,14 @@
 #define CAN_ID_DEBUG_MSG_5					0x18FE1054
 #define CAN_ID_DEBUG_MSG_6					0x18FE1055
 
+#define CAN_ID_REAL_CURRENT_FRONT 			0x17FE0006
+#define CAN_ID_REAL_CURRENT_MID 			0x17FE0007
+#define CAN_ID_REAL_CURRENT_BACK 			0x17FE0008
+
+#define CAN_ID_REFERENCE_CURRENT_FRONT		0x17FE0001	//Made up for testing purposes
+#define CAN_ID_REFERENCE_CURRENT_MID		0x17FE0002
+#define CAN_ID_REFERENCE_CURRENT_BACK		0x17FE0003
+
 /*! \brief what
  * This functions setup the retrive buffer and databoxed used by the rest of XT28 API.
  */

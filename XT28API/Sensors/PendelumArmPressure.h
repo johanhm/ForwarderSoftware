@@ -14,7 +14,7 @@
 /*!
  * This function configures the pressure sensors.
  */
-void PAPRConfigurePressureSensors(void);
+void PAPRConfigurePressureSensorsVoltageInput(void);
 
 /*!
  * Uppdates the pressure data
@@ -47,11 +47,6 @@ void PAPRSendCylinderLoadForceOnCAN(uint8 CANChannel, uint32 middleAndBackID, ui
 void PAPRSendVerticalWheelForceOnCAN(uint8 CANChannel, uint32 middleAndBackID, uint32 frontID);
 
 /*!
- * Use this function to convert a Verticalforce to a cylinder load force
- */
-sint32 PAPRConvertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce);
-
-/*!
  * Send force error % on CAN
  */
 void PAPRSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID);
@@ -65,6 +60,16 @@ void PAPRSendMassCenterLocationOnCAN(uint CANCHannel, uint32 ID);
  * Send this on CAN
  */
 void PAPRSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID);
+
+
+/*!
+ * Get calculated optimal force ref
+ */
+int PAPRGetOptimalReferenceForceForWheel_N(uint8 wheelNumber);
+
+
+
+
 
 #endif /* XT28API_SENSORS_PENDELUMARMPRESSURE_H_ */
  /** @}*/

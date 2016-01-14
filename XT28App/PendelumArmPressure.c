@@ -36,16 +36,17 @@
 static void lowPassFilterPressureSensor(void);
 static void calculateForceOnCylinderChambers(void);
 static void calculateLoadForceOnCylinder(void);
-static void calculateVerticalForceOnWheel(void);
+static void calculateVerticalForceOnWheelAndTotalMass(void);
 
 static float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm);
 static sint32 convertCylinderLoadForceToVericalOnWheel(uint16 cylinderPoss_mm, sint16 cylinderLoadForce);
+static sint32 convertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce);
 
 static void calculateMassCenterLocation(void);
 static void calculateOptimalForceForAllWheels(void);
 
 // Start of implementations
-void PAPRConfigurePressureSensors(void) {
+void PAPRConfigurePressureSensorsVoltageInput(void) {
 
 	/*
     uint16 uLowerStateThreshold_u16 = 1000;
@@ -119,7 +120,7 @@ void PAPRUppdateForceOnWheelsData(void) {
 	//Calculate Load force Fa-Fb decaN  (N/10)
 	calculateLoadForceOnCylinder();
 
-	calculateVerticalForceOnWheel();
+	calculateVerticalForceOnWheelAndTotalMass();
 
 	calculateMassCenterLocation();
 
@@ -152,16 +153,15 @@ static void calculateLoadForceOnCylinder(void) {
 
 static sint32 calculatedVerticalForceOnWheel[SUM_WHEELS] = {0};
 static sint32 sumOfVerticalForce = 0;
-static void calculateVerticalForceOnWheel(void) {
-	int i = 0;
+static void calculateVerticalForceOnWheelAndTotalMass(void) {
+	int wheel = 0;
 	sumOfVerticalForce = 0;
 	//Get vertical force depending on pendulum arm current position
-	for (i = 0; i < 6; i++) {
-		calculatedVerticalForceOnWheel[i] = convertCylinderLoadForceToVericalOnWheel(PAPOSGetPosDataForWheel_mm(i), messuredForceCylinderLoad_deciN[i]);
-		sumOfVerticalForce = sumOfVerticalForce + calculatedVerticalForceOnWheel[i];
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		calculatedVerticalForceOnWheel[wheel] = convertCylinderLoadForceToVericalOnWheel(PAPOSGetPosDataForWheel_mm(wheel), messuredForceCylinderLoad_deciN[wheel]);
+		sumOfVerticalForce = sumOfVerticalForce + calculatedVerticalForceOnWheel[wheel];
 	}  //Get vertical force depending on pendulum arm current position
 }
-
 
 void PAPRSendPressureDataOnCAN(uint8 CANChannel, uint32 backID, uint32 middleID, uint32 frontID) {
 	CANSend_uint16( CANChannel, backID,
@@ -284,17 +284,15 @@ static sint32 convertCylinderLoadForceToVericalOnWheel(uint16 cylinderPoss_mm, s
 	return forceOnWheelVertical_N;
 }
 
-sint32 PAPRConvertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce) {
+static sint32 convertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce) {
 	float relativeConstant = forceRelationshipFromLoadToGround(cylinderPoss_mm);
 	sint32 forceOnCylinder_N = verticalForce / relativeConstant;
 	return forceOnCylinder_N;
 }
 
-
 // MARK: Mass center functions
 static float massCenterLocationX_m = 0;
 static float massCenterLocationY_m = 0;
-
 static void calculateMassCenterLocation(void) {
 	float lengthOfForwarder_m = 6.05;
 	float lengthToMidOfForwarder_m = 3.70;
@@ -324,11 +322,65 @@ void PAPRSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
 	);
 }
 
+static int forceReferenceOptimalDistrubutionVertical_N[SUM_WHEELS] = {0};
+static int forceRefOptDispForCylinderLoad_N[SUM_WHEELS] = {0};
+static void calculateOptimalForceForAllWheels(void) {
+	float lengthOfForwarder_m      = 6.05;
+	float lengthToMidOfForwarder_m = 3.70;
+	float widthOfForwarder_m       = 2.35;
+
+	float kMidScalingConstant = (float)1 / 3;
+
+	float kFront = (lengthOfForwarder_m - massCenterLocationY_m - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
+	float kLeft  = 1 - massCenterLocationX_m / widthOfForwarder_m;
+	float kMid   = kMidScalingConstant;
+	float kRear  = (massCenterLocationY_m - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
+	float kRight = massCenterLocationX_m / widthOfForwarder_m;
+
+	//Optimal force ref vector vertical
+	forceReferenceOptimalDistrubutionVertical_N[FL]  = kFront * kLeft  * sumOfVerticalForce;
+	forceReferenceOptimalDistrubutionVertical_N[FR]  = kFront * kRight * sumOfVerticalForce;
+	forceReferenceOptimalDistrubutionVertical_N[ML]  = kMid   * kLeft  * sumOfVerticalForce;
+	forceReferenceOptimalDistrubutionVertical_N[MR]  = kMid   * kRight * sumOfVerticalForce;
+	forceReferenceOptimalDistrubutionVertical_N[BL]  = kRear  * kLeft  * sumOfVerticalForce;
+	forceReferenceOptimalDistrubutionVertical_N[BR]  = kRear  * kRight * sumOfVerticalForce;
+
+	sint16 wheel = 0;
+	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
+	for (wheel = 0; wheel < 6; wheel++) {
+		forceRefOptDispForCylinderLoad_N[wheel] = convertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), forceReferenceOptimalDistrubutionVertical_N[wheel]);
+	}
+}
+
+void PAPRSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID) {
+	sint16 forceReferenceDispSum_N = 0;
+	sint16 wheel = 0;
+	//convert to optimalFOrceRef on cylinder.
+	for (wheel = 0; wheel < 6; wheel++) {
+		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubutionVertical_N[wheel];
+	}
+
+	CANSend_sint16(CANChannel, frontAndMiddleID,
+			forceRefOptDispForCylinderLoad_N[FL],
+			forceRefOptDispForCylinderLoad_N[FR],
+			forceRefOptDispForCylinderLoad_N[ML],
+			forceRefOptDispForCylinderLoad_N[MR]
+	);
+	CANSend_sint16(CANChannel, backID,
+			forceRefOptDispForCylinderLoad_N[BL],
+			forceRefOptDispForCylinderLoad_N[BR],
+			sumOfVerticalForce,
+			forceReferenceDispSum_N
+	);
+}
+
 void PAPRSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID) {
 	sint32 wheel = 0;
 	sint32 forceErrorInPercent[SUM_WHEELS] = {0};
+	int convertToPercent = 100;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		forceErrorInPercent[wheel] = (float)( (float)(forceReferenceOptimalDistrubution_N[wheel] - messuredForceCylinderLoad_deciN[wheel]) / (float)forceReferenceOptimalDistrubution_N[wheel] ) * 100;
+		forceErrorInPercent[wheel] = (float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel]) / (float)forceRefOptDispForCylinderLoad_N[wheel] );
+		forceErrorInPercent[wheel] = forceErrorInPercent[wheel] * convertToPercent;
 	}
 	CANSend_sint16(CANChannel, frontAndMiddleID,
 			forceErrorInPercent[FL],
@@ -344,45 +396,8 @@ void PAPRSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID
 	);
 }
 
-static int forceReferenceOptimalDistrubution_N[SUM_WHEELS] = {0};
-static void calculateOptimalForceForAllWheels(void) {
-	float lengthOfForwarder_m      = 6.05;
-	float lengthToMidOfForwarder_m = 3.70;
-	float widthOfForwarder_m       = 2.35;
-
-	float kMidScalingConstant = (float)1/3;
-
-	float kFront = (lengthOfForwarder_m - massCenterLocationY_m - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
-	float kLeft  = 1 - massCenterLocationX_m / widthOfForwarder_m;
-	float kMid   = kMidScalingConstant;
-	float kRear  = (massCenterLocationY_m - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
-	float kRight = massCenterLocationX_m / widthOfForwarder_m;
-
-	//Optimal force ref vector vertical
-	forceReferenceOptimalDistrubution_N[FL]  = kFront * kLeft  * Weight;
-	forceReferenceOptimalDistrubution_N[FR]  = kFront * kRight * Weight;
-	forceReferenceOptimalDistrubution_N[ML]  = kMid   * kLeft  * Weight;
-	forceReferenceOptimalDistrubution_N[MR]  = kMid   * kRight * Weight;
-	forceReferenceOptimalDistrubution_N[BL]  = kRear  * kLeft  * Weight;
-	forceReferenceOptimalDistrubution_N[BR]  = kRear  * kRight * Weight;
-
-}
-
-void PAPRSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID) {
-	sint16 forceReferenceDispSum_N = 0;
-	sint16 wheel = 0;
-	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
-	for (wheel = 0; wheel < 6; wheel++) {
-		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubution_N[wheel];
-		forceReferenceOptimalDistrubution_N[wheel] = forceCylinderLoadFromForceOnWheel(posData[wheel], forceReferenceOptimalDistrubution_N[wheel]);
-	}
-	sendCAN1_sint16(0x18FF1002, forceReferenceOptimalDistrubution_N[FL], forceReferenceOptimalDistrubution_N[FR], forceReferenceOptimalDistrubution_N[ML], forceReferenceOptimalDistrubution_N[MR]);
-	sendCAN1_sint16(0x18FF1003, forceReferenceOptimalDistrubution_N[BL], forceReferenceOptimalDistrubution_N[BR], Weight, forceReferenceDispSum_N);
-}
-
-
-int PAPRGetOptimalReferenceForceForWheel(uint8 wheelNumber) {
-	return forceReferenceOptimalDistrubution_N[wheelNumber];
+int PAPRGetOptimalReferenceForceForWheel_N(uint8 wheelNumber) {
+	return forceRefOptDispForCylinderLoad_N[wheelNumber];
 }
 
 

@@ -270,17 +270,17 @@ void modes(can_Message_ts* msg_s)
 void caseSwitch(can_Message_ts* msg_s) {
 	volatile bool status = 0;
 	uint8 i = 0;
-	if(msg_s->id_u32 == CAN_ID_LEFT_EXCIPAD_BUTTONS) {						//Check CAN ID
-		if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT) {		//MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT
+	if (msg_s->id_u32 == CAN_ID_LEFT_EXCIPAD_BUTTONS) {						//Check CAN ID
+		if (msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT) {		//MSG_ENABLE_PENDULUM_ARM_FRONT_RIGHT
 			status = toggleVariable(INDEX_CYLINDER_FRONT_RIGHT);
-			for(i = 0; i < 6; i++) {
+			for (i = 0; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}					//Set all PWM-outputs (to solenoids) to zero
 			setVariablesZero();												//Reset buttonStatus to ensure only one is active
 			buttonStatus[INDEX_CYLINDER_FRONT_RIGHT] = status;				//Set active bit for buttonStatus
 			ACTIVE_FORCE_CONTROL = 0; //disable controller
 		}
-		else if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT)	//MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT
+		else if (msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT)	//MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT
 		{
 			status = toggleVariable(INDEX_CYLINDER_FRONT_LEFT);
 			for(i=0;i<6;i++){
@@ -290,7 +290,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 			buttonStatus[INDEX_CYLINDER_FRONT_LEFT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_MID_RIGHT)	//MSG_ENABLE_PENDULUM_ARM_MID_RIGHT
+		else if (msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_MID_RIGHT)	//MSG_ENABLE_PENDULUM_ARM_MID_RIGHT
 		{
 			status = toggleVariable(INDEX_CYLINDER_MID_RIGHT);
 			for(i=0;i<6;i++){
@@ -299,7 +299,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 			buttonStatus[INDEX_CYLINDER_MID_RIGHT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_MID_LEFT)		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
+		else if (msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_MID_LEFT)		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 		{
 			status = toggleVariable(INDEX_CYLINDER_MID_LEFT);
 			for(i=0;i<6;i++){
@@ -309,7 +309,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
 
-		else if(msg_s->data_au8[5] == MSG_ENABLE_PENDULUM_ARM_REAR_RIGHT)	//MSG_ENABLE_PENDULUM_ARM_REAR_RIGHT
+		else if (msg_s->data_au8[5] == MSG_ENABLE_PENDULUM_ARM_REAR_RIGHT)	//MSG_ENABLE_PENDULUM_ARM_REAR_RIGHT
 		{
 			status = toggleVariable(INDEX_CYLINDER_REAR_RIGHT);
 			for(i=0;i<6;i++){
@@ -318,16 +318,16 @@ void caseSwitch(can_Message_ts* msg_s) {
 			buttonStatus[INDEX_CYLINDER_REAR_RIGHT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_REAR_LEFT) {	//MSG_ENABLE_PENDULUM_ARM_REAR_LEFT
+		else if (msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_REAR_LEFT) {	//MSG_ENABLE_PENDULUM_ARM_REAR_LEFT
 			status = toggleVariable(INDEX_CYLINDER_REAR_LEFT);
-			for(i = 0; i < 6; i++) {
+			for (i = 0; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
 			buttonStatus[INDEX_CYLINDER_REAR_LEFT] = status;
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN) {		//MSG_ENABLE_PENDULUM_ARM_ALL_DOWN
+		else if (msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_DOWN) {		//MSG_ENABLE_PENDULUM_ARM_ALL_DOWN
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 			buttonStatus[INDEX_CYLINDER_ALL_DOWN] = 1;
@@ -338,7 +338,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 				zRampUp = 50;
 			}
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_UP) {		//MSG_ENABLE_PENDULUM_ARM_ALL_UP
+		else if (msg_s->data_au8[2] == MSG_ENABLE_PENDULUM_ARM_ALL_UP) {		//MSG_ENABLE_PENDULUM_ARM_ALL_UP
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL = 0; //disable controller
 			buttonStatus[INDEX_CYLINDER_ALL_UP] = 1;
@@ -349,28 +349,28 @@ void caseSwitch(can_Message_ts* msg_s) {
 				zRampUp = 50;
 			}
 		}
-		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_Y) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
+		else if (msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_Y) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 			status = toggleVariable(INDEX_CYLINDER_TILT_Y);
-			for( i = 0; i < 6; i++) {
+			for ( i = 0; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i]=0;
 			}
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL=0; //disable controller
 			buttonStatus[INDEX_CYLINDER_TILT_Y] = status;
 		}
-		else if(msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_X) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
+		else if (msg_s->data_au8[1] == MSG_ENABLE_PENDULUM_ARM_TILT_X) {		//MSG_ENABLE_PENDULUM_ARM_MID_LEFT
 			status = toggleVariable(INDEX_CYLINDER_TILT_X);
-			for(i = 0; i < 6; i++) {
+			for (i = 0; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
 			ACTIVE_FORCE_CONTROL = 0; //disable controller
 			buttonStatus[INDEX_CYLINDER_TILT_X] = status;
 		}
-		else if(msg_s->data_au8[2] == MSG_ENABLE_SIMPLE_CONTROL) {		//MSG_ENABLE_PENDULUM_simple controll
+		else if (msg_s->data_au8[2] == MSG_ENABLE_SIMPLE_CONTROL) {		//MSG_ENABLE_PENDULUM_simple controll
 			status = toggleVariable(INDEX_SIMPLE_CONTROL);
 			ACTIVE_FORCE_CONTROL = status;  //Enable or disable force control
-			for(i = 0 ; i < 6; i++) {
+			for (i = 0 ; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
@@ -379,8 +379,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 	}
 }
 
-bool toggleVariable(bool toggleTarget)
-{
+bool toggleVariable(bool toggleTarget) {
 	if (buttonStatus[toggleTarget]) {
 		return 0;
 	} else {
@@ -388,8 +387,7 @@ bool toggleVariable(bool toggleTarget)
 	}
 }
 
-void setVariablesZero(void)
-{
+void setVariablesZero(void) {
 	uint8 i;
 	for( i = 0; i < sizeofButtonStatus; i++) {
 		buttonStatus[i] = 0;

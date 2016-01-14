@@ -14,7 +14,7 @@
 /*!
  *  Configures the pos sensors
  */
-void PAPOSConfigurePositionSensors(void);
+void PAPOSConfigurePositionSensorsVoltageInput(void);
 
 /*!
  *  Uppdate the pos data of the forwarder. This taks need to know the sampletime it is in.
