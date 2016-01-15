@@ -19,7 +19,7 @@ void PAPOSConfigurePositionSensorsVoltageInput(void);
 /*!
  *  Uppdate the pos data of the forwarder. This taks need to know the sampletime it is in.
  */
-void PAPOSUppdatePosSensorsData(int sampleTime_ms);
+void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
 
 /*!
  * Get the latest pos data value in mm for a specific wheel

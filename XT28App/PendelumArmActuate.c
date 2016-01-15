@@ -130,7 +130,7 @@ void PAASetReferenceCurrentSaturationLimit(int currentLimit) {
 }
 
 bool actuateEnabled = 0;
-void PAASetActuateState(bool state) {
+void PAASetPendelumArmActuateState(bool state) {
 	actuateEnabled = state;
 }
 

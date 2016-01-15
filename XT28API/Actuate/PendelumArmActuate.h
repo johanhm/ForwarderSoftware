@@ -48,7 +48,7 @@ void PAASetReferenceCurrentSaturationLimit(int currentLimit);
 /*!
  *  Set if current output should be activated or not.
  */
-void PAASetActuateState(bool state);
+void PAASetPendelumArmActuateState(bool state);
 
 /*!
  * Sends reference current on CAN

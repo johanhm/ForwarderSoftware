@@ -3,7 +3,7 @@
 #include <math.h>
 #include "XT28CANSupport.h"
 #include "PendelumArmPosition.h"
-//#include "XT28HardwareConstants.h"
+#include "XT28HardwareConstants.h"
 
 // Pressure sensor index
 #define ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A		0
@@ -19,18 +19,6 @@
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_A		10
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B		11
 #define INDEX_SIZE_PRESSURESENS						12
-
-#define FR	 		0
-#define FL	 		1
-#define MR	 		2
-#define ML 			3
-#define BR 			4
-#define BL			5
-#define SUM_WHEELS	6
-
-// Hardware constants
-#define CYLINDER_PUSH_AREA_SIDE_A1_m2 0.00785 // Cylinder push area (m^2) A side
-#define CYLINDER_PUSH_AREA_SIDE_B2_m2 0.00589 // Cylinder pull area (m^2) B side
 
 //Private prototytpes
 static void lowPassFilterPressureSensor(void);
@@ -294,9 +282,9 @@ static sint32 convertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss
 static float massCenterLocationX_m = 0;
 static float massCenterLocationY_m = 0;
 static void calculateMassCenterLocation(void) {
-	float lengthOfForwarder_m = 6.05;
-	float lengthToMidOfForwarder_m = 3.70;
-	float widthOfForwarder_m = 2.35;
+	float lengthOfForwarder_m = LENGTH_OF_FORWARDER_m;
+	float lengthToMidOfForwarder_m = LENGTH_TO_MID_OFF_FORWARDER_m;
+	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
 	float sumOfForcesOnWheels_N = sumOfVerticalForce;
 
@@ -310,13 +298,14 @@ static void calculateMassCenterLocation(void) {
 }
 
 void PAPRSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
-	float lengthOfForwarder_m = 6.05;
-	float widthOfForwarder_m = 2.35;
-	sint16 massCenterLocationX_sint16_10m = (massCenterLocationX_m / widthOfForwarder_m  * 100);
-	sint16 massCenterLocationY_sint16_10m = (massCenterLocationY_m / lengthOfForwarder_m * 100);
+	float lengthOfForwarder_m = LENGTH_OF_FORWARDER_m;
+	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
+	int convertToPercent = 100;
+	sint16 massCenterLocationX_s16_10m = (massCenterLocationX_m / widthOfForwarder_m  * convertToPercent);
+	sint16 massCenterLocationY_s16_10m = (massCenterLocationY_m / lengthOfForwarder_m * convertToPercent);
 	CANSend_sint16(CANChannel, ID,
-			massCenterLocationX_sint16_10m,
-			massCenterLocationY_sint16_10m,
+			massCenterLocationX_s16_10m,
+			massCenterLocationY_s16_10m,
 			0,
 			0
 	);
@@ -325,9 +314,9 @@ void PAPRSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
 static int forceReferenceOptimalDistrubutionVertical_N[SUM_WHEELS] = {0};
 static int forceRefOptDispForCylinderLoad_N[SUM_WHEELS] = {0};
 static void calculateOptimalForceForAllWheels(void) {
-	float lengthOfForwarder_m      = 6.05;
-	float lengthToMidOfForwarder_m = 3.70;
-	float widthOfForwarder_m       = 2.35;
+	float lengthOfForwarder_m = LENGTH_OF_FORWARDER_m;
+	float lengthToMidOfForwarder_m = LENGTH_TO_MID_OFF_FORWARDER_m;
+	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
 	float kMidScalingConstant = (float)1 / 3;
 

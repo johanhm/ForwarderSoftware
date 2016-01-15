@@ -283,8 +283,8 @@ void caseSwitch(can_Message_ts* msg_s) {
 		else if (msg_s->data_au8[3] == MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT)	//MSG_ENABLE_PENDULUM_ARM_FRONT_LEFT
 		{
 			status = toggleVariable(INDEX_CYLINDER_FRONT_LEFT);
-			for(i=0;i<6;i++){
-				referenceSoleonidOutputCurrent_ma[i]=0;
+			for(i = 0; i < 6; i++) {
+				referenceSoleonidOutputCurrent_ma[i] = 0;
 			}
 			setVariablesZero();
 			buttonStatus[INDEX_CYLINDER_FRONT_LEFT] = status;
@@ -293,7 +293,7 @@ void caseSwitch(can_Message_ts* msg_s) {
 		else if (msg_s->data_au8[4] == MSG_ENABLE_PENDULUM_ARM_MID_RIGHT)	//MSG_ENABLE_PENDULUM_ARM_MID_RIGHT
 		{
 			status = toggleVariable(INDEX_CYLINDER_MID_RIGHT);
-			for(i=0;i<6;i++){
+			for(i = 0; i < 6; i++) {
 				referenceSoleonidOutputCurrent_ma[i]=0;}
 			setVariablesZero();
 			buttonStatus[INDEX_CYLINDER_MID_RIGHT] = status;

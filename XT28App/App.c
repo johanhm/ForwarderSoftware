@@ -5,6 +5,7 @@
 #include "PendelumArmPosition.h"
 #include "XT28CANSupport.h"
 #include "PendelumArmActuate.h"
+#include "Excipad.h"
 
 // Defines
 #define READ_SENSORS_PRIO 5
@@ -13,9 +14,9 @@
 
 // Prototypes
 void sys_main(void);
-void readSensorsTask_10ms(void);
-void sendSensorDataOnCAN(void);
-
+static void readSensorsTask_10ms(void);
+static void sendSensorDataOnCAN(void);
+static void checkMachineStateAndActuate(void);
 
 //Start of program
 void sys_main(void) {
@@ -25,7 +26,17 @@ void sys_main(void) {
 
 	int databoxNrGyro = 1;
 	int databoxNrAcc = 2;
-	IMUConfigure(CAN_2, databoxNrGyro, databoxNrAcc);
+	IMUConfigure(CAN_2,
+			databoxNrGyro,
+			databoxNrAcc
+	);
+
+	int databoxNrExipadButtons = 3;
+	int databoxNrExipadJoystrick = 4;
+	EXPConfigure(CAN_1,
+			databoxNrExipadButtons,
+			databoxNrExipadJoystrick
+	);
 
 	can_init(CAN_1, 1000000);
 	can_init(CAN_2, 500000);
@@ -53,36 +64,55 @@ void sys_main(void) {
 
 }
 
-void readSensorsTask_10ms(void) {
+static void readSensorsTask_10ms(void) {
 	sys_triggerTC(0);
-
 	sys_setVP(VP_1, ON); // This could maby be intergrated into PAActuate module with logic that check the return values.
 	sys_setVP(VP_2, ON);
-
+	PAASetPendelumArmActuateState(TRUE);
+	PAASetPendelumArmPosLimitState(TRUE);
 
 	// Uppdate presure and recalculate force data
-	PAPOSUppdatePosSensorsData(READ_SENSORS_TASK_TIME_MS);
+	PAPOSUppdatePosSensorsDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
 	PAPRUppdatePressureData();
 	PAPRUppdateForceOnWheelsData();
 
-	PAASetActuateState(1);
-	PAASetPendelumArmPosLimitState(1);
-
-	/*
-	PAASetReferenceCurrentForWheel(0, 12);
-	PAASetReferenceCurrentForWheel(1, -14);
-	PAASetReferenceCurrentForWheel(2, -13);
-	PAASetReferenceCurrentForWheel(3, 50);
-	PAASetReferenceCurrentForWheel(4, 80);
-	PAASetReferenceCurrentForWheel(5, -35);
-	*/
-
-	PAAActuatePendelumArms();
-
+	checkMachineStateAndActuate();
 	sendSensorDataOnCAN();
 }
 
-void sendSensorDataOnCAN(void) {
+static void checkMachineStateAndActuate(void) {
+	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
+	switch (machineState) {
+	case NONE:
+		break;
+	case BUTTON_1:
+		break;
+	case BUTTON_3:
+		break;
+	case BUTTON_4:
+		break;
+	case BUTTON_6:
+		break;
+	case BUTTON_7:
+		break;
+	case BUTTON_9:
+		break;
+	case BUTTON_16:
+		break;
+	case BUTTON_17:
+		break;
+	case BUTTON_18:
+		break;
+	case BUTTON_19:
+		break;
+	case BUTTON_20:
+		break;
+	default:
+		break;
+	}
+}
+
+static void sendSensorDataOnCAN(void) {
 
 	// Send data on CAN
 	CANSendSupplyVoltageOnCAN(CAN_1, 0x18FF1060);

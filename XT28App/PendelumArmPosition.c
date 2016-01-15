@@ -27,7 +27,7 @@ void PAPOSConfigurePositionSensorsVoltageInput(void) {
 
 static uint16 posData_mm[SUM_WHEELS] = {0};
 static sint16 velData[SUM_WHEELS] = {0};
-void PAPOSUppdatePosSensorsData(int sampleTime_ms) {
+void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
 	static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
