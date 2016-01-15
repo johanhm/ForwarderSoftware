@@ -38,7 +38,7 @@
 
 // Private prototypes
 static void checkCylinderPosLimit(void);
-static void addDeadbandCurrentToPutput(void);
+static void addDeadbandCurrentToOutputAndSplitIntoAB(int wheel);
 
 
 // Start of implementation
@@ -112,15 +112,16 @@ int PAAGetReferenceCurrentForWheel(int wheel) {
 }
 
 int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrentInput_ma) {
-	if(referenceCurrentInput_ma < REFERENCE_CURRENT_MAXIMUM_B_mA) {
+	if (referenceCurrentInput_ma < REFERENCE_CURRENT_MAXIMUM_B_mA) {
 		referenceSoleonidOutputCurrent_ma[wheel] = REFERENCE_CURRENT_MAXIMUM_B_mA;
 		return CURRENT_SET_TO_MAXIMUM;
 	}
-	else if(referenceCurrentInput_ma > REFERENCE_CURRENT_MAXIMUM_A_mA) {
+	else if (referenceCurrentInput_ma > REFERENCE_CURRENT_MAXIMUM_A_mA) {
 		referenceSoleonidOutputCurrent_ma[wheel] = REFERENCE_CURRENT_MAXIMUM_A_mA;
 		return CURRENT_SET_TO_MAXIMUM;
 	}
 	referenceSoleonidOutputCurrent_ma[wheel] = referenceCurrentInput_ma;
+	addDeadbandCurrentToOutputAndSplitIntoAB(wheel);
 	return SUCESS_SETTING_CURRENT;
 }
 
@@ -129,7 +130,7 @@ void PAASetReferenceCurrentSaturationLimit(int currentLimit) {
 	currentLimit = 0;
 }
 
-bool actuateEnabled = 0;
+bool actuateEnabled = FALSE;
 void PAASetPendelumArmActuateState(bool state) {
 	actuateEnabled = state;
 }
@@ -142,14 +143,11 @@ void PAASetPendelumArmPosLimitState(bool state) {
 static volatile sint16 referenceCurrentPortA[SUM_WHEELS] = {0};
 static volatile sint16 referenceCurrentPortB[SUM_WHEELS] = {0};
 void PAAActuatePendelumArms(void) {
-
-	addDeadbandCurrentToPutput();
 	if (pendelumArmPosLimit) {
 		checkCylinderPosLimit();
 	}
-
 	//If OUT_Analog then actuate solenoids with scaled values
-	if(actuateEnabled == 1) {
+	if (actuateEnabled == TRUE) {
 		out(OUT_PENDELURM_FRONT_RIGHT_A, referenceCurrentPortA[FR]);
 		out(OUT_PENDELURM_FRONT_RIGHT_B, referenceCurrentPortB[FR]);
 
@@ -169,23 +167,18 @@ void PAAActuatePendelumArms(void) {
 		out(OUT_PENDELURM_REAR_LEFT_B,   referenceCurrentPortB[BL]);}
 }
 
-static void addDeadbandCurrentToPutput(void) {
-	uint8 wheel = 0;
-
-	//Compute scaled values for each cylinder's valves
-	for(wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		if(referenceSoleonidOutputCurrent_ma[wheel] == 0) {//both valves off
-			referenceCurrentPortA[wheel] = 0;
-			referenceCurrentPortB[wheel] = 0;
-		}
-		else if(referenceSoleonidOutputCurrent_ma[wheel] > 0) {//Output scaled on A  turn off B
-			referenceCurrentPortA[wheel] = referenceSoleonidOutputCurrent_ma[wheel] + DEADZONE_FOR_SOLEONID_CURRENT_mA;  //Out between 400 and 800
-			referenceCurrentPortB[wheel] = 0;
-		}
-		else if(referenceSoleonidOutputCurrent_ma[wheel] < 0) {//Output scaled on B  turn off A
-			referenceCurrentPortA[wheel] = 0;
-			referenceCurrentPortB[wheel] = (-1 * referenceSoleonidOutputCurrent_ma[wheel]) + DEADZONE_FOR_SOLEONID_CURRENT_mA;	} //Out between 400 and 800
+static void addDeadbandCurrentToOutputAndSplitIntoAB(int wheel) {
+	if (referenceSoleonidOutputCurrent_ma[wheel] == 0) {//both valves off
+		referenceCurrentPortA[wheel] = 0;
+		referenceCurrentPortB[wheel] = 0;
 	}
+	else if (referenceSoleonidOutputCurrent_ma[wheel] > 0) {//Output scaled on A  turn off B
+		referenceCurrentPortA[wheel] = referenceSoleonidOutputCurrent_ma[wheel] + DEADZONE_FOR_SOLEONID_CURRENT_mA;  //Out between 400 and 800
+		referenceCurrentPortB[wheel] = 0;
+	}
+	else if (referenceSoleonidOutputCurrent_ma[wheel] < 0) {//Output scaled on B  turn off A
+		referenceCurrentPortA[wheel] = 0;
+		referenceCurrentPortB[wheel] = (-1 * referenceSoleonidOutputCurrent_ma[wheel]) + DEADZONE_FOR_SOLEONID_CURRENT_mA;	} //Out between 400 and 800
 }
 
 static void checkCylinderPosLimit(void) {
@@ -216,25 +209,25 @@ void PAASendReferenceCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middl
 	can_sendData(CANChannel, frontID, CAN_EXD_DU8, 8, data_au8_cylinders_front);
 
 	uint8 data_au8_cylinders_mid[8]   = {0};
-	data_au8_cylinders_mid[0] = referenceCurrentPortA[ML] >> 8;
-	data_au8_cylinders_mid[1] = referenceCurrentPortA[ML];
-	data_au8_cylinders_mid[2] = referenceCurrentPortB[ML] >> 8;
-	data_au8_cylinders_mid[3] = referenceCurrentPortB[ML];
-	data_au8_cylinders_mid[4] = referenceCurrentPortA[MR] >> 8;
-	data_au8_cylinders_mid[5] = referenceCurrentPortA[MR];
-	data_au8_cylinders_mid[6] = referenceCurrentPortB[MR] >> 8;
-	data_au8_cylinders_mid[7] = referenceCurrentPortB[MR];
+	data_au8_cylinders_mid[0] = referenceCurrentPortA[MR] >> 8;
+	data_au8_cylinders_mid[1] = referenceCurrentPortA[MR];
+	data_au8_cylinders_mid[2] = referenceCurrentPortB[MR] >> 8;
+	data_au8_cylinders_mid[3] = referenceCurrentPortB[MR];
+	data_au8_cylinders_mid[4] = referenceCurrentPortA[ML] >> 8;
+	data_au8_cylinders_mid[5] = referenceCurrentPortA[ML];
+	data_au8_cylinders_mid[6] = referenceCurrentPortB[ML] >> 8;
+	data_au8_cylinders_mid[7] = referenceCurrentPortB[ML];
 	can_sendData(CANChannel, middleID, CAN_EXD_DU8, 8, data_au8_cylinders_mid);
 
 	uint8 data_au8_cylinders_rear[8]  = {0};
-	data_au8_cylinders_rear[0] = referenceCurrentPortA[BL] >> 8;
-	data_au8_cylinders_rear[1] = referenceCurrentPortA[BL];
-	data_au8_cylinders_rear[2] = referenceCurrentPortB[BL] >>8;
-	data_au8_cylinders_rear[3] = referenceCurrentPortB[BL];
-	data_au8_cylinders_rear[4] = referenceCurrentPortA[BR] >>8;
-	data_au8_cylinders_rear[5] = referenceCurrentPortA[BR];
-	data_au8_cylinders_rear[6] = referenceCurrentPortB[BR] >>8;
-	data_au8_cylinders_rear[7] = referenceCurrentPortB[BR];
+	data_au8_cylinders_rear[0] = referenceCurrentPortA[BR] >>8;
+	data_au8_cylinders_rear[1] = referenceCurrentPortA[BR];
+	data_au8_cylinders_rear[2] = referenceCurrentPortB[BR] >>8;
+	data_au8_cylinders_rear[3] = referenceCurrentPortB[BR];
+	data_au8_cylinders_rear[4] = referenceCurrentPortA[BL] >> 8;
+	data_au8_cylinders_rear[5] = referenceCurrentPortA[BL];
+	data_au8_cylinders_rear[6] = referenceCurrentPortB[BL] >>8;
+	data_au8_cylinders_rear[7] = referenceCurrentPortB[BL];
 	can_sendData(CANChannel, backID, CAN_EXD_DU8, 8, data_au8_cylinders_rear);
 
 }

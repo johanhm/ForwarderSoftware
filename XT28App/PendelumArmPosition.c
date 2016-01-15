@@ -133,9 +133,3 @@ void PAPOSSendVelDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 front
 }
 
 
-
-
-
-
-
-

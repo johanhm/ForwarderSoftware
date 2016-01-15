@@ -1,5 +1,4 @@
-/** \defgroup CAN CAN Support
- * \ingroup CAN
+/** \defgroup CANSuport CAN Support
  * \brief This modules handels CAN stuff
  *
  *  Configure CAN and get ID defined for xt28
@@ -12,9 +11,6 @@
 #include "api_lib_basic.h"
 
 // CAN ID's retrieved
-#define CAN_ID_LEFT_EXCIPAD_BUTTONS	 		0x18FE030B
-#define CAN_ID_RIGHT_EXCIPAD_BUTTONS		0x18FE0315
-#define CAN_ID_JOYSTICK_Y					0x18FE010B
 #define CAN_ID_GYRODATA_DATA				0x1FD
 #define CAN_ID_ACCELOMETER_DATA				0x2FD
 

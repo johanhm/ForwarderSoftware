@@ -20,7 +20,7 @@ static uint8  IMUCANChannel       = 0;
 static uint16 gyroDatabox         = 0;
 static uint16 acceleometerDatabox = 0;
 
-void IMUConfigure(uint8 CANChannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber) {
+void IMUConfigureInertialMeasurementUnit(uint8 CANChannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber) {
 
 	static can_DataboxData_ts gyroCanDataboxBuffer[GYRO_RX_DATABOX_BUFFER_LEN_DU8];
 	static can_DataboxData_ts acceCanDataboxBuffer[ACCE_RX_DATABOX_BUFFER_LEN_DU8];

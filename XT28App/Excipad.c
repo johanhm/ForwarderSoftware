@@ -6,6 +6,10 @@
 #define EXIPAD_BUTTONS_DB_BUFF_LEN  	5
 #define EXIPAD_JOYSTICK_DB_BUFF_LEN  	5
 
+#define CAN_ID_LEFT_EXCIPAD_BUTTONS	 		0x18FE030B
+#define CAN_ID_RIGHT_EXCIPAD_BUTTONS		0x18FE0315
+#define CAN_ID_JOYSTICK_Y					0x18FE010B
+
 /* CAN message exipad */
 #define BUTTON_ID_1		0x10 //16	 //Byte 4, bit 5
 #define BUTTON_ID_3 	0x01 //1	 //Byte 4, bit 1
@@ -35,7 +39,7 @@ static void exipadJoystickCallback(void);
 static int exipadCANChannel = 0;
 static int exipadButtonDBNr = 0;
 static int exipadJoystrickDBNr = 0;
-void EXPConfigure(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxNr) {
+void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxNr) {
 
 	exipadCANChannel    = CANChannel;
 	exipadButtonDBNr    = buttonDataboxNr;
@@ -65,44 +69,51 @@ void EXPConfigure(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxNr)
 	);
 }
 
-static uint8 leftExcipadButtonsMessage[8];
+static uint8 leftExcipadButtonsMessage[8] = {0};
 static void exipadButtonsCallback(void) {
 	uint8 LeftExcipadNumBytes_u8 = 0;
 	can_getDatabox(exipadCANChannel, exipadButtonDBNr, leftExcipadButtonsMessage, &LeftExcipadNumBytes_u8);
+
+	/* Debugg remove when done */
+	can_sendData(CAN_1, 0x18FE1050, CAN_EXD_DU8, 8, leftExcipadButtonsMessage);
+	/* End debugg, remove when done */
 }
 
 static void exipadJoystickCallback(void) {
 	// to be implemented
 }
 
-
 typedef enum {
 	ACCEPT_NEW_MESSAGE,
 	NOT_ACCEPT_NEW_MESSAGE
 } exipadCANMessageState;
 
+static exipadButton pressedButtonOld = NONE;
 exipadButton EXPGetLastPressedButtonWithToggle(void) {
 	static exipadCANMessageState exipadCANMessageState = ACCEPT_NEW_MESSAGE;
-	static exipadButton lastPressedButton = NONE;
-	static exipadButton lastPressedButtonOld = NONE;
+	static exipadButton pressedButton = NONE;
 	switch (exipadCANMessageState) {
 	case ACCEPT_NEW_MESSAGE:
 		if (EXPGetUserIsHoldingAButtonDown() == TRUE) {
-			lastPressedButton = EXPGetCurrentlyPressedButton();
-			if (lastPressedButton == lastPressedButtonOld) {
-				lastPressedButton = NONE;
+			pressedButton = EXPGetCurrentlyPressedButton();
+			if (pressedButton == pressedButtonOld) {
+				pressedButton = NONE;
 			}
 			exipadCANMessageState = NOT_ACCEPT_NEW_MESSAGE;
 		}
 		break;
 	case NOT_ACCEPT_NEW_MESSAGE:
 		if (EXPGetUserIsHoldingAButtonDown() == FALSE) {
+			pressedButtonOld = pressedButton;
 			exipadCANMessageState = ACCEPT_NEW_MESSAGE;
 		}
 		break;
 	}
-	lastPressedButtonOld = lastPressedButton;
-	return lastPressedButton;
+	return pressedButton;
+}
+
+void EXPSetLastPressedButtonToNone(void) {
+	pressedButtonOld = NONE;
 }
 
 exipadButton EXPGetCurrentlyPressedButton(void) {
@@ -146,7 +157,8 @@ exipadButton EXPGetCurrentlyPressedButton(void) {
 bool EXPGetUserIsHoldingAButtonDown(void) {
 	uint16 statusSum = 0;
 	int i = 0;
-	for (i = 0; i < 8; i++) {
+	int sumBytes = 8;
+	for (i = 0; i < sumBytes; i++) {
 		statusSum = statusSum + leftExcipadButtonsMessage[i];
 	}
 	if (statusSum == 0) {
@@ -155,19 +167,3 @@ bool EXPGetUserIsHoldingAButtonDown(void) {
 		return TRUE;
 	}
 }
-
-/*
-static int checkButtonState(uint8 message, uint8 buttonID, int currentState, int toggleIfThisState) {
-	if (message == buttonID) {
-		if (currentState == toggleIfThisState) {
-			return 0;
-		} else {
-			return toggleIfThisState;
-		}
-	}
-}
- */
-
-
-
-

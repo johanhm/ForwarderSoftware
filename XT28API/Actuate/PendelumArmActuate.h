@@ -1,6 +1,9 @@
-/** \defgroup PAActuate Actuate
- * \ingroup PAActuate
- * \brief This modules handels the pos sensor data.
+/** \defgroup PAActuate Actuate PA
+ * \brief Handle output to pendelum arm
+ *
+ * This module handels the output to the pendelum arms on the forwarder.
+ * The output will by defualt be saturated to a maximum for 800mA in order not to plow the solenoid valves up.
+ *
  *
  *  @{
  */
@@ -11,22 +14,34 @@
 #include "api_lib_basic.h"
 
 /*!
- * Configure the outputs
+ * Configures the outputs on the forwarder. THis needs to be called in application setup in order to be able to
+ * actuate anything at all on the pendelum arms.
  */
 void PAAConfigurePendelumArmOutputs(void);
 
 /*!
- * Set passive dampening state
+ * Set passive dampening state of the forwarder.
+ * The machine have passive accamulators installd on each wheel. They can be activated by calling this function. They will all be activated at once.
+ *
+ * \param[in] Set passive dampening state to [TRUE, FALSE]
  */
 void PAASetPassiveDampeningState(bool state);
 
 /*!
- * Get reference current for a wheel
+ * Use this function to investigate what the reference current on a wheel is at this point in time when you call it.
+ *
+ * \return Reference current on wheel
  */
 int PAAGetReferenceCurrentForWheel(int wheel);
 
 /*!
- * Set the reference current for a wheel
+ * Set the reference current on a wheel to a specific value.
+ * Valid values are in the range of [0 - 400]. This function will then add the deadband on the solenoids of 400 to the set value.
+ * This function will also check if the input is valid.
+ * If it is not valid the input will be saturated and the function will return an error parameter
+ *
+ * \return 0 Set current, valid range
+ * \return 1 Set current, saturated.
  */
 int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrent_ma);
 

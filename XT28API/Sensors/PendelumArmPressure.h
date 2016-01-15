@@ -1,4 +1,3 @@
-
 /** \defgroup PAPR Pressure
  * \ingroup Sensors
  * \brief This modules handels configuration of pressure data.

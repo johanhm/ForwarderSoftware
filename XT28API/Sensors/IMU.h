@@ -7,7 +7,7 @@
  *  - \ref Pos
  */
 
-/** \defgroup IMU Inertial measurement unit
+/** \defgroup IMU IMU ;)
  * \ingroup Sensors
  * \brief This modules handels the configuration of the IMU and IMU Data.
  *
@@ -39,7 +39,7 @@
  ~~~~~~~~~~
  *
  */
-void IMUConfigure(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber);
+void IMUConfigureInertialMeasurementUnit(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber);
 
 /*!
  *  This function sends the start init message to the IMU. It has to be called after the CAN channels have been initilazied.

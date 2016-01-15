@@ -91,7 +91,8 @@ void actuatePendelumArmsTask(void) {
 		out(OUT_PENDELURM_REAR_RIGHT_B,  Ref_B[BR]);
 
 		out(OUT_PENDELURM_REAR_LEFT_A,   Ref_A[BL]);
-		out(OUT_PENDELURM_REAR_LEFT_B,   Ref_B[BL]);}
+		out(OUT_PENDELURM_REAR_LEFT_B,   Ref_B[BL]);
+	}
 
 	defaultSafety++;
 	if (defaultSafety > 80) {   //if no command has been received for 80*1ms out references to 0
