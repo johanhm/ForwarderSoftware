@@ -95,9 +95,11 @@ static void checkMachineStateAndActuate(void) {
 		break;
 	case BUTTON_1: /* Front Right */
 		joystickControl(ON, OFF, OFF, OFF, OFF, OFF);
+		PAASetPassiveDampeningState(TRUE);
 		break;
 	case BUTTON_3: /* Front Left */
 		joystickControl(OFF, ON, OFF, OFF, OFF, OFF);
+		PAASetPassiveDampeningState(FALSE);
 		break;
 	case BUTTON_4: /* Mid Right */
 		joystickControl(OFF, OFF, ON, OFF, OFF, OFF);
@@ -130,7 +132,7 @@ static void checkMachineStateAndActuate(void) {
 }
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
-	int joystrickReferenceCurrent = -40;
+	int joystrickReferenceCurrent = EXPGetJoystickScaledValue();
 	PAASetReferenceCurrentForWheel(FR, wheelFR * joystrickReferenceCurrent);
 	PAASetReferenceCurrentForWheel(FL, wheelFL * joystrickReferenceCurrent);
 	PAASetReferenceCurrentForWheel(MR, wheelMR * joystrickReferenceCurrent);

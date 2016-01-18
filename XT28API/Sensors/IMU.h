@@ -7,7 +7,7 @@
  *  - \ref Pos
  */
 
-/** \defgroup IMU IMU ;)
+/** \defgroup IMU IMU)
  * \ingroup Sensors
  * \brief This modules handels the configuration of the IMU and IMU Data.
  *

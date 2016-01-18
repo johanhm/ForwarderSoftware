@@ -1,104 +1,95 @@
-/*
- * ActiveDampeningController.c
- *
- *  Created on: 23 nov. 2015
- *      Author: johanhm
- */
-
-#include "ActiveDamping.h"
+#include "ActiveDampening.h"
+#include "PendelumArmPressure.h"
+#include "PendelumArmPosition.h"
+#include "XT28CANSupport.h"
+#include "XT28HardwareConstants.h"
 
 //Valve flow curve parameters
 #define VALVE_FLOW_FIT_PARAMETER_CP1  0.0000117254976
 #define VALVE_FLOW_FIT_PARAMETER_CP2  -0.0020898157818
 #define VALVE_FLOW_FIT_PARAMETER_CP3  0.1025966561449
 #define VALVE_FLOW_FIT_PARAMETER_CP4  2.2459943305454
-#define VALVE_FLOW_FIT_PARAMETER_CP5  410  //416.9941090504642
+#define VALVE_FLOW_FIT_PARAMETER_CP5  399  //416.9941090504642
 
 //Sliding mode parameters
 #define DELTA_PRESSURE_8bar               800000  //8 bar pressure compensator setting
 #define MAXIMUM_FLOW_QMAX_m3s             100/1000/60  // maximum flow  (m^3/s)
 #define SLIDING_MODE_CONTROL_PARAMETER_Kt 0.000077 //orginalvalue is 0.000077
 
-
-//---- Control Prototypes private functions
-// Related to Dynamic controll task
-void heightControllAddToAllocationMatrix(void);
-void hightControllSkyhookForceAddition(void);
-void rollPhiControllAddToAllocationMatrix(void);
-void pitchThetaControllAddToAllocationMatrix(void);
-void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
-void calculateForceReferenceForAllWheels(void);
-sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter);
-void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
-void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
-
-void Dynamic_control_Task(void){
-
-	//Zc damping individual chassis point skyhook damping implementation
-	hightControllSkyhookForceAddition();
-
-	//Chassis Height control Zc
-	heightControllAddToAllocationMatrix();
-
-	//Roll (Phi) control    P (Stiffness) I (integrator)  Skyhook damping (D)
-	rollPhiControllAddToAllocationMatrix();
-
-	//Pitch (Theta) control   P (Stiffness) I (integrator) Skyhook damping (D)
-	pitchThetaControllAddToAllocationMatrix();
-
-	//Decoupling of forces and assign to individual cylinders
-	//Multiply 6x3 moore inverse times 3x1 Force_reference matrix
-	decoupleHightRollPitchAndConvertToCylinderForceForAllWheels();
-
-	//ADD current Load force, calculated cylinder force needed and individual skyhook damping forces
-	calculateForceReferenceForAllWheels();
-}
+// Z height controller
+#define MAX_ZI      10000   //Integrator limit Z
+#define MAX_PHI_I   100000	//2000  //Integrator limit Phi
+#define MAX_THETA_I 2000 	//Integrator limit Theta
 
 
-void hightControllSkyhookForceAddition(void) {
-	uint8 x = 0;
-	if (ACTIVE_ZSKY_CONTROL==1) {
-		for (x = 0; x < 6; x++) {
-			F_Z_sky[x] = -BSky_Z * Zi_vel[x];     //Skyhook damping force per chassis wheel point [N]
-			F_Z_sky[x] = forceCylinderLoadFromForceOnWheel(posData[x], F_Z_sky[x]); //Transform vertical force into cylinder force
-		}
-	}
-	else {
-		for (x = 0; x < 6; x++) {
-			F_Z_sky[x] = 0;
-		}
+// Private prototypes
+static void heightControllAddToAllocationMatrix(void);
+static void hightControllSkyhookForceAddition(void);
+//static void rollPhiControllAddToAllocationMatrix(void);
+//static void pitchThetaControllAddToAllocationMatrix(void);
+//static void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
+//static void calculateForceReferenceForAllWheels(void);
+//static sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter);
+//static void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
+//static void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
+
+
+static sint32 forceHeightSkyHookRef[SUM_WHEELS] = {0};
+static void hightControllSkyhookForceAddition(void) {
+	uint8 wheel = 0;
+	uint16 BSky_Z = 0;  //Chassis force application points Zci skyhook damping
+
+	for (wheel = 0; wheel < 6; wheel++) {
+		forceHeightSkyHookRef[wheel] = -BSky_Z * PAPOSGetVelDataForWheel(wheel);     //Skyhook damping force per chassis wheel point [N]
+		forceHeightSkyHookRef[wheel] = PAPRConvertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), forceHeightSkyHookRef[wheel]); //Transform vertical force into cylinder force
 	}
 }
 
-void heightControllAddToAllocationMatrix(void) {
-	//Chassis Height control Zc
-	if(ACTIVE_HEIGHT_CONTROL == 1){
-		//P(Stiffness) I control
-		Zc_error = Zc_ref - Zc;   //Zc between is average of all arm positions, between (0 and 500) mm
-		if (Zc_error < 5 && Zc_error > -5) {
-			Z_I = 0;   //If we reach almost zero error, reset integrator
-			Zc_error = 0;
-		}
-		Z_k = Zc_error * K_z;
-		Z_I = (Zc_error+Z_I) * I_z;
-
-		if (Z_I > MAX_ZI) {
-			Z_I = MAX_ZI;
-		}  //Clamp integrator to max
-		if (Z_I < -MAX_ZI) {
-			Z_I = -MAX_ZI;
-		}  //Clamp integrator to min
-
-		F_Z_damp = -B_Zc * Zcdot;
-		F_REF_Z  = Z_k + Z_I + F_Z_damp; //Sum vertical forces
-		F_matrix[0] = F_REF_Z; //Include in Force matrix for decoupling
-	}
-	else {
-		F_matrix[0] = 0;
-	}
+static float heightReference_mm = 0;
+static float phiReference_deg = 0;
+static float thetaReference_deg = 0;
+void ADCSetReferenceValuesForNivController(float height, float phi, float theta) {
+	heightReference_mm = height;
+	phiReference_deg = phi;
+	thetaReference_deg = theta;
 }
 
-void rollPhiControllAddToAllocationMatrix(void) {
+static sint32 forceMatrix[3] = {0, 0, 0};
+static void heightControllAddToAllocationMatrix(void) {
+	static sint32 forceReferenceHeightZ = 0;
+	static sint32 forceHeightDamp = 0;
+	static sint16 heightError = 0;
+
+	static sint16 K_z = 1000;
+	static sint16 I_z = 0;
+
+	static sint32 Z_k = 0;
+	static sint32 Z_I = 0;
+	static sint16 B_Zc = 200;
+
+	//P(Stiffness) I control
+	heightError = heightReference_mm - PAPOSGetAvrageHeightOfForwarder();   //Zc between is average of all arm positions, between (0 and 500) mm
+	if (heightError < 5 && heightError > -5) {
+		Z_I = 0;   //If we reach almost zero error, reset integrator
+		heightError = 0;
+	}
+	Z_k = heightError * K_z;
+	Z_I = (heightError + Z_I) * I_z;
+
+	if (Z_I > MAX_ZI) {
+		Z_I = MAX_ZI;
+	}  //Clamp integrator to max
+	if (Z_I < -MAX_ZI) {
+		Z_I = -MAX_ZI;
+	}  //Clamp integrator to min
+
+	forceHeightDamp = -B_Zc * PAPOSGetAvrageHeightVelocityOfForwarder();
+	forceReferenceHeightZ  = Z_k + Z_I + forceHeightDamp; //Sum vertical forces
+	forceMatrix[0] = forceReferenceHeightZ; //Include in Force matrix for decoupling
+}
+
+/*
+static void rollPhiControllAddToAllocationMatrix(void) {
 	if (ACTIVE_PHI_CONTROL == 1) {
 
 		Phi_I = I_phi;
@@ -145,11 +136,11 @@ void rollPhiControllAddToAllocationMatrix(void) {
 	else {
 		F_matrix[1] = 0;
 	}
-
-
 }
+ */
 
-void pitchThetaControllAddToAllocationMatrix(void) {
+/*
+static void pitchThetaControllAddToAllocationMatrix(void) {
 	if(ACTIVE_THETA_CONTROL == 1) {
 
 		Theta_error = 0 - Theta_deg; //Reference is 0
@@ -176,8 +167,10 @@ void pitchThetaControllAddToAllocationMatrix(void) {
 		F_matrix[2] = 0;
 	}
 }
+ */
 
-void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
+/*
+static void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 	uint8 i = 0;
 	uint8 k = 0;
 
@@ -195,8 +188,10 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 		F_REF_CYL[i] = forceCylinderLoadFromForceOnWheel(posData[i], F_REF[i]);  //Calculate needed cylinder force according to arm position
 	}
 }
+ */
 
-void calculateForceReferenceForAllWheels(void) {
+/*
+static void calculateForceReferenceForAllWheels(void) {
 	uint8 wheel = 0;
 	for(wheel = 0; wheel <= 5; wheel++) {
 		if (To_ground_active == 0) {
@@ -214,23 +209,10 @@ void calculateForceReferenceForAllWheels(void) {
 		}
 	}
 }
+ */
 
-
-void FORCE_ControlTask(void)  //Sliding mode
-{
-	uint8 wheelCounter = 0; //Loop counter
-	for (wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
-		//Calculate erestimated flow with sliding mode controll structure
-		calculateErestimatedFlowForWheelWithNumber(wheelCounter);
-
-		//Calculate corresponding valve current for requested flow using fitted flow curve
-		mapErestimatedFlowToCurrentOutputOnWheelWithNumber(wheelCounter);
-
-	}//end for
-}
-
-
-void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
+/*
+static void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 
 	//create variables
 	uint32 sl_P1  = 0; //KPa*1000=[Pa]
@@ -274,8 +256,10 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	}
 	sl_uold[wheelCounter] = sl_u;
 }
+ */
 
-sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
+/*
+static sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
 
 	static volatile sint32 sigmaOld[5]              = {0};
 	static volatile uint8  forceControllerWindowCase[5] = {0};
@@ -302,8 +286,10 @@ sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forc
 	sigmaOld[wheelCounter] = errorSigma;
 	return errorSigma;
 }
+ */
 
-void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
+/*
+static void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 	float absoluteFlowInPercent = fabs(sl_u * 100.0);
 	if (sl_u < 0.025 && sl_u > -0.025) {
 		sl_current = 400;
@@ -320,4 +306,62 @@ void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
 		referenceSoleonidOutputCurrent_ma[wheelCounter] = -1 * sl_debug_current - To_ground_ref[wheelCounter];
 		defaultSafety = 0;
 	}
+}
+ */
+
+void ADCUppdateReferenceOutputsForNewSensorValues(void) {
+
+	//Zc damping individual chassis point skyhook damping implementation
+	hightControllSkyhookForceAddition();
+
+	//Chassis Height control Zc
+	heightControllAddToAllocationMatrix();
+
+	//Roll (Phi) control    P (Stiffness) I (integrator)  Skyhook damping (D)
+	//rollPhiControllAddToAllocationMatrix();
+
+	//Pitch (Theta) control   P (Stiffness) I (integrator) Skyhook damping (D)
+	//pitchThetaControllAddToAllocationMatrix();
+
+	//Decoupling of forces and assign to individual cylinders
+	//Multiply 6x3 moore inverse times 3x1 Force_reference matrix
+	//decoupleHightRollPitchAndConvertToCylinderForceForAllWheels();
+
+	//ADD current Load force, calculated cylinder force needed and individual skyhook damping forces
+	//calculateForceReferenceForAllWheels();
+
+	uint8 wheelCounter = 0; //Loop counter
+	for (wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
+		//Calculate erestimated flow with sliding mode controll structure
+		//calculateErestimatedFlowForWheelWithNumber(wheelCounter);
+
+		//Calculate corresponding valve current for requested flow using fitted flow curve
+		//mapErestimatedFlowToCurrentOutputOnWheelWithNumber(wheelCounter);
+
+	}//end for
+
+
+}
+
+
+int ADCGetReferenceCurrentForWheel(int wheel) {
+	return wheel;
+
+}
+
+int ADCSetThetaControlParametersPID(float P, float I, float D) {
+	int p = P;
+	p = I;
+	p = D;
+
+	return 1;
+
+}
+
+int ADCSetPhiControlParametersPID(float P, float I, float D) {
+	int p = P;
+	p = I;
+	p = D;
+
+	return 1;
 }

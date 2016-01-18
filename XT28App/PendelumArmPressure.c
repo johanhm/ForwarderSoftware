@@ -28,7 +28,6 @@ static void calculateVerticalForceOnWheelAndTotalMass(void);
 
 static float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm);
 static sint32 convertCylinderLoadForceToVericalOnWheel(uint16 cylinderPoss_mm, sint16 cylinderLoadForce);
-static sint32 convertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce);
 
 static void calculateMassCenterLocation(void);
 static void calculateOptimalForceForAllWheels(void);
@@ -272,7 +271,7 @@ static sint32 convertCylinderLoadForceToVericalOnWheel(uint16 cylinderPoss_mm, s
 	return forceOnWheelVertical_N;
 }
 
-static sint32 convertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce) {
+sint32 PAPRConvertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce) {
 	float relativeConstant = forceRelationshipFromLoadToGround(cylinderPoss_mm);
 	sint32 forceOnCylinder_N = verticalForce / relativeConstant;
 	return forceOnCylinder_N;
@@ -337,7 +336,7 @@ static void calculateOptimalForceForAllWheels(void) {
 	sint16 wheel = 0;
 	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
 	for (wheel = 0; wheel < 6; wheel++) {
-		forceRefOptDispForCylinderLoad_N[wheel] = convertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), forceReferenceOptimalDistrubutionVertical_N[wheel]);
+		forceRefOptDispForCylinderLoad_N[wheel] = PAPRConvertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), forceReferenceOptimalDistrubutionVertical_N[wheel]);
 	}
 }
 

@@ -137,7 +137,7 @@ void modes(can_Message_ts* msg_s)
 		joystickInput = ((msg_s->data_au8[1] << 8) | msg_s->data_au8[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
 	}
 
-	sint16 JoyREF=0;
+	sint16 JoyREF = 0;
 	//Scale Joystick input for new actuate function Joystick 350 to 4300  to -300 to 300 signal
 	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
 		JoyREF = 0;

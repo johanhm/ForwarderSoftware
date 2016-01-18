@@ -66,6 +66,11 @@ void PAPRSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uin
  */
 int PAPRGetOptimalReferenceForceForWheel_N(uint8 wheelNumber);
 
+/*!
+ * Get converted force
+ */
+sint32 PAPRConvertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce);
+
 
 
 

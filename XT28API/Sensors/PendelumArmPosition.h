@@ -27,6 +27,11 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
 int PAPOSGetPosDataForWheel_mm(int wheel);
 
 /*!
+ * Get vel data for a wheel
+ */
+int PAPOSGetVelDataForWheel(int wheel);
+
+/*!
  * Sends pos data on CAN
  */
 void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 frontID);
@@ -35,6 +40,17 @@ void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 front
  * Sends vel data on CAN
  */
 void PAPOSSendVelDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 frontID);
+
+/*!
+ * Get avrage height
+ */
+float PAPOSGetAvrageHeightOfForwarder(void);
+
+/*!
+ * Get avrage chassi vel
+ */
+float PAPOSGetAvrageHeightVelocityOfForwarder(void);
+
 
 #endif /* XT28API_SENSORS_PENDELUMARMPOSITION_H_ */
  /** @}*/

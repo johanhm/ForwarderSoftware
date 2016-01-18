@@ -94,6 +94,17 @@ static void uppdateForwarderAvrageHeightAndVelocity(void) {
 int PAPOSGetPosDataForWheel_mm(int wheel) {
 	return (int)posData_mm[wheel];
 }
+int PAPOSGetVelDataForWheel(int wheel) {
+	return (int)velData[wheel];
+}
+
+float PAPOSGetAvrageHeightOfForwarder(void) {
+	return forwarderAvrageHeightZc;
+}
+
+float PAPOSGetAvrageHeightVelocityOfForwarder(void) {
+	return forwarderAvrageVelZc;
+}
 
 void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 frontID) {
 

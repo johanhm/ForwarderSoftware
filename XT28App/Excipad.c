@@ -71,17 +71,37 @@ void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDat
 
 static uint8 leftExcipadButtonsMessage[8] = {0};
 static void exipadButtonsCallback(void) {
-	uint8 LeftExcipadNumBytes_u8 = 0;
-	can_getDatabox(exipadCANChannel, exipadButtonDBNr, leftExcipadButtonsMessage, &LeftExcipadNumBytes_u8);
+	uint8 leftExcipadNumBytes_u8 = 0;
+	can_getDatabox(exipadCANChannel, exipadButtonDBNr, leftExcipadButtonsMessage, &leftExcipadNumBytes_u8);
 
 	/* Debugg remove when done */
-	can_sendData(CAN_1, 0x18FE1050, CAN_EXD_DU8, 8, leftExcipadButtonsMessage);
+	//can_sendData(CAN_1, 0x18FE1050, CAN_EXD_DU8, 8, leftExcipadButtonsMessage);
 	/* End debugg, remove when done */
 }
 
+static uint8 joyStickYMessage[8] = {0};
 static void exipadJoystickCallback(void) {
-	// to be implemented
+	uint8 joystickYNumBytes_u8;
+	can_getDatabox(exipadCANChannel, exipadJoystrickDBNr, joyStickYMessage, &joystickYNumBytes_u8);
 }
+
+int EXPGetJoystickScaledValue(void) {
+
+	uint16 joystickInput = ((joyStickYMessage[1] << 8) | joyStickYMessage[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
+
+	sint16 joyRef = 0;
+	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
+		joyRef = 0;
+	}
+	else if (joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {
+		joyRef = ((float)(joystickInput - JOYSTICK_Y_HIGH_DEADBAND) / (4300 - JOYSTICK_Y_HIGH_DEADBAND) * (float)300);
+	}  //Linear scaling
+	else if (joystickInput < JOYSTICK_Y_LOW_DEADBAND) {
+		joyRef = ((float)(joystickInput - JOYSTICK_Y_LOW_DEADBAND) / (JOYSTICK_Y_HIGH_DEADBAND - 350) * (float)300);
+	}
+	return joyRef;
+}
+
 
 typedef enum {
 	ACCEPT_NEW_MESSAGE,

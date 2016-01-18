@@ -11,6 +11,20 @@
 #ifndef XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_
 #define XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_
 
+#include "api_lib_basic.h"
+
+/*!
+ * Set reference values for the controllers
+ */
+void ADCSetReferenceValuesForNivController(float height, float phi, float theta);
+
+
+/*!
+ *  call this function one every runtime loop before fetching new reference values for outputs
+ */
+void ADCUppdateReferenceOutputsForNewSensorValues(void);
+
+
 /*! \brief Use this function to get a reference current for a wheel.
  *
  * \param[in] Wheel The wheel you need to get a reference current for. Valid values are [0-5]
