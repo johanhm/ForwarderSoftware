@@ -308,7 +308,7 @@ C:/HighTec/TriCore/bin/../tricore/lib\libc.a(strncmp.o)
 
 Linker version: GNU ld version 2.13 (tricore) using BFD version 2.13 (2008-12-10), Tool Version v5.2
 Name of linker executable: C:\HighTec\TriCore\bin\tricore-ld.exe
-Date of link run: Mon Jan 18 16:05:38 2016
+Date of link run: Tue Jan 19 17:11:42 2016
 Name of linker map file: obj/appl_RC30-00D6.map
 
 >>> Symbols (global (S = g) and static (S = l); sorted by address)

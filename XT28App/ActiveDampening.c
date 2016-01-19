@@ -1,367 +1,183 @@
 #include "ActiveDampening.h"
-#include "PendelumArmPressure.h"
-#include "PendelumArmPosition.h"
-#include "XT28CANSupport.h"
-#include "XT28HardwareConstants.h"
-
-//Valve flow curve parameters
-#define VALVE_FLOW_FIT_PARAMETER_CP1  0.0000117254976
-#define VALVE_FLOW_FIT_PARAMETER_CP2  -0.0020898157818
-#define VALVE_FLOW_FIT_PARAMETER_CP3  0.1025966561449
-#define VALVE_FLOW_FIT_PARAMETER_CP4  2.2459943305454
-#define VALVE_FLOW_FIT_PARAMETER_CP5  399  //416.9941090504642
-
-//Sliding mode parameters
-#define DELTA_PRESSURE_8bar               800000  //8 bar pressure compensator setting
-#define MAXIMUM_FLOW_QMAX_m3s             100/1000/60  // maximum flow  (m^3/s)
-#define SLIDING_MODE_CONTROL_PARAMETER_Kt 0.000077 //orginalvalue is 0.000077
-
-// Z height controller
-#define MAX_ZI      10000   //Integrator limit Z
-#define MAX_PHI_I   100000	//2000  //Integrator limit Phi
-#define MAX_THETA_I 2000 	//Integrator limit Theta
-
 
 // Private prototypes
-static void heightControllAddToAllocationMatrix(void);
-static void hightControllSkyhookForceAddition(void);
-//static void rollPhiControllAddToAllocationMatrix(void);
-//static void pitchThetaControllAddToAllocationMatrix(void);
-//static void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void);
-//static void calculateForceReferenceForAllWheels(void);
-//static sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter);
-//static void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter);
-//static void calculateErestimatedFlowForWheelWithNumber(uint8 cylinderCounter);
 
+static float hightPID(float refHeight);
+static float phiPID  (float refPhi);
+static float thetaPID(float refTheta);
 
-static sint32 forceHeightSkyHookRef[SUM_WHEELS] = {0};
-static void hightControllSkyhookForceAddition(void) {
-	uint8 wheel = 0;
-	uint16 BSky_Z = 0;  //Chassis force application points Zci skyhook damping
+float mapErestimatedFlowToCurrent(float slidingModeFlow);
 
-	for (wheel = 0; wheel < 6; wheel++) {
-		forceHeightSkyHookRef[wheel] = -BSky_Z * PAPOSGetVelDataForWheel(wheel);     //Skyhook damping force per chassis wheel point [N]
-		forceHeightSkyHookRef[wheel] = PAPRConvertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), forceHeightSkyHookRef[wheel]); //Transform vertical force into cylinder force
-	}
+// MARK: Height related signal calculations
+float heightP = 0;
+float heightI = 0;
+float heightD = 0;
+int ADCSetHeightControlParametersPID(float P, float I, float D) {
+	heightP = P;
+	heightI = I;
+	heightD = D;
+	return 1;
 }
 
-static float heightReference_mm = 0;
-static float phiReference_deg = 0;
-static float thetaReference_deg = 0;
-void ADCSetReferenceValuesForNivController(float height, float phi, float theta) {
-	heightReference_mm = height;
-	phiReference_deg = phi;
-	thetaReference_deg = theta;
+static float hightPID(float heightError) {
+
+	float propTerm       = heightP * heightError;
+	float integratorTerm = heightI * 0;
+	float deriativeTerm  = heightD * 0;
+
+	return propTerm + integratorTerm + deriativeTerm;
 }
 
-static sint32 forceMatrix[3] = {0, 0, 0};
-static void heightControllAddToAllocationMatrix(void) {
-	static sint32 forceReferenceHeightZ = 0;
-	static sint32 forceHeightDamp = 0;
-	static sint16 heightError = 0;
 
-	static sint16 K_z = 1000;
-	static sint16 I_z = 0;
-
-	static sint32 Z_k = 0;
-	static sint32 Z_I = 0;
-	static sint16 B_Zc = 200;
-
-	//P(Stiffness) I control
-	heightError = heightReference_mm - PAPOSGetAvrageHeightOfForwarder();   //Zc between is average of all arm positions, between (0 and 500) mm
-	if (heightError < 5 && heightError > -5) {
-		Z_I = 0;   //If we reach almost zero error, reset integrator
-		heightError = 0;
-	}
-	Z_k = heightError * K_z;
-	Z_I = (heightError + Z_I) * I_z;
-
-	if (Z_I > MAX_ZI) {
-		Z_I = MAX_ZI;
-	}  //Clamp integrator to max
-	if (Z_I < -MAX_ZI) {
-		Z_I = -MAX_ZI;
-	}  //Clamp integrator to min
-
-	forceHeightDamp = -B_Zc * PAPOSGetAvrageHeightVelocityOfForwarder();
-	forceReferenceHeightZ  = Z_k + Z_I + forceHeightDamp; //Sum vertical forces
-	forceMatrix[0] = forceReferenceHeightZ; //Include in Force matrix for decoupling
+// MARK: Phi related signal stuff
+float phiP = 0;
+float phiI = 0;
+float phiD = 0;
+int ADCSetPhiControlParametersPID(float P, float I, float D) {
+	phiP = P;
+	phiI = I;
+	phiD = D;
+	return 1;
 }
 
-/*
-static void rollPhiControllAddToAllocationMatrix(void) {
-	if (ACTIVE_PHI_CONTROL == 1) {
+static float phiPID(float phiError) {
 
-		Phi_I = I_phi;
-		static volatile sint32 Idel = 0;
-		static volatile sint32 Phi_I_old = 0;
-		static volatile float intergratorPart = 0;
-		Phi_error = 0 - Phi_deg; //Reference is 0
+	float propTerm       = phiP * phiError;
+	float integratorTerm = phiI * 0;
+	float deriativeTerm  = phiD * 0;
 
-		if(Phi_error > 5 || Phi_error < -5) {  //Error tolerance of 1 degree when the value was set to 5
-			intergratorPart = intergratorPart + (float)(Phi_error) / 10; //if the error is less then 1 this will be zero
-		}
-
-		if (ACTIVE_FORCE_CONTROL == 0) {
-			intergratorPart = 0;
-		}
-
-		Phi_k = Phi_error * K_phi;
-		if (Phi_I != Phi_I_old) {
-			intergratorPart = 0;
-			Phi_I_old       = Phi_I;
-		}
-
-		Idel = intergratorPart * Phi_I ;
-		//Phi_I = Phi_I * intergratorPart / 100;
-
-		if (Idel > MAX_PHI_I) {
-			//Phi_I = MAX_PHI_I;
-			if (Phi_I == 0 ) {
-				Phi_I = 1;
-			}
-			intergratorPart = MAX_PHI_I / Phi_I;
-		}  //Clamp integrator to max
-		if (Idel < -MAX_PHI_I) {
-			intergratorPart = -MAX_PHI_I / Phi_I;
-		}
-
-		Phi_sky = -BSky_phi * Gyro_Phi_deg;
-		F_REF_Phi = Phi_k + Phi_sky + Idel;//Phi_I; //Sum phi moment
-		F_matrix[1] = F_REF_Phi;  //Assign to force vector
-		//sl_debug_1 = Idel;
-		//sl_debug_2 = intergratorPart;
-		//sl_debug_3 = Phi_I;
-	}
-	else {
-		F_matrix[1] = 0;
-	}
+	return propTerm + integratorTerm + deriativeTerm;
 }
- */
-
-/*
-static void pitchThetaControllAddToAllocationMatrix(void) {
-	if(ACTIVE_THETA_CONTROL == 1) {
-
-		Theta_error = 0 - Theta_deg; //Reference is 0
-		if(Theta_error < 0.5 && Theta_error > -0.5){  //Error tolerance of 1 degree when the value was set to 5
-			Theta_I = 0;   //If we reach almost zero error, reset integrator
-			Theta_error = 0;
-		}
-
-		Theta_k = Theta_error * K_theta;  //Ref=0  Error=(0-Thetadeg)
-
-		Theta_I = -Theta_deg + Theta_I;
-		if(Theta_I > MAX_THETA_I) {
-			Theta_I = MAX_THETA_I;
-		}  //Clamp integrator to max
-		if(Theta_I < -MAX_THETA_I) {
-			Theta_I = -MAX_THETA_I;
-		}  //Clamp integrator to min
-
-		Theta_sky = -BSky_theta * Gyro_Theta_deg;
-		F_REF_Theta = Theta_k + Theta_sky + Theta_I; //Sum theta moment
-		F_matrix[2] = F_REF_Theta;  //Assign to force vector
-	}
-	else {
-		F_matrix[2] = 0;
-	}
+// MARK: Theta related stuff
+float thetaP = 0;
+float thetaI = 0;
+float thetaD = 0;
+int ADCSetThetaControlParametersPID(float P, float I, float D) {
+	thetaP = P;
+	thetaI = I;
+	thetaD = D;
+	return 1;
 }
- */
 
-/*
-static void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
-	uint8 i = 0;
-	uint8 k = 0;
+static float thetaPID(float thetaError) {
 
-	for (i = 0; i <= 5; i++) {  //Moore row counter
-		sum = 0;
-		for (k = 0; k <= 2; k++) {  //Moore column counter
-			if (Control_allocation_on == 0) {
-				sum = sum + (float)moore_inverse[i][k] * F_matrix[k];
-			}
-			if (Control_allocation_on == 1) {
-				sum = sum + (float)moore_inverse_modified[i][k] * F_matrix[k];
-			}
-		}
-		F_REF[i] = sum;  //Vertical reference force for each cylinder
-		F_REF_CYL[i] = forceCylinderLoadFromForceOnWheel(posData[i], F_REF[i]);  //Calculate needed cylinder force according to arm position
-	}
+	float propTerm       = thetaP * thetaError;
+	float integratorTerm = thetaI * 0;
+	float deriativeTerm  = thetaD * 0;
+
+	return propTerm + integratorTerm + deriativeTerm;
 }
- */
 
-/*
-static void calculateForceReferenceForAllWheels(void) {
-	uint8 wheel = 0;
-	for(wheel = 0; wheel <= 5; wheel++) {
-		if (To_ground_active == 0) {
-			Ref_ground_force[wheel] = 0;
-		}
+// MARK: Get PID signals
+void ADCGetPIDSignalsForHeightPhiAndTheta(float signalArrayOut[static SUM_WHEELS], float heightError, float phiError, float thetaError) {
+	float heightSignal = 0;
+	heightSignal = hightPID( heightError);
 
-		//change between optimal dispribuiton or not
-		F_REF_CYL[wheel] = getOptimalReferenceForceForWheel(wheel) * 10 + F_REF_CYL[wheel] + F_Z_sky[wheel] + Ref_ground_force[wheel];
+	float phiSignal = 0;
+	phiSignal = phiPID( phiError);
 
-		//F_REF_CYL[wheel] = messuredForceCylinderLoad_deciN[wheel] * 10 + F_REF_CYL[wheel] + F_Z_sky[wheel] + Ref_ground_force[wheel];
+	float thetaSignal = 0;
+	thetaSignal = thetaPID( thetaError);
 
-		//if(F_REF_CYL[x]<GROUND_P){F_REF_CYL[x]=Load_force[x]*10+Ref_ground_force[x];}
-		if(F_REF_CYL[wheel] < GROUND_P) {
-			F_REF_CYL[wheel] = GROUND_P;
-		}
-	}
+	// Decouple and output by reference
+	float zScaleConstant = 0.1694;
+	float phiScaleConstant = (float) 1 / 3;
+
+	signalArrayOut[FR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal + 0.1192 * thetaSignal;
+	signalArrayOut[FL] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal + 0.1192 * thetaSignal;
+	signalArrayOut[MR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal - 0.0046 * thetaSignal;
+	signalArrayOut[ML] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal - 0.0046 * thetaSignal;
+	signalArrayOut[BR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal - 0.1152 * thetaSignal;
+	signalArrayOut[BL] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal - 0.1152 * thetaSignal;
 }
- */
 
-/*
-static void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
+// MARK: Skyhook
+static float chassiGain = 0, phiGain = 0, thetaGain = 0, wheelGain = 0;
+void ADCSetSkyhookParameters(float wheelGainIn, float chassiGainIn, float phiGainIn, float thetaGainIn) {
+	wheelGain  = wheelGainIn;
+	chassiGain = chassiGainIn;
+	phiGain    = phiGainIn;
+	thetaGain  = thetaGainIn;
+}
 
+void ADCGetSkyhookSignals(float signalArrayOut[static SUM_WHEELS], float wheelVel[static SUM_WHEELS], float avrageVelocity, float gyroVelX, float gyroVelY) {
+
+	float skyhookControlSignalHeight = - chassiGain * avrageVelocity;
+	float skyhookSignalPhi 	         = phiGain      * gyroVelX;
+	float skyhookSignalTheta 	     = thetaGain    * gyroVelY;
+
+	// Add induvidual wheel skyhook to output
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		signalArrayOut[wheel] = (wheelGain * wheelVel[wheel]);
+	}
+
+	// Decouple and output by reference
+	float zScaleConstant = 0.1694;
+	float phiScaleConstant = (float) 1 / 3; //(Allocation could be a own function)
+	signalArrayOut[FR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
+	signalArrayOut[FL] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
+	signalArrayOut[MR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
+	signalArrayOut[ML] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
+	signalArrayOut[BR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
+	signalArrayOut[BL] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
+}
+
+float ADCCalculateFrankAndBrunoSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel) {
 	//create variables
-	uint32 sl_P1  = 0; //KPa*1000=[Pa]
-	uint32 sl_P2  = 0;  //Kpa*1000=[Pa]
-	sint32 sl_Fl  = 0; //Load force in [N]
-	sint32 sl_Vel = 0;  //Cylinder velocity in mm/s
-	sint32 sigma  = 0;
+	int deltaPressure8bar = 800000;
+	float maximumFlow = 100/1000/60;
+	float slidingModeControlParameterKt = 0.000077;
+	static float sl_uold[SUM_WHEELS] = {0};
 
-	float L = 0;
-	float sgn = 0;
+	// Frank and brunos implementation of this did not use vel wheel
+	velocityWheel = 0;
 
 	//Map Variables to latest cylinder values and scale
-	sl_P1 = pressureData[wheelCounter*2] * 1000; //KPa*1000=[Pa]
-	sl_P2 = pressureData[(wheelCounter*2)+1] * 1000;  //Kpa*1000=[Pa]
-	sl_Fl = messuredForceCylinderLoad_deciN[wheelCounter] * 10; //Load force in [N]
+	int sl_P1 = pressureA; 		//KPa*1000=[Pa]
+	int sl_P2 = pressureB;  	//Kpa*1000=[Pa]
 
-	if ((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {
-		sl_Vel = 0;
-	} else {
-		sl_Vel = velData[wheelCounter];
-	} //Cylinder velocity in mm/s
-
-	//sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
-	sigma = deadBandCheckForceReferenceError(sl_Fl , F_REF_CYL[wheelCounter], wheelCounter);
-
+	int sigma = -pesudoForce;
 	sigma = sigma / 200;
-	sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
-	if (sl_uold[wheelCounter] >= 0) {
-		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
+	float sgnSigma = (float)sigma / (labs(sigma) + 1000.0);
+
+	float L = 0;
+	if (sl_uold[wheel] >= 0) {
+		L = CYLINDER_PUSH_AREA_SIDE_A1_m2 * maximumFlow + CYLINDER_PUSH_AREA_SIDE_B2_m2 * sqrt(abs(sl_P2 - 0)) * maximumFlow / sqrt(deltaPressure8bar);
 	} else {
-		L = CYLINDER_PUSH_AREA_SIDE_B2_m2 * MAXIMUM_FLOW_QMAX_m3s + CYLINDER_PUSH_AREA_SIDE_A1_m2 * sqrt(abs(sl_P1 - 0)) * MAXIMUM_FLOW_QMAX_m3s / sqrt(DELTA_PRESSURE_8bar);
+		L = CYLINDER_PUSH_AREA_SIDE_B2_m2 * maximumFlow + CYLINDER_PUSH_AREA_SIDE_A1_m2 * sqrt(abs(sl_P1 - 0)) * maximumFlow / sqrt(deltaPressure8bar);
 	}
-	sl_u = 1.0 / L * ((pow(CYLINDER_PUSH_AREA_SIDE_A1_m2,2) + pow(CYLINDER_PUSH_AREA_SIDE_B2_m2,2)) * ((float)sl_Vel / 1000.0) - SLIDING_MODE_CONTROL_PARAMETER_Kt * sgn);  //Requested flow in percentage
+	float slidingModeFlow = 1.0 / L * ( - slidingModeControlParameterKt * sgnSigma);  //Requested flow in percentage
 
 	//Saturate requested flow % between -1 and 1  (100% full flow on both directions)
-	if (sl_u > 1) {
-		sl_u = 1;
-	} else if (sl_u < -1) {
-		sl_u = -1;
+	if (slidingModeFlow > 1) {
+		slidingModeFlow = 1;
+	} else if (slidingModeFlow < -1) {
+		slidingModeFlow = -1;
 	}
-	sl_uold[wheelCounter] = sl_u;
+	sl_uold[wheel] = slidingModeFlow;
+
+	return mapErestimatedFlowToCurrent(slidingModeFlow);
 }
- */
 
-/*
-static sint32 deadBandCheckForceReferenceError(sint32 currentCylinderForce, sint32 forceReferenceCylinder, uint8 wheelCounter) {
+float mapErestimatedFlowToCurrent(float slidingModeFlow) {
 
-	static volatile sint32 sigmaOld[5]              = {0};
-	static volatile uint8  forceControllerWindowCase[5] = {0};
+	float cp1 = 0.0000117254976;
+	float cp2 = -0.0020898157818;
+	float cp3 = 0.1025966561449;
+	float cp4 = 2.2459943305454;
+	float cp5 = 0;
+	float slidingModeCurrent = 0;
 
-	sint32 errorSigma = currentCylinderForce - forceReferenceCylinder;
-	float errorChangedSign = 0;
-
-	switch (forceControllerWindowCase[wheelCounter]) {
-	case 0:
-		if (abs(errorSigma) > ((float)forceReferenceCylinder * 0.1)) {
-			forceControllerWindowCase[wheelCounter] = 1;
-		}
-		errorSigma = 0;
-		break;
-
-	case 1:
-		errorChangedSign = errorSigma - sigmaOld[wheelCounter];
-		if (fabs(errorChangedSign) > fabs(errorSigma)) {
-			forceControllerWindowCase[wheelCounter] = 0;
-		}
-		errorSigma = currentCylinderForce - forceReferenceCylinder;
-		break;
-	}
-	sigmaOld[wheelCounter] = errorSigma;
-	return errorSigma;
-}
- */
-
-/*
-static void mapErestimatedFlowToCurrentOutputOnWheelWithNumber(uint8 wheelCounter) {
-	float absoluteFlowInPercent = fabs(sl_u * 100.0);
-	if (sl_u < 0.025 && sl_u > -0.025) {
-		sl_current = 400;
-	} else if (fabs(sl_u) > 0.97) {
-		sl_current = 800 * (sl_u / fabs(sl_u)); //changed from 600
+	float absoluteFlowInPercent = fabs(slidingModeFlow * 100.0);
+	if (slidingModeFlow < 0.025 && slidingModeFlow > -0.025) {
+		slidingModeCurrent = 0;
+	} else if (fabs(slidingModeFlow) > 0.97) {
+		slidingModeCurrent = 400 * (slidingModeFlow / fabs(slidingModeFlow)); //changed from 600
 	} else {
-		sl_current = (sl_u/fabs(sl_u)) * (VALVE_FLOW_FIT_PARAMETER_CP1*pow(absoluteFlowInPercent,4) + VALVE_FLOW_FIT_PARAMETER_CP2*pow(absoluteFlowInPercent,3) + VALVE_FLOW_FIT_PARAMETER_CP3*pow(absoluteFlowInPercent,2) + VALVE_FLOW_FIT_PARAMETER_CP4 * absoluteFlowInPercent + VALVE_FLOW_FIT_PARAMETER_CP5);
+		slidingModeCurrent = (slidingModeFlow/fabs(slidingModeFlow)) * (cp1 * pow(absoluteFlowInPercent,4) + cp2 * pow(absoluteFlowInPercent,3) + cp3 * pow(absoluteFlowInPercent,2) + cp4 * absoluteFlowInPercent + cp5);
 	}
-
-	sl_debug_current = sl_current - (sl_current / labs(sl_current)) * 400;  //Valve current to output in CAN for debugging
-
-	//Set reference to valves only if control is active generally and per cylinder
-	if ((ACTIVE_FORCE_CONTROL == 1) & (Force_control_cylinders[wheelCounter] == 1)) {
-		referenceSoleonidOutputCurrent_ma[wheelCounter] = -1 * sl_debug_current - To_ground_ref[wheelCounter];
-		defaultSafety = 0;
-	}
-}
- */
-
-void ADCUppdateReferenceOutputsForNewSensorValues(void) {
-
-	//Zc damping individual chassis point skyhook damping implementation
-	hightControllSkyhookForceAddition();
-
-	//Chassis Height control Zc
-	heightControllAddToAllocationMatrix();
-
-	//Roll (Phi) control    P (Stiffness) I (integrator)  Skyhook damping (D)
-	//rollPhiControllAddToAllocationMatrix();
-
-	//Pitch (Theta) control   P (Stiffness) I (integrator) Skyhook damping (D)
-	//pitchThetaControllAddToAllocationMatrix();
-
-	//Decoupling of forces and assign to individual cylinders
-	//Multiply 6x3 moore inverse times 3x1 Force_reference matrix
-	//decoupleHightRollPitchAndConvertToCylinderForceForAllWheels();
-
-	//ADD current Load force, calculated cylinder force needed and individual skyhook damping forces
-	//calculateForceReferenceForAllWheels();
-
-	uint8 wheelCounter = 0; //Loop counter
-	for (wheelCounter = 0; wheelCounter < 6; wheelCounter++) {  //ALL
-		//Calculate erestimated flow with sliding mode controll structure
-		//calculateErestimatedFlowForWheelWithNumber(wheelCounter);
-
-		//Calculate corresponding valve current for requested flow using fitted flow curve
-		//mapErestimatedFlowToCurrentOutputOnWheelWithNumber(wheelCounter);
-
-	}//end for
-
-
+	return slidingModeCurrent;
 }
 
-
-int ADCGetReferenceCurrentForWheel(int wheel) {
-	return wheel;
-
-}
-
-int ADCSetThetaControlParametersPID(float P, float I, float D) {
-	int p = P;
-	p = I;
-	p = D;
-
-	return 1;
-
-}
-
-int ADCSetPhiControlParametersPID(float P, float I, float D) {
-	int p = P;
-	p = I;
-	p = D;
-
-	return 1;
-}

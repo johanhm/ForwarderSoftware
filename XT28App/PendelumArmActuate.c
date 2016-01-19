@@ -112,17 +112,19 @@ int PAAGetReferenceCurrentForWheel(int wheel) {
 }
 
 int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrentInput_ma) {
+	int errorMessage = 0;
+	referenceSoleonidOutputCurrent_ma[wheel] = referenceCurrentInput_ma;
 	if (referenceCurrentInput_ma < REFERENCE_CURRENT_MAXIMUM_B_mA) {
 		referenceSoleonidOutputCurrent_ma[wheel] = REFERENCE_CURRENT_MAXIMUM_B_mA;
-		return CURRENT_SET_TO_MAXIMUM;
+		errorMessage = CURRENT_SET_TO_MAXIMUM;
 	}
 	else if (referenceCurrentInput_ma > REFERENCE_CURRENT_MAXIMUM_A_mA) {
 		referenceSoleonidOutputCurrent_ma[wheel] = REFERENCE_CURRENT_MAXIMUM_A_mA;
-		return CURRENT_SET_TO_MAXIMUM;
+		errorMessage = CURRENT_SET_TO_MAXIMUM;
 	}
-	referenceSoleonidOutputCurrent_ma[wheel] = referenceCurrentInput_ma;
 	addDeadbandCurrentToOutputAndSplitIntoAB(wheel);
-	return SUCESS_SETTING_CURRENT;
+	errorMessage = SUCESS_SETTING_CURRENT;
+	return errorMessage;
 }
 
 void PAASetReferenceCurrentSaturationLimit(int currentLimit) {

@@ -198,7 +198,7 @@ void decoupleHightRollPitchAndConvertToCylinderForceForAllWheels(void) {
 
 void calculateForceReferenceForAllWheels(void) {
 	uint8 wheel = 0;
-	for(wheel = 0; wheel <= 5; wheel++) {
+	for (wheel = 0; wheel <= 5; wheel++) {
 		if (To_ground_active == 0) {
 			Ref_ground_force[wheel] = 0;
 		}
@@ -243,8 +243,8 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 	float sgn = 0;
 
 	//Map Variables to latest cylinder values and scale
-	sl_P1 = pressureData[wheelCounter*2] * 1000; //KPa*1000=[Pa]
-	sl_P2 = pressureData[(wheelCounter*2)+1] * 1000;  //Kpa*1000=[Pa]
+	sl_P1 = pressureData[wheelCounter * 2] * 1000; //KPa*1000=[Pa]
+	sl_P2 = pressureData[(wheelCounter * 2) + 1] * 1000;  //Kpa*1000=[Pa]
 	sl_Fl = messuredForceCylinderLoad_deciN[wheelCounter] * 10; //Load force in [N]
 
 	if ((velData[wheelCounter] > -10) || (velData[wheelCounter] < 10)) {

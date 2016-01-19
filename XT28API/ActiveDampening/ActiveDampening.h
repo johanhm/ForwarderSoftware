@@ -11,26 +11,23 @@
 #ifndef XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_
 #define XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_
 
-#include "api_lib_basic.h"
+#include "XT28HardwareConstants.h"
+#include "math.h"
+#include "stdlib.h"
+/*!
+ * Get PID signals
+ */
+void ADCGetPIDSignalsForHeightPhiAndTheta(float signalArray[static SUM_WHEELS], float heightError, float phiError, float thetaError);
 
 /*!
- * Set reference values for the controllers
+ * Set skyhoop dudes
  */
-void ADCSetReferenceValuesForNivController(float height, float phi, float theta);
-
+void ADCSetSkyhookParameters(float wheelGainIn, float chassiGainIn, float phiGainIn, float thetaGainIn);
 
 /*!
- *  call this function one every runtime loop before fetching new reference values for outputs
+ * skyhook
  */
-void ADCUppdateReferenceOutputsForNewSensorValues(void);
-
-
-/*! \brief Use this function to get a reference current for a wheel.
- *
- * \param[in] Wheel The wheel you need to get a reference current for. Valid values are [0-5]
- * where the number is defined by XT28 hardware constants.
- */
-int ADCGetReferenceCurrentForWheel(int wheel);
+void ADCGetSkyhookSignals(float signalArrayOut[static SUM_WHEELS], float wheelVel[static SUM_WHEELS], float avrageVelocity, float gyroVelX, float gyroVelY);
 
 /*!
  * \brief Set PID parameters for pitch controller
@@ -55,9 +52,15 @@ int ADCSetThetaControlParametersPID(float P, float I, float D);
  */
 int ADCSetPhiControlParametersPID(float P, float I, float D);
 
+/*!
+ * Set PID for height
+ */
+int ADCSetHeightControlParametersPID(float P, float I, float D);
 
-
-
+/*!
+ * Frank and brunos black magic
+ */
+float ADCCalculateFrankAndBrunoSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel);
 
 
 #endif /* XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_ */

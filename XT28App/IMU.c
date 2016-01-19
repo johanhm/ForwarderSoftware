@@ -146,6 +146,16 @@ float IMUGetTheta(void) {
 	return thetaAngleInDegree;
 }
 
+float IMUGetAngleVelX(void) {
+	int convertToDegreePerSecConstant = 50;
+	return (gyroPhiRaw / convertToDegreePerSecConstant);
+}
+
+float IMUGetAngleVelY(void) {
+	int convertToDegreePerSecConstant = 50;
+	return (gyroThetaRaw / convertToDegreePerSecConstant);
+}
+
 void IMUSendIMURawValuesOnCAN(uint8 CANChannel, uint32 gyroID, uint32 accID) {
 
 	uint8 angleData_au8[6];

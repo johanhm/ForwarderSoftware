@@ -7,6 +7,7 @@
 #include "PendelumArmActuate.h"
 #include "Excipad.h"
 #include "XT28HardwareConstants.h"
+#include "ActiveDampening.h"
 
 // Defines
 #define READ_SENSORS_PRIO 			(5)
@@ -24,6 +25,8 @@ static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static void activeDampeningControl(void);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
+static void PIDControllSignal(float referenceCurrentArray[static SUM_WHEELS]);
+static void SkyhookControlSignal(float skyhookSignalArray[static SUM_WHEELS]);
 
 //Start of program
 void sys_main(void) {
@@ -89,6 +92,11 @@ static void readSensorsTask_10ms(void) {
 
 static void checkMachineStateAndActuate(void) {
 	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
+
+	//TEMPORARY
+	machineState = BUTTON_18;
+	//END TEMPORARY
+
 	switch (machineState) {
 	case NONE: /* All off */
 		joystickControl(OFF, OFF, OFF, OFF, OFF, OFF);
@@ -141,16 +149,6 @@ static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, 
 	PAASetReferenceCurrentForWheel(BL, wheelBL * joystrickReferenceCurrent);
 
 	PAAActuatePendelumArms();
-}
-
-static void activeDampeningControl(void) {
-	int wheel = 0;
-	for (wheel = 0; wheel < 6; wheel++) {
-		PAASetReferenceCurrentForWheel(wheel,
-				0//ADCGetReferenceCurForWheel(wheel)
-		);
-	}
-	//PAAActuatePendelumArms();
 }
 
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
@@ -232,3 +230,78 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_REFERENCE_CURRENT_BACK
 	);
 }
+
+static void activeDampeningControl(void) {
+
+	// PID Height Theta Phi
+	float referenceCurrentArray[SUM_WHEELS] = {0};
+	PIDControllSignal(referenceCurrentArray);
+
+	// Skyhook
+	float skyhookSignalArray[SUM_WHEELS];
+	SkyhookControlSignal(skyhookSignalArray);
+
+	// Set reference current and actuate
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		PAASetReferenceCurrentForWheel(wheel,
+				(referenceCurrentArray[wheel] + skyhookSignalArray[wheel])
+		);
+	}
+	//PAAActuatePendelumArms();
+}
+
+static void PIDControllSignal(float referenceCurrentArray[static SUM_WHEELS]) {
+
+	// Set parameters
+	ADCSetHeightControlParametersPID(0, 0, 0);
+	ADCSetPhiControlParametersPID(0, 0, 0);
+	ADCSetThetaControlParametersPID(0, 0, 0);
+
+	// Get signal and put in array
+	ADCGetPIDSignalsForHeightPhiAndTheta(referenceCurrentArray,
+			(250 - 251),
+			(0 - 10),
+			(0 - 10)
+	);
+	/* real deal
+	ADCGetPIDSignalsForHeightPhiAndTheta(referenceCurrentArray,
+			(250 - PAPOSGetAvrageHeightOfForwarder()),
+			(0 - IMUGetPhi()),
+			(0 - IMUGetTheta())
+	);
+	 */
+}
+
+static void SkyhookControlSignal(float skyhookSignalArray[static SUM_WHEELS]) {
+
+	ADCSetSkyhookParameters(0, 0, 0, 0);
+
+	float wheelVelArray[SUM_WHEELS] = {0};
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		wheelVelArray[wheel] = 1;
+	}
+	ADCGetSkyhookSignals(skyhookSignalArray,
+			wheelVelArray,
+			0,
+			0,
+			1
+	);
+
+	/* real deal
+	float wheelVel[SUM_WHEELS] = {0};
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		wheelVel[wheel] = PAPOSGetVelDataForWheel(wheel);
+	}
+	ADCGetSkyhookSignals(skyhookSignalArray,
+			wheelVel,
+			IMUGetAngleVelX(),
+			IMUGetAngleVelY(),
+			PAPOSGetAvrageHeightVelocityOfForwarder()
+	);
+	 */
+}
+
+

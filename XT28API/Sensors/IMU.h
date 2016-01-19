@@ -77,6 +77,16 @@ float thetaDegree = IMUGetTheta();
  */
 float IMUGetTheta(void);
 
+/*!
+ * Get angle velocity around Y axis. This axis is the same as angle Theta
+ */
+float IMUGetAngleVelY(void);
+
+/*!
+ * Get angle vel around x axis, this is PHI
+ */
+float IMUGetAngleVelX(void);
+
 /*! \Brief This function will send out the raw values on corresponding can ID when called.
  *
  * \param[in] CANChannel The channel the message should be sent on
