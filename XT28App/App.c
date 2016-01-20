@@ -3,11 +3,13 @@
 #include "IMU.h"
 #include "PendelumArmPressure.h"
 #include "PendelumArmPosition.h"
+#include "PendelumArmForces.h"
 #include "XT28CANSupport.h"
 #include "PendelumArmActuate.h"
 #include "Excipad.h"
 #include "XT28HardwareConstants.h"
 #include "ActiveDampening.h"
+#include "ADCConfigurations.h"
 
 // Defines
 #define READ_SENSORS_PRIO 			(5)
@@ -25,8 +27,6 @@ static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static void activeDampeningControl(void);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static void PIDControllSignal(float referenceCurrentArray[static SUM_WHEELS]);
-static void SkyhookControlSignal(float skyhookSignalArray[static SUM_WHEELS]);
 
 //Start of program
 void sys_main(void) {
@@ -81,12 +81,21 @@ static void readSensorsTask_10ms(void) {
 	PAASetPendelumArmActuateState(TRUE);
 	PAASetPendelumArmPosLimitState(TRUE);
 
-	// Uppdate presure and recalculate force data
+	/* Uppdate presure and recalculate force data */
 	PAPOSUppdatePosSensorsDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
-	PAPRUppdatePressureData();
-	PAPRUppdateForceOnWheelsData();
+	PAPRUppdatePressureDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
 
+	/* Get new valus for force calculations and uppdate force data */
+	int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
+	int posData_mm[SUM_WHEELS] = {0};
+	PAPRGetPressureDataArray_bar(pressureData_Bar);
+	PAPOSGetPosDataArray(posData_mm);
+	PAFUppdateForceOnWheelsDataUsing(pressureData_Bar, posData_mm);
+
+	/* Check the machine state and actuate accordingly */
 	checkMachineStateAndActuate();
+
+	/* Send all the sensor data on CAN */
 	sendSensorDataOnCAN();
 }
 
@@ -139,19 +148,28 @@ static void checkMachineStateAndActuate(void) {
 	}
 }
 
+static void activeDampeningControl(void) {
+
+	ADCFGNivPIDSetup(TRUE);
+	ADCFGNivPIDAndSkyhookSetup(FALSE);
+	ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
+}
+
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
 	int joystrickReferenceCurrent = EXPGetJoystickScaledValue();
-	PAASetReferenceCurrentForWheel(FR, wheelFR * joystrickReferenceCurrent);
-	PAASetReferenceCurrentForWheel(FL, wheelFL * joystrickReferenceCurrent);
-	PAASetReferenceCurrentForWheel(MR, wheelMR * joystrickReferenceCurrent);
-	PAASetReferenceCurrentForWheel(ML, wheelML * joystrickReferenceCurrent);
-	PAASetReferenceCurrentForWheel(BR, wheelBR * joystrickReferenceCurrent);
-	PAASetReferenceCurrentForWheel(BL, wheelBL * joystrickReferenceCurrent);
+	PAAOutUnit joystrickUnit = CURRENT_MA;
+	PAASetReferenceForWheelWithUnit(FR, joystrickUnit, wheelFR * joystrickReferenceCurrent);
+	PAASetReferenceForWheelWithUnit(FL, joystrickUnit, wheelFL * joystrickReferenceCurrent);
+	PAASetReferenceForWheelWithUnit(MR, joystrickUnit, wheelMR * joystrickReferenceCurrent);
+	PAASetReferenceForWheelWithUnit(ML, joystrickUnit, wheelML * joystrickReferenceCurrent);
+	PAASetReferenceForWheelWithUnit(BR, joystrickUnit, wheelBR * joystrickReferenceCurrent);
+	PAASetReferenceForWheelWithUnit(BL, joystrickUnit, wheelBL * joystrickReferenceCurrent);
 
 	PAAActuatePendelumArms();
 }
 
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
+
 	static float rampCurrentReference = 0;
 	float growth = 0.1;
 	rampCurrentReference = rampCurrentReference + growth;
@@ -164,12 +182,13 @@ static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML
 		EXPSetLastPressedButtonToNone();
 	}
 	int rampRef = (int)rampCurrentReference;
-	PAASetReferenceCurrentForWheel(FR, wheelFR * rampRef);
-	PAASetReferenceCurrentForWheel(FL, wheelFL * rampRef);
-	PAASetReferenceCurrentForWheel(MR, wheelMR * rampRef);
-	PAASetReferenceCurrentForWheel(ML, wheelML * rampRef);
-	PAASetReferenceCurrentForWheel(BR, wheelBR * rampRef);
-	PAASetReferenceCurrentForWheel(BL, wheelBL * rampRef);
+	PAAOutUnit buttonHoldUnit = CURRENT_MA;
+	PAASetReferenceForWheelWithUnit(FR, buttonHoldUnit, wheelFR * rampRef);
+	PAASetReferenceForWheelWithUnit(FL, buttonHoldUnit, wheelFL * rampRef);
+	PAASetReferenceForWheelWithUnit(MR, buttonHoldUnit, wheelMR * rampRef);
+	PAASetReferenceForWheelWithUnit(ML, buttonHoldUnit, wheelML * rampRef);
+	PAASetReferenceForWheelWithUnit(BR, buttonHoldUnit, wheelBR * rampRef);
+	PAASetReferenceForWheelWithUnit(BL, buttonHoldUnit, wheelBL * rampRef);
 
 	PAAActuatePendelumArms();
 }
@@ -195,27 +214,27 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_SENSOR_INFO_SMS_6,
 			CAN_ID_SENSOR_INFO_SMS_7
 	);
-	PAPRSendCylinderForceOnCAN(CAN_1,
+	PAFSendCylinderChamberForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_8,
 			CAN_ID_SENSOR_INFO_SMS_9,
 			CAN_ID_SENSOR_INFO_SMS_10
 	);
-	PAPRSendCylinderLoadForceOnCAN(CAN_1,
+	PAFSendCylinderLoadForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_12,
 			CAN_ID_SENSOR_INFO_SMS_13
 	);
-	PAPRSendVerticalWheelForceOnCAN(CAN_1,
+	PAFSendVerticalWheelForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_14,
 			CAN_ID_SENSOR_INFO_SMS_15
 	);
-	PAPRSendMassCenterLocationOnCAN(CAN_1,
+	PAFSendMassCenterLocationOnCAN(CAN_1,
 			0x18FF1001
 	);
-	PAPRSendOptimalForceRefOnCAN(CAN_1,
+	PAFSendOptimalForceRefOnCAN(CAN_1,
 			0x18FF1002,
 			0x18FF1003
 	);
-	PAPRSendForceErrorPercentageOnCAN(CAN_1,
+	PAFSendForceErrorPercentageOnCAN(CAN_1,
 			0x18FF1004,
 			0x18FF1005
 	);
@@ -229,79 +248,6 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_REFERENCE_CURRENT_MID,
 			CAN_ID_REFERENCE_CURRENT_BACK
 	);
-}
-
-static void activeDampeningControl(void) {
-
-	// PID Height Theta Phi
-	float referenceCurrentArray[SUM_WHEELS] = {0};
-	PIDControllSignal(referenceCurrentArray);
-
-	// Skyhook
-	float skyhookSignalArray[SUM_WHEELS];
-	SkyhookControlSignal(skyhookSignalArray);
-
-	// Set reference current and actuate
-	int wheel = 0;
-	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		PAASetReferenceCurrentForWheel(wheel,
-				(referenceCurrentArray[wheel] + skyhookSignalArray[wheel])
-		);
-	}
-	//PAAActuatePendelumArms();
-}
-
-static void PIDControllSignal(float referenceCurrentArray[static SUM_WHEELS]) {
-
-	// Set parameters
-	ADCSetHeightControlParametersPID(0, 0, 0);
-	ADCSetPhiControlParametersPID(0, 0, 0);
-	ADCSetThetaControlParametersPID(0, 0, 0);
-
-	// Get signal and put in array
-	ADCGetPIDSignalsForHeightPhiAndTheta(referenceCurrentArray,
-			(250 - 251),
-			(0 - 10),
-			(0 - 10)
-	);
-	/* real deal
-	ADCGetPIDSignalsForHeightPhiAndTheta(referenceCurrentArray,
-			(250 - PAPOSGetAvrageHeightOfForwarder()),
-			(0 - IMUGetPhi()),
-			(0 - IMUGetTheta())
-	);
-	 */
-}
-
-static void SkyhookControlSignal(float skyhookSignalArray[static SUM_WHEELS]) {
-
-	ADCSetSkyhookParameters(0, 0, 0, 0);
-
-	float wheelVelArray[SUM_WHEELS] = {0};
-	int wheel = 0;
-	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		wheelVelArray[wheel] = 1;
-	}
-	ADCGetSkyhookSignals(skyhookSignalArray,
-			wheelVelArray,
-			0,
-			0,
-			1
-	);
-
-	/* real deal
-	float wheelVel[SUM_WHEELS] = {0};
-	int wheel = 0;
-	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		wheelVel[wheel] = PAPOSGetVelDataForWheel(wheel);
-	}
-	ADCGetSkyhookSignals(skyhookSignalArray,
-			wheelVel,
-			IMUGetAngleVelX(),
-			IMUGetAngleVelY(),
-			PAPOSGetAvrageHeightVelocityOfForwarder()
-	);
-	 */
 }
 
 

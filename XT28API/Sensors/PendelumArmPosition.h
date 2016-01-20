@@ -10,6 +10,7 @@
 #define XT28API_SENSORS_PENDELUMARMPOSITION_H_
 
 #include "api_lib_basic.h"
+#include "XT28HardwareConstants.h"
 
 /*!
  *  Configures the pos sensors
@@ -27,9 +28,19 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
 int PAPOSGetPosDataForWheel_mm(int wheel);
 
 /*!
+ * Get pos data in the form of an array following standard wheel def
+ */
+void PAPOSGetPosDataArray(int posDataOutput[static SUM_WHEELS]);
+
+/*!
  * Get vel data for a wheel
  */
 int PAPOSGetVelDataForWheel(int wheel);
+
+/*!
+ * Get velocity data array
+ */
+void PAPOSGetVelDataArray(float velDataOutput[static SUM_WHEELS]);
 
 /*!
  * Sends pos data on CAN
@@ -50,7 +61,6 @@ float PAPOSGetAvrageHeightOfForwarder(void);
  * Get avrage chassi vel
  */
 float PAPOSGetAvrageHeightVelocityOfForwarder(void);
-
 
 #endif /* XT28API_SENSORS_PENDELUMARMPOSITION_H_ */
  /** @}*/

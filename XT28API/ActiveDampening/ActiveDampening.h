@@ -60,7 +60,7 @@ int ADCSetHeightControlParametersPID(float P, float I, float D);
 /*!
  * Frank and brunos black magic
  */
-float ADCCalculateFrankAndBrunoSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel);
+float ADCCalculateSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel);
 
 
 #endif /* XT28API_ACTIVEDAMPENING_ACTIVEDAMPENING_H_ */

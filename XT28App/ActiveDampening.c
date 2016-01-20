@@ -6,8 +6,6 @@ static float hightPID(float refHeight);
 static float phiPID  (float refPhi);
 static float thetaPID(float refTheta);
 
-float mapErestimatedFlowToCurrent(float slidingModeFlow);
-
 // MARK: Height related signal calculations
 float heightP = 0;
 float heightI = 0;
@@ -80,15 +78,15 @@ void ADCGetPIDSignalsForHeightPhiAndTheta(float signalArrayOut[static SUM_WHEELS
 	thetaSignal = thetaPID( thetaError);
 
 	// Decouple and output by reference
-	float zScaleConstant = 0.1694;
-	float phiScaleConstant = (float) 1 / 3;
+	float zAllocationConstant = 0.1694;
+	float phiAllocationConstant = (float) 1 / 3;
 
-	signalArrayOut[FR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal + 0.1192 * thetaSignal;
-	signalArrayOut[FL] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal + 0.1192 * thetaSignal;
-	signalArrayOut[MR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal - 0.0046 * thetaSignal;
-	signalArrayOut[ML] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal - 0.0046 * thetaSignal;
-	signalArrayOut[BR] = zScaleConstant * heightSignal - phiScaleConstant * phiSignal - 0.1152 * thetaSignal;
-	signalArrayOut[BL] = zScaleConstant * heightSignal + phiScaleConstant * phiSignal - 0.1152 * thetaSignal;
+	signalArrayOut[FR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal + 0.1192 * thetaSignal;
+	signalArrayOut[FL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.1192 * thetaSignal;
+	signalArrayOut[MR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal - 0.0046 * thetaSignal;
+	signalArrayOut[ML] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal - 0.0046 * thetaSignal;
+	signalArrayOut[BR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal - 0.1152 * thetaSignal;
+	signalArrayOut[BL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal - 0.1152 * thetaSignal;
 }
 
 // MARK: Skyhook
@@ -113,17 +111,17 @@ void ADCGetSkyhookSignals(float signalArrayOut[static SUM_WHEELS], float wheelVe
 	}
 
 	// Decouple and output by reference
-	float zScaleConstant = 0.1694;
-	float phiScaleConstant = (float) 1 / 3; //(Allocation could be a own function)
-	signalArrayOut[FR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
-	signalArrayOut[FL] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
-	signalArrayOut[MR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
-	signalArrayOut[ML] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
-	signalArrayOut[BR] += zScaleConstant * skyhookControlSignalHeight - phiScaleConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
-	signalArrayOut[BL] += zScaleConstant * skyhookControlSignalHeight + phiScaleConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
+	float zAllocationConstant = 0.1694;
+	float phiAllocationConstant = (float) 1 / 3;
+	signalArrayOut[FR] += zAllocationConstant * skyhookControlSignalHeight - phiAllocationConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
+	signalArrayOut[FL] += zAllocationConstant * skyhookControlSignalHeight + phiAllocationConstant * skyhookSignalPhi + 0.1192 * skyhookSignalTheta;
+	signalArrayOut[MR] += zAllocationConstant * skyhookControlSignalHeight - phiAllocationConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
+	signalArrayOut[ML] += zAllocationConstant * skyhookControlSignalHeight + phiAllocationConstant * skyhookSignalPhi - 0.0046 * skyhookSignalTheta;
+	signalArrayOut[BR] += zAllocationConstant * skyhookControlSignalHeight - phiAllocationConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
+	signalArrayOut[BL] += zAllocationConstant * skyhookControlSignalHeight + phiAllocationConstant * skyhookSignalPhi - 0.1152 * skyhookSignalTheta;
 }
 
-float ADCCalculateFrankAndBrunoSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel) {
+float ADCCalculateSlidingModeControllerForWheel(int wheel, float pesudoForce, float pressureA, float pressureB, float velocityWheel) {
 	//create variables
 	int deltaPressure8bar = 800000;
 	float maximumFlow = 100/1000/60;
@@ -158,26 +156,6 @@ float ADCCalculateFrankAndBrunoSlidingModeControllerForWheel(int wheel, float pe
 	}
 	sl_uold[wheel] = slidingModeFlow;
 
-	return mapErestimatedFlowToCurrent(slidingModeFlow);
-}
-
-float mapErestimatedFlowToCurrent(float slidingModeFlow) {
-
-	float cp1 = 0.0000117254976;
-	float cp2 = -0.0020898157818;
-	float cp3 = 0.1025966561449;
-	float cp4 = 2.2459943305454;
-	float cp5 = 0;
-	float slidingModeCurrent = 0;
-
-	float absoluteFlowInPercent = fabs(slidingModeFlow * 100.0);
-	if (slidingModeFlow < 0.025 && slidingModeFlow > -0.025) {
-		slidingModeCurrent = 0;
-	} else if (fabs(slidingModeFlow) > 0.97) {
-		slidingModeCurrent = 400 * (slidingModeFlow / fabs(slidingModeFlow)); //changed from 600
-	} else {
-		slidingModeCurrent = (slidingModeFlow/fabs(slidingModeFlow)) * (cp1 * pow(absoluteFlowInPercent,4) + cp2 * pow(absoluteFlowInPercent,3) + cp3 * pow(absoluteFlowInPercent,2) + cp4 * absoluteFlowInPercent + cp5);
-	}
-	return slidingModeCurrent;
+	return slidingModeFlow;
 }
 

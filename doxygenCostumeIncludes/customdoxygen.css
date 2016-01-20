@@ -16,9 +16,60 @@
      background-color:#16552a;
    }
 
+.pannel-default > .active  {
+    border-color: red;
+}
+
+td.memItemLeft > a, td.memItemLeft {
+    font-family: "courier new",courier,monospace;
+    font-weight: bold;
+    white-space: pre-wrap;
+    word-wrap: break-word; 
+}
+
+.navbar-default {
+    background-color: #9ac72e;
+    border-bottom: 3px solid #6d9312;
+}
+
+.navbar-default .navbar-brand {
+    color: white;
+}
+
+body {
+    background-color: #f5f9ea;
+}
+
+.panel-default>.panel-heading {
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+}
+
+hr.footer {
+    border-top: 0pt
+}
 
 td.memname {
-  color: blue;
+  color: darkblue;
+  width: 80%;
+  font-family: "courier new",courier,monospace;
+  font-size: 15px;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.paramtype {
+    color: purple;
+    font-family: "courier new",courier,monospace;
+    font-size: 15px;
+}
+.paramname {
+    color: darkgreen;
+    font-family: "courier new",courier,monospace;
+    font-size: 15px;
 }
 
 /* Custom Look and feel - Can be edited

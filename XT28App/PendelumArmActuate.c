@@ -1,29 +1,7 @@
 #include "PendelumArmActuate.h"
 #include "PendelumArmPosition.h"
-#include <math.h>
+#include "XT28HardwareConstants.h"
 
-//------ Defines for pendelurm outputs
-#define OUT_PENDELURM_FRONT_RIGHT_A		OUT_1_POH_CL
-#define OUT_PENDELURM_FRONT_RIGHT_B		OUT_2_POH_CL
-#define OUT_PENDELURM_FRONT_LEFT_A		OUT_3_POH_CL
-#define OUT_PENDELURM_FRONT_LEFT_B		OUT_4_POH_CL
-#define OUT_PENDELURM_MID_RIGHT_A		OUT_5_POH_CL
-#define OUT_PENDELURM_MID_RIGHT_B		OUT_6_POH_CL
-#define OUT_PENDELURM_MID_LEFT_A		OUT_7_POH_CL
-#define OUT_PENDELURM_MID_LEFT_B		OUT_8_POH_CL
-#define OUT_PENDELURM_REAR_RIGHT_A		OUT_9_POH_CL
-#define OUT_PENDELURM_REAR_RIGHT_B		OUT_10_POH_CL
-#define OUT_PENDELURM_REAR_LEFT_A		OUT_11_POH_CL
-#define OUT_PENDELURM_REAR_LEFT_B		OUT_12_POH_CL
-
-// Defines used in this module
-#define FR	 		0
-#define FL	 		1
-#define MR	 		2
-#define ML 			3
-#define BR 			4
-#define BL			5
-#define SUM_WHEELS	6
 
 #define REFERENCE_CURRENT_MAXIMUM_B_mA   -200
 #define REFERENCE_CURRENT_MAXIMUM_A_mA   200
@@ -35,19 +13,22 @@
 // setting current error codes
 #define SUCESS_SETTING_CURRENT   0
 #define CURRENT_SET_TO_MAXIMUM   1
+#define ERROR_SETTING_CURRENT    2
 
 // Private prototypes
 static void checkCylinderPosLimit(void);
 static void addDeadbandCurrentToOutputAndSplitIntoAB(int wheel);
+static int convertFlowToCurrent(float requestedFlowPercentage);
+static int convertVelocityToCurrent(float requestedVel_ms);
 
 
 // Start of implementation
 void PAAConfigurePendelumArmOutputs(void) {
 	//BOSCH preferred
-	uint32 cfg_minLoad   = 5000;	//7400	/* [mOhm] */
-	uint16 cfg_maxLoad   = 30000;			//21700
-	uint16 cfg_frequency = f_200Hz_DU16;	/* [Hz] */
-	uint32 cfg_debounce  = 100;				/* [ms] */
+	uint32 cfg_minLoad   = 5000;			/* [mOhm] */
+	uint16 cfg_maxLoad   = 30000;			/* 21700  */
+	uint16 cfg_frequency = f_200Hz_DU16;	/* [Hz]   */
+	uint32 cfg_debounce  = 100;				/* [ms]   */
 
 	out_cfg(OUT_1_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
 	out_cfg(OUT_2_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
@@ -111,7 +92,30 @@ int PAAGetReferenceCurrentForWheel(int wheel) {
 	return referenceSoleonidOutputCurrent_ma[wheel];
 }
 
-int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrentInput_ma) {
+
+void PAASetReferenceArrayWithUnit(float referenceArray[static SUM_WHEELS], PAAOutUnit unit)  {
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		PAASetReferenceForWheelWithUnit(wheel,
+				unit,
+				referenceArray[wheel]
+		);
+	}
+}
+
+int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceInput) {
+
+	int referenceCurrentInput_ma = 0;
+	if (unit == FLOW_PERCENTAGE) {
+		referenceCurrentInput_ma = convertFlowToCurrent(referenceInput);
+	} else if (unit == VELOCITY_MS) {
+		referenceCurrentInput_ma = convertVelocityToCurrent(referenceInput);
+	} else if (unit == CURRENT_MA) {
+		referenceCurrentInput_ma = (int)referenceInput;
+	} else {
+		return ERROR_SETTING_CURRENT;
+	}
+
 	int errorMessage = 0;
 	referenceSoleonidOutputCurrent_ma[wheel] = referenceCurrentInput_ma;
 	if (referenceCurrentInput_ma < REFERENCE_CURRENT_MAXIMUM_B_mA) {
@@ -125,6 +129,32 @@ int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrentInput_ma) {
 	addDeadbandCurrentToOutputAndSplitIntoAB(wheel);
 	errorMessage = SUCESS_SETTING_CURRENT;
 	return errorMessage;
+}
+
+static int convertFlowToCurrent(float requestedFlowPercentage) {
+
+	float cp1 = 0.0000117254976;
+	float cp2 = -0.0020898157818;
+	float cp3 = 0.1025966561449;
+	float cp4 = 2.2459943305454;
+	float cp5 = 0;
+	int correspondingCurrent = 0;
+
+	float absoluteFlowInPercent = fabs(requestedFlowPercentage * 100.0);
+	if (requestedFlowPercentage < 0.025 && requestedFlowPercentage > -0.025) {
+		correspondingCurrent = 0;
+	} else if (fabs(requestedFlowPercentage) > 0.97) {
+		correspondingCurrent = 400 * (requestedFlowPercentage / fabs(requestedFlowPercentage)); //changed from 600
+	} else {
+		correspondingCurrent = (requestedFlowPercentage / fabs(requestedFlowPercentage)) * (cp1 * pow(absoluteFlowInPercent,4) + cp2 * pow(absoluteFlowInPercent,3) + cp3 * pow(absoluteFlowInPercent,2) + cp4 * absoluteFlowInPercent + cp5);
+	}
+	return correspondingCurrent;
+}
+
+static int convertVelocityToCurrent(float requestedVel_ms) {
+	// Not yet implemented
+	requestedVel_ms = 0;
+	return 0;
 }
 
 void PAASetReferenceCurrentSaturationLimit(int currentLimit) {
@@ -196,6 +226,8 @@ static void checkCylinderPosLimit(void) {
 	}
 }
 
+
+//MARK: CAN functions
 void PAASendReferenceCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID) {
 
 	// Motorola standard bifshift tt, every other messages uses INTEL.

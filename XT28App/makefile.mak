@@ -63,9 +63,11 @@ OBJECTS          = $(OUTPUT_PATH)/App.o\
 									 $(OUTPUT_PATH)/XT28CANSupport.o\
 									 $(OUTPUT_PATH)/PendelumArmPressure.o\
 									 $(OUTPUT_PATH)/PendelumArmPosition.o\
+									 $(OUTPUT_PATH)/PendelumArmForces.o\
 									 $(OUTPUT_PATH)/PendelumArmActuate.o\
 									 $(OUTPUT_PATH)/Excipad.o\
 									 $(OUTPUT_PATH)/ActiveDampening.o\
+									 $(OUTPUT_PATH)/ADCConfigurations.o\
 									 
 ####################################################################################################
 # Path to libraries which should be included

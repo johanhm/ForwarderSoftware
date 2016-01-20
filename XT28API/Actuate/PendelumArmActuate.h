@@ -12,6 +12,18 @@
 #define XT28API_ACTUATE_PENDELUMARMACTUATE_H_
 
 #include "api_lib_basic.h"
+#include "math.h"
+#include "stdlib.h"
+#include "XT28HardwareConstants.h"
+
+/*!
+ * THe unit for setting output
+ */
+typedef enum {
+	CURRENT_MA,			/* Current   [mA] 	*/
+	FLOW_PERCENTAGE,	/* Flow      [%] 	*/
+	VELOCITY_MS			/* Velocity  [m/s] 	*/
+} PAAOutUnit;
 
 /*!
  * Configures the outputs on the forwarder. THis needs to be called in application setup in order to be able to
@@ -43,7 +55,12 @@ int PAAGetReferenceCurrentForWheel(int wheel);
  * \return 0 Set current, valid range
  * \return 1 Set current, saturated.
  */
-int PAASetReferenceCurrentForWheel(int wheel, int referenceCurrent_ma);
+int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceInput);
+
+/*!
+ * Set reference array for all wheels
+ */
+void PAASetReferenceArrayWithUnit(float referenceArray[static SUM_WHEELS], PAAOutUnit unit);
 
 /*!
  *  This function sends the current reference current actuate on pendelumarm.

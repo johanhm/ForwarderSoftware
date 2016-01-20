@@ -2,15 +2,6 @@
 #include "api_lib_basic.h"
 #include "XT28CANSupport.h"
 
-// Defines used in this module
-#define FR	 		0
-#define FL	 		1
-#define MR	 		2
-#define ML 			3
-#define BR 			4
-#define BL			5
-#define SUM_WHEELS	6
-
 //private prototypes
 static void uppdateForwarderAvrageHeightAndVelocity(void);
 
@@ -72,9 +63,6 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 static uint16 forwarderAvrageHeightZc = 0;
 static uint16 forwarderAvrageVelZc = 0;
-/*!
- * This functions is called in 'self.PAPOSUppdatePosSensorsData'
- */
 static void uppdateForwarderAvrageHeightAndVelocity(void) {
 	uint8 x = 0; //index used in FOR loops
 	//Observer for average chassis height
@@ -94,8 +82,23 @@ static void uppdateForwarderAvrageHeightAndVelocity(void) {
 int PAPOSGetPosDataForWheel_mm(int wheel) {
 	return (int)posData_mm[wheel];
 }
+
+void PAPOSGetPosDataArray(int posDataOutput[static SUM_WHEELS]) {
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		posDataOutput[wheel] = (int)posData_mm[wheel];
+	}
+}
+
 int PAPOSGetVelDataForWheel(int wheel) {
 	return (int)velData[wheel];
+}
+
+void PAPOSGetVelDataArray(float velDataOutput[static SUM_WHEELS]) {
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		velDataOutput[wheel] = (float)velData[wheel];
+	}
 }
 
 float PAPOSGetAvrageHeightOfForwarder(void) {
