@@ -1,7 +1,7 @@
  .navbar-default .navbar-nav > .active{
     color: #000;
    background: #d65c14;
-   background-color: ##2c7e17
+
  }
  .navbar-default .navbar-nav > .active > a,
  .navbar-default .navbar-nav > .active > a:hover,
@@ -14,10 +14,72 @@
  .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
      color:white;
      background-color:#16552a;
-   }
+}
+
+div.title.h1 {
+	font-size: 36px;
+	font-weight: 500;
+	font-family: Roboto, sans-serif
+}
+
+h2.groupheader {
+    border-bottom: 2px solid #2F4F4F;
+    color: #2F4F4F;
+}
+
+div.directory {
+    margin: 10px 0px;
+    border-top: 1px solid rgba(163, 198, 47, 0.41);
+    border-bottom: 1px solid rgba(163, 198, 47, 0.41);
+    width: 100%;
+}
+
+div.caption {
+	padding-bottom: 12pt;
+}
+
+html {
+   height: 100%;
+}
+
+body {
+   min-height: 100%;
+}
+
+img {
+    width: 80%;
+}
+
+div.image img[src="support28api.png"]{ 
+    width: 45%; 
+}
+
+
 
 .pannel-default > .active  {
     border-color: red;
+}
+
+
+footer h2 {
+    color: #fff;
+    line-height: 60px;
+    font-size: 24px;
+    border-bottom: 3px solid #505346;
+}
+
+footer {
+    width: 100%;
+    padding-bottom: 30px;
+    background-color: #5e5e5e;
+    color: #f5f9ea;
+    z-index: 100;
+    position: relative;
+    font-size: .77777em;
+}
+
+footer a, footer a:link, footer a:visited {
+    color: #f5f9ea;
 }
 
 td.memItemLeft > a, td.memItemLeft {
@@ -41,9 +103,6 @@ body {
 }
 
 .panel-default>.panel-heading {
-  display: block;
-  white-space: pre-wrap;
-  word-wrap: break-word;
 
 }
 
@@ -53,8 +112,7 @@ hr.footer {
 
 td.memname {
   color: darkblue;
-  width: 80%;
-  font-family: "courier new",courier,monospace;
+  font-family: "courier new", courier, monospace;
   font-size: 15px;
   display: block;
   white-space: pre-wrap;
@@ -131,7 +189,7 @@ pre.fragment {
 div.fragment {
     padding: 4px 6px;
     margin: 4px 8px 4px 2px;
-    border: 1px solid #C4CFE5;
+    border: 1px solid rgba(163, 198, 47, 0.41);
 }
 
 div.well {

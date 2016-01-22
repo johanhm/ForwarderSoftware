@@ -1,4 +1,5 @@
 /** \defgroup XT28HWC Machine Constants
+ * \ingroup SUPPORT
  * \brief The constants used by the XT28 API are declared here
  *
  *  @{

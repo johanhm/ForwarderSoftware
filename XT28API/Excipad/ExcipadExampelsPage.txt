@@ -1,0 +1,85 @@
+/*!
+ \page EXCIPADEX Excipad example
+ 
+ \brief An example on how to control the machine when using joy strick and Exciapd.
+  
+The excipad module gives the used functionality to comminicate with the excipad easy. This sections covers a small guide for setting
+upp the excipad and an example of how to use the api to change how the machine is controlled.
+
+Setup is painless
+----------------
+
+Example code of setting up the Excipad comminucations.
+~~~~~~~~~~~~~{.c} 
+
+void sys_main(void) {
+
+	// CAN channels configuration
+	CANConfigureXT28CANChannels();
+
+	int databoxNrExipadButtons = 3;
+	int databoxNrExipadJoystrick = 4;
+	EXPConfigureExcipad(CAN_1,
+			databoxNrExipadButtons,
+			databoxNrExipadJoystrick
+	);
+
+	can_init(CAN_1, 1000000);
+	sys_init("SMS", "RC30-00D6"); // RC28-14/30
+}
+~~~~~~~~~~~~~
+
+What we do here is the following:
+
++ First to set up the CAN channels using a function defined in \ref XT28CAN. 
+
+This function register that databoxes exists witch is a pre-requisite
+in order to be able to call the next function. 
+
++ Then we define what databox the excipad should use.
+
+A databox is just an abitary number that have to be unique for that
+specific can channel you register the excipad on.
+A databox register callback functions that handels the incomming message, the \EXP handels everything
+else sutch as setting upp callbacks and handeling incomming messages.
+
++ System init to get the system going.
+
+With the exipad setup it will now communicate with the Bodas controller. The Exipad comes packed with different
+functionalitys when it comes to checking what button the user have pressed. For all functionalitys check out \ref EXP.
+
+Here is an example of a function where depeing on last pressed button with toggle a machine state is set.
+
+Check machine state made easy!
+----------------
+~~~~~~~~~~~~~{.c} 
+static void checkMachineStateAndActuate(void) {
+
+	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
+	switch (machineState) {
+		...
+	case BUTTON_3:
+		PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, 100);
+		PAAActuatePendelumArms();
+		break;
+		...
+	case BUTTON_18: // ADC Control 
+		activeDampeningControl();
+		break;
+	case BUTTON_19: // All Upp 
+		buttonHoldControl(UPP, UPP, UPP, UPP, UPP, UPP);
+		break;
+		...
+	}
+}
+~~~~~~~~~~~~~
+
+What we do here is to ask the \ref EXP what button the user pressed last. With toggle means that if the user pressed a button once it is activated and 'EXPGetLastPressedButtonWithToggle()'
+will return that button. If the user pressed that button again then 'EXPGetLastPressedButtonWithToggle()' will return 'NONE'. In this example, if the user have pressed button 3 then
+the reference current for the front left wheel will be set to 100 mA and then actuated making the wheel go down. Button 18 will do whatever is defined in 'activeDampeningControl();'
+and 'buttonHoldControl(...);' will probably make the machine go down. To be able to actuate and moce the pendelurm arms the \ref PAA is used. 
+
+For more information about the power and flexibility that comes with the excipad check out \ref EXP.
+
+
+ */

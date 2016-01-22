@@ -1,5 +1,5 @@
 /*! \defgroup EXP Excipad
- *  \brief Handle Exipad and Joystrick
+ *  \brief Handle Exipad and Joystick
  *
  *  This module handels the user interface with the exipad. From this module
  *  its possibole to get status about the exipad sutch as what

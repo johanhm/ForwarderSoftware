@@ -1,27 +1,24 @@
-/*
- * XT28_api.h
- *
- *  Created on: 10 jan. 2016
- *      Author: ladmin
- */
+
 
 #ifndef XT28API_XT28_API_H_
 #define XT28API_XT28_API_H_
 
-// Sensors
-#include "Sensors/IMU.h"
-//#include "Sensors/PendelumArmPosition.h"
-//#include "Sensors/PendelumArmPressure.h"
+/* Sensors */
+#include "IMU.h"
+#include "PendelumArmPressure.h"
+#include "PendelumArmPosition.h"
+#include "PendelumArmForces.h"
 
-// Actuate
-//#include "Actuate/PendelumarmActuate.h"
+/* Actuate */
+#include "PendelumArmActuate.h"
+#include "Excipad.h"
 
-// Exipad
-//#include "Excipad/ExcipadButtons.h"
-//#include "Excipad/ExcipadJoyStick.h"
+/* Support */
+#include "XT28CANSupport.h"
+#include "XT28HardwareConstants.h"
 
-// Active Dampening
-//#include "ActiveDampening/ActiveDampening.h"
-
+/* Active Dampening */
+#include "ActiveDampening.h"
+#include "ADCConfigurations.h"
 
 #endif /* XT28API_XT28_API_H_ */

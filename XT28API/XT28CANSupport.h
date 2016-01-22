@@ -1,4 +1,10 @@
-/** \defgroup CANSuport CAN Support
+/*! \defgroup SUPPORT Support
+ */
+
+
+
+/** \defgroup XT28CAN CAN
+ * \ingroup SUPPORT
  * \brief This modules handels CAN stuff
  *
  *  Configure CAN and get ID defined for xt28
@@ -52,6 +58,14 @@
 #define CAN_ID_REFERENCE_CURRENT_MID		0x17FE0002
 #define CAN_ID_REFERENCE_CURRENT_BACK		0x17FE0003
 
+extern sint32 g_debug1;
+extern sint32 g_debug2;
+extern sint32 g_debug3;
+extern sint32 g_debug4;
+extern sint32 g_debug5;
+extern sint32 g_debug6;
+
+
 /*! \brief what
  * This functions setup the retrive buffer and databoxed used by the rest of XT28 API.
  */
@@ -71,6 +85,12 @@ void CANSend_uint16(uint8 CANChannel, uint32 ID, uint16 A, uint16 B, uint16 C, u
  * Sends the supply voltage on CAN
  */
 void CANSendSupplyVoltageOnCAN(uint8 CANChannel, uint32 ID);
+
+/*!
+ * Use do send global debugg variabels
+ */
+void CANSendDebuggMessage(uint8 CANChannel);
+
 
 #endif /* XT28API_XT28CANSUPPORT_H_ */
 /** @}*/

@@ -1,5 +1,5 @@
 /** \defgroup PAF Forces
- * \ingroup Sensors
+ * \ingroup SENSORS
  * \brief This modules calculates the forces action on the wheels. To calculate this data it used the pressure data and pos
  * data from PAPR and PAPOS
  *
@@ -69,11 +69,25 @@ void PAFSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint
 int PAFGetOptimalReferenceForceForWheel_N(uint8 wheelNumber);
 
 /*!
+ * Get messured cylinder load forec
+ */
+int PAFGetMessuredCylinderLoadForceForWheel_dN(uint8 wheelNumber);
+
+
+/*!
  * Get converted force
  */
 sint32 PAFConvertVerticalForceOnWheelToCylinderLoadForce(uint16 cylinderPoss_mm, sint32 verticalForce);
 
+/*!
+ * Get forces array
+ */
+void PAFGetOptimalReferenceForceArray_N(int forceOptRefOutputArray[static SUM_WHEELS]);
 
+/*!
+ * Get forces array also
+ */
+void PAFGetMessuredCylinderLoadForceArray_dN(int forceCylLoadOutputArray[static SUM_WHEELS]);
 
 
 #endif /* XT28API_SENSORS_PENDELUMARMFORCES_H_ */

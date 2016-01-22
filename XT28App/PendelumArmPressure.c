@@ -84,6 +84,10 @@ void PAPRGetPressureDataArray_bar(int pressureDataOutput_bar[static INDEX_SIZE_P
 	}
 }
 
+float PAPRGetPressureForChamber_bar(int chamber) {
+	return (float)pressureData_Bar[chamber];
+}
+
 
 void PAPRSendPressureDataOnCAN(uint8 CANChannel, uint32 backID, uint32 middleID, uint32 frontID) {
 	CANSend_uint16( CANChannel, backID,

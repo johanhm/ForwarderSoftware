@@ -1,5 +1,5 @@
 /** \defgroup PAPR Pressure
- * \ingroup Sensors
+ * \ingroup SENSORS
  * \brief This modules handels configuration of pressure data.
  *
  *  @{
@@ -26,7 +26,7 @@
 #define INDEX_SIZE_PRESSURESENS						12
 
 /*!
- * Get all pressure data
+ * Get all pressure data in a array
  */
 void PAPRGetPressureDataArray_bar(int pressureDataOutput_bar[static INDEX_SIZE_PRESSURESENS]);
 
@@ -44,6 +44,12 @@ void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate);
  *  Sends pressureData on CAN
  */
 void PAPRSendPressureDataOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID);
+
+/*!
+ * Get pressure data in bar for chamber
+ */
+float PAPRGetPressureForChamber_bar(int chamber);
+
 
 #endif /* XT28API_SENSORS_PENDELUMARMPRESSURE_H_ */
  /** @}*/

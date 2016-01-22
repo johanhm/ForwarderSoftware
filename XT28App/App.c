@@ -1,15 +1,5 @@
 #include "api_lib_basic.h"
-//#include "XT28_api.h"
-#include "IMU.h"
-#include "PendelumArmPressure.h"
-#include "PendelumArmPosition.h"
-#include "PendelumArmForces.h"
-#include "XT28CANSupport.h"
-#include "PendelumArmActuate.h"
-#include "Excipad.h"
-#include "XT28HardwareConstants.h"
-#include "ActiveDampening.h"
-#include "ADCConfigurations.h"
+#include "XT28_api.h"
 
 // Defines
 #define READ_SENSORS_PRIO 			(5)
@@ -46,6 +36,11 @@ void sys_main(void) {
 	EXPConfigureExcipad(CAN_1,
 			databoxNrExipadButtons,
 			databoxNrExipadJoystrick
+	);
+	ADCFGConfigureParameterSettingsFromCAN(CAN_1,
+			3,
+			4,
+			7
 	);
 
 	can_init(CAN_1, 1000000);
@@ -150,9 +145,12 @@ static void checkMachineStateAndActuate(void) {
 
 static void activeDampeningControl(void) {
 
-	ADCFGNivPIDSetup(TRUE);
+	ADCFGManualTestingPlayground(TRUE);
+
+	ADCFGNivPIDSetup(FALSE);
 	ADCFGNivPIDAndSkyhookSetup(FALSE);
 	ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
+	ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
 }
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
@@ -248,6 +246,5 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_REFERENCE_CURRENT_MID,
 			CAN_ID_REFERENCE_CURRENT_BACK
 	);
+	CANSendDebuggMessage(CAN_1);
 }
-
-

@@ -1,4 +1,11 @@
-/** \defgroup PAActuate Actuate PA
+/*!
+ *  \defgroup ACTUATE Actuate
+ */
+
+
+
+/** \defgroup PAA Pendelum Arm
+ * \ingroup ACTUATE
  * \brief Handle output to pendelum arm
  *
  * This module handels the output to the pendelum arms on the forwarder.

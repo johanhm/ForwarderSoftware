@@ -1,5 +1,5 @@
 /** \defgroup PAPOS Posetion
- * \ingroup Sensors
+ * \ingroup SENSORS
  * \brief This modules handels the pos sensor data.
  *
  *  @{

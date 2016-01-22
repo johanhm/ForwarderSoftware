@@ -85,6 +85,53 @@ void CANSendSupplyVoltageOnCAN(uint8 CANChannel, uint32 ID) {
 	);
 }
 
+sint32 g_debug1 = 0;
+sint32 g_debug2 = 0;
+sint32 g_debug3 = 0;
+sint32 g_debug4 = 0;
+sint32 g_debug5 = 0;
+sint32 g_debug6 = 0;
+void CANSendDebuggMessage(uint8 CANChannel) {
+	//Debugging for force controller
+		uint8 debug1msg[8] = {0}; //
+		uint8 debug2msg[8] = {0}; //
+		uint8 debug3msg[8] = {0}; //
+		//Construct Debugmsg 1
+
+		debug1msg[0] = g_debug1;
+		debug1msg[1] = g_debug1 >> 8;
+		debug1msg[2] = g_debug1 >> 16;
+		debug1msg[3] = g_debug1 >> 24;
+		debug1msg[4] = g_debug2;
+		debug1msg[5] = g_debug2 >> 8;
+		debug1msg[6] = g_debug2 >> 16;
+		debug1msg[7] = g_debug2 >> 24;
+
+		//Construct Debugmsg 2
+		debug2msg[0] = g_debug3;
+		debug2msg[1] = g_debug3 >> 8;
+		debug2msg[2] = g_debug3 >> 16;
+		debug2msg[3] = g_debug3 >> 24;
+		debug2msg[4] = g_debug4;
+		debug2msg[5] = g_debug4 >> 8;
+		debug2msg[6] = g_debug4 >> 16;
+		debug2msg[7] = g_debug4 >> 24;
+
+		//Construct Debugmsg 3
+		debug3msg[0] = g_debug5;
+		debug3msg[1] = g_debug5 >> 8;
+		debug3msg[2] = g_debug5 >> 16;
+		debug3msg[3] = g_debug5 >> 24;
+		debug3msg[4] = g_debug6;
+		debug3msg[5] = g_debug6 >> 8;
+		debug3msg[6] = g_debug6 >> 16;
+		debug3msg[7] = g_debug6 >> 24;
+
+		can_sendData(CANChannel, CAN_ID_DEBUG_MSG_1, CAN_EXD_DU8, 8, debug1msg);
+		can_sendData(CANChannel, CAN_ID_DEBUG_MSG_2, CAN_EXD_DU8, 8, debug2msg);
+		can_sendData(CANChannel, CAN_ID_DEBUG_MSG_3, CAN_EXD_DU8, 8, debug3msg);
+}
+
 
 
 

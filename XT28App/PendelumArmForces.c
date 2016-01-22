@@ -53,7 +53,7 @@ static void calculateForceOnCylinderChambers(void) {
 	}
 }
 
-static sint32 messuredForceCylinderLoad_deciN[SUM_WHEELS] = {0};
+static int messuredForceCylinderLoad_deciN[SUM_WHEELS] = {0};
 static void calculateLoadForceOnCylinder(void) {
 	uint8 x = 0;
 	uint8 i = 0;
@@ -272,8 +272,9 @@ void PAFSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID,
 	sint32 forceErrorInPercent[SUM_WHEELS] = {0};
 	int convertToPercent = 100;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		forceErrorInPercent[wheel] = (float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel]) / (float)forceRefOptDispForCylinderLoad_N[wheel] );
-		forceErrorInPercent[wheel] = forceErrorInPercent[wheel] * convertToPercent;
+		forceErrorInPercent[wheel] = (float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel])
+				/
+				(float)forceRefOptDispForCylinderLoad_N[wheel] ) * convertToPercent;
 	}
 	CANSend_sint16(CANChannel, frontAndMiddleID,
 			forceErrorInPercent[FL],
@@ -292,3 +293,25 @@ void PAFSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID,
 int PAFGetOptimalReferenceForceForWheel_N(uint8 wheelNumber) {
 	return forceRefOptDispForCylinderLoad_N[wheelNumber];
 }
+
+void PAFGetOptimalReferenceForceArray_N(int forceOptRefOutputArray[static SUM_WHEELS]) {
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		forceOptRefOutputArray[wheel] = forceRefOptDispForCylinderLoad_N[wheel];
+	}
+}
+
+int PAFGetMessuredCylinderLoadForceForWheel_dN(uint8 wheelNumber) {
+	return messuredForceCylinderLoad_deciN[wheelNumber];
+}
+
+void PAFGetMessuredCylinderLoadForceArray_dN(int forceCylLoadOutputArray[static SUM_WHEELS]) {
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		forceCylLoadOutputArray[wheel] = messuredForceCylinderLoad_deciN[wheel];
+	}
+}
+
+
+
+

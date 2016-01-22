@@ -1,5 +1,19 @@
-/*! \defgroup ADCFG	ADC configurations
- *  \brief This module contains pre defined setups for different ways to controll the forwarder,.
+/*!
+ * \page ADCONFIG  Configurations
+ *
+ * Hello does thos works doxygen pls explain
+ */
+
+
+
+/*! \defgroup AD Active Dampening
+ * 	This group contains module for different controller types
+ * 	and a mocule that congaints different configurations of different controllers.
+ */
+
+/*! \defgroup ADCFG	Configurations
+ * \ingroup SUPPORT
+ *  \brief This shot dosent work
  *
  *  @{
  */
@@ -11,8 +25,19 @@
 #include "PendelumArmActuate.h"
 #include "PendelumArmPosition.h"
 #include "PendelumArmForces.h"
+#include "PendelumArmPressure.h"
 #include "IMU.h"
 #include "api_lib_basic.h"
+
+/*!
+ * Will remove this dude
+ */
+void ADCFGManualTestingPlayground(bool state);
+
+/*!
+ * Enable setting the controller parameters though CAN with Canalyzer
+ */
+void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1, uint16 databoxNr2, uint16 databoxNr3);
 
 /*!
  *  This setups the PID only config with current outputs
@@ -36,6 +61,13 @@ void ADCFGNivPIDAndSkyhookSetup(bool state);
  *  Send to actuate with unit flow %
  */
 void ADCFGPesudoForcePIDSkyhookSlidingMode(bool state);
+
+
+/*!
+ *  With optimal force ref
+ */
+void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state);
+
 
 #endif /* XT28API_ACTIVEDAMPENING_ADCCONFIGURATIONS_H_ */
  /** @}*/

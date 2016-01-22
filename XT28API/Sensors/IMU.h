@@ -1,14 +1,12 @@
-/*! \defgroup Sensors XT28 Sensors
- *  \brief The sensors that exists on the forwarder.
+/*! \defgroup SENSORS Sensors
+ *
  *  This group conatains the API related to sensors on the forwarder. The
  *  installed sensors on the forwarder are:
  *  - \ref IMU
- *  - \ref Pressure
- *  - \ref Pos
  */
 
-/** \defgroup IMU IMU)
- * \ingroup Sensors
+/** \defgroup IMU IMU
+ * \ingroup SENSORS
  * \brief This modules handels the configuration of the IMU and IMU Data.
  *
  *  From this module you can get the IMU data sunch as pitch angle and roll angle.
@@ -49,7 +47,7 @@ void IMUConfigureInertialMeasurementUnit(uint8 CANchannel, uint16 gyroDataboxNum
 uint16 IMUInit(void);
 
 
-/*! \Brief Call to get lates value of Phi
+/*! \brief Call to get lates value of Phi
  *
  *  The filter used to calculate the angle the forwarder have is complementary filter.
  *
@@ -63,7 +61,7 @@ float phiDegree = IMUGetTheta();
  */
 float IMUGetPhi(void);
 
-/*! \Brief Call to get lates value of Theta
+/*! \brief Call to get lates value of Theta
  *
  *  The filter used to calculate the angle the forwarder have is complementary filter.
  *
@@ -87,7 +85,7 @@ float IMUGetAngleVelY(void);
  */
 float IMUGetAngleVelX(void);
 
-/*! \Brief This function will send out the raw values on corresponding can ID when called.
+/*! \brief This function will send out the raw values on corresponding can ID when called.
  *
  * \param[in] CANChannel The channel the message should be sent on
  * \param[in] gyroID The id for IMU message. In short format
