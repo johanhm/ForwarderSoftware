@@ -3,11 +3,12 @@
 #include "api_lib_basic.h"
 #include <math.h>
 #include "XT28CANSupport.h"
+#include "PendelumArmPosition.h"
 
 // Private prototypes
 static void IMUUppdateGyroDataCANCallback(void);
 static void IMUAcceleometerUppdateDataCANCallback(void);
-static void uppdateFilterdAngelsWithComplementaryFilter(void);
+//static void uppdateFilterdAngelsWithComplementaryFilter(void);
 
 // Databox defines
 #define GYRO_RX_DATABOX_BUFFER_LEN_DU8  	5
@@ -98,16 +99,12 @@ static void IMUAcceleometerUppdateDataCANCallback(void) {
 	accelometerXRaw = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);
 	accelometerZRaw = (angleMessageData_au8[5] << 8 | angleMessageData_au8[4]);
 
-	uppdateFilterdAngelsWithComplementaryFilter();
+	//uppdateFilterdAngelsWithComplementaryFilter();
 }
 
 static float phiAngleInDegree = 0;
 static float thetaAngleInDegree = 0;
-/*!
- *  This function is called in the callback of 'IMUAcceleometerUppdateDataCANCallback'
- *  and uppdates the local global variabels 'phiAngleInDegree' and 'thetaAngleInDegree'.
- */
-static void uppdateFilterdAngelsWithComplementaryFilter(void) {
+void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 
 	int multConstantForFilter = 1000;
 	float IMUSensorSampleTime = 0.01;
@@ -123,7 +120,7 @@ static void uppdateFilterdAngelsWithComplementaryFilter(void) {
 	float filterdAnglePhi  = (oldFilterdPhiAngle + gyroAnglePhi) * alpha + (1 - alpha) * accAnglePhi;
 	oldFilterdPhiAngle = filterdAnglePhi;
 
-	phiAngleInDegree = filterdAnglePhi / multConstantForFilter;
+	phiAngleInDegree = filterdAnglePhi * 10 / multConstantForFilter;
 
 	//Theta
 	static int oldFilterdThetaAngle = 0;
@@ -134,7 +131,14 @@ static void uppdateFilterdAngelsWithComplementaryFilter(void) {
 	float filterdAngleTheta  = (oldFilterdThetaAngle + gyroAngleTheta) * alpha + (1 - alpha) * accAngleTheta;
 	oldFilterdThetaAngle = filterdAngleTheta;
 
-	thetaAngleInDegree = filterdAngleTheta / multConstantForFilter;
+	thetaAngleInDegree = filterdAngleTheta * 10 / multConstantForFilter;
+
+
+	//DEBUGG
+	//g_debug1 = 1000 * phiAngleInDegree;
+	//g_debug2 = 1000 * accAnglePhi;
+	//g_debug3 = 1000 * gyroAnglePhi;
+	//END DEBUGG
 }
 
 
@@ -181,11 +185,14 @@ void IMUSendFilterdAngleDataOnCAN(uint CANChannel, sint32 ID) {
 	sint32 Theta_deg = thetaAngleInDegree;
 	sint32 Phi_deg = phiAngleInDegree;
 
+	sint32 avrageHeight = PAPOSGetAvrageHeightOfForwarder();
+	sint32 avrageVel    = PAPOSGetAvrageHeightVelocityOfForwarder();
+
 	uint8 data_au8_sms_OBS[8] = {0};
-	data_au8_sms_OBS[0] = 0;
-	data_au8_sms_OBS[1] = 0;
-	data_au8_sms_OBS[2] = 0;
-	data_au8_sms_OBS[3] = 0;
+	data_au8_sms_OBS[0] = avrageHeight;
+	data_au8_sms_OBS[1] = avrageHeight >> 8;
+	data_au8_sms_OBS[2] = avrageVel;
+	data_au8_sms_OBS[3] = avrageVel >> 8;
 	data_au8_sms_OBS[4] = Theta_deg;
 	data_au8_sms_OBS[5] = Theta_deg >> 8;
 	data_au8_sms_OBS[6] = Phi_deg;

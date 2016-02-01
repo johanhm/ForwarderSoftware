@@ -3,10 +3,11 @@
 #include "XT28CANSupport.h"
 #include "PendelumArmPosition.h"
 #include "XT28HardwareConstants.h"
+#include "XT28CANSupport.h"
 
 
 //Private prototytpes
-static void lowPassFilterPressureSensor(void);
+static void lowPassFilterPressureSensor(float sampleTime);
 
 // Start of implementations
 void PAPRConfigurePressureSensorsVoltageInput(void) {
@@ -21,9 +22,9 @@ void PAPRConfigurePressureSensorsVoltageInput(void) {
 	 */
 
 	/* pressure sensors 7-18 */
-	in_cfgVoltageInput(IN_7_AIV, 1000, 4000, 100, 200, 4800, 200); //Front right A
-	in_cfgVoltageInput(IN_8_AIV, 1000, 4000, 100, 200, 4800, 200); //Front right B
-	in_cfgVoltageInput(IN_9_AIV, 1000, 4000, 100, 200, 4800, 200); //Front left A
+	in_cfgVoltageInput(IN_7_AIV,  1000, 4000, 100, 200, 4800, 200); //Front right A
+	in_cfgVoltageInput(IN_8_AIV,  1000, 4000, 100, 200, 4800, 200); //Front right B
+	in_cfgVoltageInput(IN_9_AIV,  1000, 4000, 100, 200, 4800, 200); //Front left A
 	in_cfgVoltageInput(IN_10_AIV, 1000, 4000, 100, 200, 4800, 200); //Front left B
 	in_cfgVoltageInput(IN_11_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid right A
 	in_cfgVoltageInput(IN_12_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid right B
@@ -36,11 +37,10 @@ void PAPRConfigurePressureSensorsVoltageInput(void) {
 
 }
 
-static int pressureData_mV[INDEX_SIZE_PRESSURESENS]  = {0};
-static int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
-static int sampleTime = 0;
-void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate) {
-	sampleTime = sampleTimeUppdate;
+static uint16 pressureData_mV[INDEX_SIZE_PRESSURESENS]  = {0};
+static uint16 pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
+void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
+	float sampleTime = (float)sampleTimeUppdate_ms / 1000;
 	//read Pressure sensors and calculate Cylinder Forces
 	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A] = in(IN_8_AIV);
 	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_B] = in(IN_7_AIV);
@@ -61,13 +61,21 @@ void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate) {
 		pressureData_Bar[x] = (float)pressureData_mV[x] * 6.25 - 3125;
 	}
 
+	g_debug1 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
+	g_debug3 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
+
 	//Low pass filter pressure signals
-	lowPassFilterPressureSensor();
+	lowPassFilterPressureSensor(sampleTime);
+
+	//deubb
+	g_debug2 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
+	g_debug4 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
 }
 
-static void lowPassFilterPressureSensor(void) {
+static void lowPassFilterPressureSensor(float sampleTime) {
 	static uint32 pressureDataLast_Bar[INDEX_SIZE_PRESSURESENS];
-	float alpha = 0.9938;
+	float Tfp =  1.0 / (2.0 * 3.1415);
+	float alpha = Tfp/(Tfp + sampleTime);
 
 	uint8 x = 0;
 	for (x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {

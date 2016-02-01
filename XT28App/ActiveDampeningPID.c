@@ -80,15 +80,15 @@ void ADPIDGetPIDSignalsForHeightPhiAndThetaArray(float signalArrayOut[static SUM
 	thetaSignal = thetaPID( thetaError);
 
 	// Decouple and output by reference
-	float zAllocationConstant = 0.1694;
+	float zAllocationConstant = -0.1694;
 	float phiAllocationConstant = (float) 1 / 3;
 
-	signalArrayOut[FR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal + 0.1192 * thetaSignal;
-	signalArrayOut[FL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.1192 * thetaSignal;
-	signalArrayOut[MR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal - 0.0046 * thetaSignal;
-	signalArrayOut[ML] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal - 0.0046 * thetaSignal;
-	signalArrayOut[BR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal - 0.1152 * thetaSignal;
-	signalArrayOut[BL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal - 0.1152 * thetaSignal;
+	signalArrayOut[FR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal - 0.1192 * thetaSignal;
+	signalArrayOut[FL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal - 0.1192 * thetaSignal;
+	signalArrayOut[MR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal + 0.0046 * thetaSignal;
+	signalArrayOut[ML] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.0046 * thetaSignal;
+	signalArrayOut[BR] = zAllocationConstant * heightSignal - phiAllocationConstant * phiSignal + 0.1152 * thetaSignal;
+	signalArrayOut[BL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.1152 * thetaSignal;
 }
 
 static float forceP = 0.0;
@@ -108,9 +108,9 @@ void ADPIDGetForceControllerReferenceSignalsArray(int messuredForceCylinder[stat
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		forceError = (float)( forceReferenceArray[wheel] - messuredForceCylinder[wheel] ) / forceReferenceArray[wheel];
 		if (deadbandState == TRUE) {
-			signalArrayOut[wheel] = forceP * deadbandCheckForceError(forceError, wheel);
+			signalArrayOut[wheel] = -forceP * deadbandCheckForceError(forceError, wheel);
 		} else {
-			signalArrayOut[wheel] = forceP * forceError;
+			signalArrayOut[wheel] = -forceP * forceError;
 		}
 	}
 }

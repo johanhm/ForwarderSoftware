@@ -19,16 +19,26 @@
 #include "api_lib_basic.h"
 
 /*!
- * Get PID signals
+ * \brief Get PID signals for Niv controller
+ *
+ * \bug Only P controller truly implemented!
+ *
+ * \param[out] signalArray 	The output array of length 6.
+ * \param[in] heightError 	error = (reference - measured value)
+ * \param[in] phiError 		error = (reference - measured value)
+ * \param[in] thetaError	error = (reference - measured value)
+ *
  */
 void ADPIDGetPIDSignalsForHeightPhiAndThetaArray(float signalArray[static SUM_WHEELS], float heightError, float phiError, float thetaError);
 
 /*!
  * \brief Set PID parameters for pitch controller
  *
+ * \bug Only P controller truly implemented!
+ *
  * \param[in] P proportional constant
  * \param[in] I intergrator constant
- * \param[in] D dereiative constant
+ * \param[in] D derivative constant
  *
  * \return returns whatever the parameters was succesfully set or not.
  *
@@ -40,29 +50,60 @@ int ADPIDSetThetaControlParametersPID(float P, float I, float D);
  *
  * \param[in] P proportional constant
  * \param[in] I intergrator constant
- * \param[in] D dereiative constant
+ * \param[in] D derivative constant
  *
  * \return returns whatever the parameters was succesfully set or not.
  */
 int ADPIDSetPhiControlParametersPID(float P, float I, float D);
 
 /*!
- * Set PID for height
+ * \brief Set PID parameters for height controller
+ *
+ * \param[in] P proportional constant
+ * \param[in] I intergrator constant
+ * \param[in] D derivative constant
+ *
+ * \return returns whatever the parameters was succesfully set or not.
  */
 int ADPIDSetHeightControlParametersPID(float P, float I, float D);
 
 /*!
- * Set force controller PID parameters
+ * \brief Set PID parameters for force controller
+ *
+ * \param[in] P proportional constant
+ * \param[in] I Integrator constant
+ * \param[in] D derivative constant
+ *
+ * \return returns whatever the parameters was successfully set or not.
  */
 int ADPIDSetForceControllerParametersPID(float P, float I, float D);
 
 /*!
- * Force controller swag with optimal deadband
+ * \brief Get the force controllers reference signal for a wheel
+ *
+ * Use this function to get the force controller signal for a specific wheel
+ *
+ * \param[in] wheel          Wheel, for what wheel corresponds to what number see \ref XT28HWC
+ * \param[in] messuredForce  Measured Force
+ * \param[in] forceReference Reference Force
+ * \param[in] deadbandState  If activated. Controller will return 0 when error is less then 10%. If error is higher then 10% it returns a value until the error change sign or is zero.
+ *
+ * \return P * Error
+ *
  */
 float ADPIDGetForceControllerReferenceSignals(int wheel, float messuredForce, float forceReference, bool deadbandState);
 
 /*!
- * Get array
+ * \brief Get an array of signals from force controller
+ *
+ * \bug Only P controller is truely implemented!
+ *
+ * \param[in] messuredForceCylinder Messured force array
+ * \param[in] forceReferenceArray   Reference force array
+ * \param[out] signalArrayOut       Output signal array
+ * \param[in] deadbandState         If activated. Controller will return 0 when error is less then 10%. If error is heigher then 10% it returns a value until the error change sign or is zero.
+ *
+ * \return P * Error array
  */
 void ADPIDGetForceControllerReferenceSignalsArray(int messuredForceCylinder[static SUM_WHEELS], int forceReferenceArray[static SUM_WHEELS], float signalArrayOut[static SUM_WHEELS], bool deadbandState);
 

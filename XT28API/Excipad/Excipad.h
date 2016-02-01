@@ -74,7 +74,7 @@ void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDat
  *
  * \return int values in range [-400 - 400]
  */
-int EXPGetJoystickScaledValue(void);
+float EXPGetJoystickScaledValue(void);
 
 
 

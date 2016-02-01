@@ -209,7 +209,7 @@ void calculateForceReferenceForAllWheels(void) {
 		//F_REF_CYL[wheel] = messuredForceCylinderLoad_deciN[wheel] * 10 + F_REF_CYL[wheel] + F_Z_sky[wheel] + Ref_ground_force[wheel];
 
 		//if(F_REF_CYL[x]<GROUND_P){F_REF_CYL[x]=Load_force[x]*10+Ref_ground_force[x];}
-		if(F_REF_CYL[wheel] < GROUND_P) {
+		if (F_REF_CYL[wheel] < GROUND_P) {
 			F_REF_CYL[wheel] = GROUND_P;
 		}
 	}
@@ -253,10 +253,10 @@ void calculateErestimatedFlowForWheelWithNumber(uint8 wheelCounter) {
 		sl_Vel = velData[wheelCounter];
 	} //Cylinder velocity in mm/s
 
-	//sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
-	sigma = deadBandCheckForceReferenceError(sl_Fl , F_REF_CYL[wheelCounter], wheelCounter);
+	sigma = sl_Fl - F_REF_CYL[wheelCounter]; //dont commet this you retard
+	//sigma = deadBandCheckForceReferenceError(sl_Fl , F_REF_CYL[wheelCounter], wheelCounter);
 
-	sigma = sigma / 200;
+	sigma = sigma / 800;
 	sgn = ((float)sigma / (labs(sigma) + 1000.0));
 
 	if (sl_uold[wheelCounter] >= 0) {

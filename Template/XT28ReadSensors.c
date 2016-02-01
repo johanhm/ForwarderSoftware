@@ -58,14 +58,14 @@ void readPressureSensorsTask(void)  //Read Pressure sensors at 1000hz
 	}
 
 
-	sl_debug_1 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
-	sl_debug_3 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
+	//sl_debug_1 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
+	//sl_debug_3 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
 
 	//Low pass filter pressure signals
 	lowPassFilterPressureSensor();
 
-	sl_debug_2 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
-	sl_debug_4 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
+	//sl_debug_2 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
+	//sl_debug_4 = pressureData[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
 
 	//Calculate corresponding forces at cylinder chambers and total
 	calculateForceOnCylinderChambers();
@@ -248,12 +248,12 @@ void filterIMUSignals(void) {
 	Phi_deg = filterAnglePhi * 10 / multConstantForFilter;
 
 	//debugg variaqbels
-	/*
-	sl_debug_1 = Theta_degOLD;
-	sl_debug_2 = Theta_deg;
-	sl_debug_3 = Phi_degOLD;
-	sl_debug_4 = Phi_deg;
-	*/
+
+	sl_debug_1 = filterAnglePhi;
+	sl_debug_2 = accAnglePhi;
+	sl_debug_3 = gyroAnglePhi;
+	sl_debug_4 = Phi_deg * 1000 / 10;
+
 	// end debugging filter testing
 
 	Theta_rad = (float)Theta_deg * pi / 1800.0;			//Convert to radians

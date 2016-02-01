@@ -33,7 +33,7 @@ void sys_main(void) {
 
 	int databoxNrExipadButtons = 3;
 	int databoxNrExipadJoystrick = 4;
-	EXPConfigureExcipad(CAN_1,
+	EXPConfigureExcipad(CAN_3,
 			databoxNrExipadButtons,
 			databoxNrExipadJoystrick
 	);
@@ -77,6 +77,7 @@ static void readSensorsTask_10ms(void) {
 	PAASetPendelumArmPosLimitState(TRUE);
 
 	/* Uppdate presure and recalculate force data */
+    IMUUppdateFilterdAngelsWithComplementaryFilter();
 	PAPOSUppdatePosSensorsDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
 	PAPRUppdatePressureDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
 
@@ -96,10 +97,6 @@ static void readSensorsTask_10ms(void) {
 
 static void checkMachineStateAndActuate(void) {
 	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
-
-	//TEMPORARY
-	machineState = BUTTON_18;
-	//END TEMPORARY
 
 	switch (machineState) {
 	case NONE: /* All off */
@@ -145,12 +142,15 @@ static void checkMachineStateAndActuate(void) {
 
 static void activeDampeningControl(void) {
 
-	ADCFGManualTestingPlayground(TRUE);
-
+	/*
+	ADCFGManualTestingPlayground(FALSE);
 	ADCFGNivPIDSetup(FALSE);
 	ADCFGNivPIDAndSkyhookSetup(FALSE);
 	ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
 	ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
+	*/
+
+	ADCFGNivPIDAndForcePID(TRUE);
 }
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {

@@ -1,12 +1,26 @@
 /*! \mainpage XT28 Forwarder API Introduction
  
- Welcome to the API documentation for the XT28 Forwarder API.
- This API uses the bodas API to implement its functionality.
-The Api struckture is seen in a figure below
-   
-   \image html xt28API.png "XT28 api Structure and dependencys" 
+  Welcome to the API documentation for the XT28 Forwarder API. This API contains the functions related to the
+ _active dampening_ off the machine. All sensors and cylinders related to active dampening is connected to a  Rexroth BODAS 28-30 controller. As a consequence this API used the 
+ functionality provided by BODAS C-API to implement its futures.
 
-The api contagins the following moduels and sub moduels
+\image html xt28Bild.jpeg "XT28 Extractor Forwarder" 
+ 
+ ### So what is active Dampening? ###
+ To minimize the damage to the soil while driving in the forest and making the driving more confterbole the 
+ XT28 Forwarder wheels is equioped with pendelum arms and hydralic cylinders.
+ With the hydralic cylinders the wheels can move upp and down, wich means that its 
+ possibole to keep the machine leveld and the pressure between the wheels distribiuted. This
+ amazing thecnolegy enables the drivers to drive up to twicve as fast while still beeing more confterbole while driving
+ then you are today. This is the future of the forest industri.
+ 
+ ### How to achive Active dampening? ###
+ 
+ The Api struckture is seen in a figure below
+   
+\image html xt28API.png "XT28 api Structure and dependencys" 
+
+The api contains the following moduels and sub moduels
 
  - \ref ADC
 	+ \ref ADPID

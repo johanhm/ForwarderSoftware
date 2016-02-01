@@ -20,6 +20,8 @@ static uint16 posData_mm[SUM_WHEELS] = {0};
 static sint16 velData[SUM_WHEELS] = {0};
 void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
+	sampleTime_ms = 0; /* Not used rigtht now */
+
 	static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
 	static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
 	static uint16 posData_last[SUM_WHEELS] = {0};
@@ -51,18 +53,20 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 		velData_last[x] = velData[x];
 	}
 
+
 	//Calculate Vel(k)
 	int velocityFilterCoficient = 5; //Filter coefficient for velocity calculation lower value is more filtering
-	float a_vel = 1 / (1 + velocityFilterCoficient * ((float)sampleTime_ms / 1000));
+	float Ts = 0.02;
+	float a_vel = 1 / (1 + velocityFilterCoficient * Ts);
 	for (x = 0; x < 6; x++) {
-		velData[x] = a_vel * velData_last[x] + a_vel * velocityFilterCoficient * ((float)sampleTime_ms / 1000) * (posData_mm[x] - posData_last[x]) / ((float)sampleTime_ms / 1000);
+		velData[x] = a_vel * velData_last[x] + a_vel * velocityFilterCoficient * (Ts) * (posData_mm[x] - posData_last[x]) / (Ts);
 	}
 
 	uppdateForwarderAvrageHeightAndVelocity();
 }
 
 static uint16 forwarderAvrageHeightZc = 0;
-static uint16 forwarderAvrageVelZc = 0;
+static sint16 forwarderAvrageVelZc = 0;
 static void uppdateForwarderAvrageHeightAndVelocity(void) {
 	uint8 x = 0; //index used in FOR loops
 	//Observer for average chassis height

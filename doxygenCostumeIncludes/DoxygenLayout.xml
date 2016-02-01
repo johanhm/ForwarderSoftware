@@ -3,7 +3,7 @@
 	<!-- Navigation index tabs for HTML output -->
 	<navindex>
 		<tab type="mainpage" visible="yes" title="" />
-		<tab type="pages" visible="yes" title="Guides and Exampels" intro="Guides for using the XT28 api to create an application" />
+		<tab type="pages" visible="yes" title="Guides and Exampels" intro="Guides for using the XT28 API to create an application" />
 		<tab type="modules" visible="yes" title="XT28 API documentation"
 			intro="The following are sub-moduels of XT28 API" />
 		<tab type="namespaces" visible="yes" title="">

@@ -68,6 +68,11 @@ void ADCFGPesudoForcePIDSkyhookSlidingMode(bool state);
  */
 void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state);
 
+/*!
+ * PID niv PID force
+ */
+void ADCFGNivPIDAndForcePID(bool state);
+
 
 #endif /* XT28API_ACTIVEDAMPENING_ADCCONFIGURATIONS_H_ */
  /** @}*/

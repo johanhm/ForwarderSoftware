@@ -19,6 +19,12 @@
 #include "api_lib_basic.h"
 
 
+/*!
+ * Uppdate IMU data
+ */
+void IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+
+
 /*! This function configures the IMU. The IMU is a secret IMU from a secret company. It comminucates with the BODAS controller thought CAN.
  * Since the communication is thought CAN the configuration will register databoxes and callback functions. The IMU raw data will uppdate every 10ms after this functions has been called.
  *

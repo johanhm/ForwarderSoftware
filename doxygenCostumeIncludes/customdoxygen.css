@@ -10,6 +10,11 @@
       background: #d65c14;
       background-color: #2c7e17;
  }
+ 
+ .page-header {
+    padding-bottom: 9px;
+    margin: 15px 0 20px;
+}
 
  .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
      color:white;
@@ -20,6 +25,13 @@ div.title.h1 {
 	font-size: 36px;
 	font-weight: 500;
 	font-family: Roboto, sans-serif
+}
+
+div.ingroups {
+    font-size: 16pt;
+    width: 100%;
+    text-align: left;
+    padding-top: 5pt;
 }
 
 h2.groupheader {
@@ -52,6 +64,12 @@ img {
 
 div.image img[src="support28api.png"]{ 
     width: 45%; 
+}
+
+div.image img[src="xt28Bild.jpeg"]{ 
+    width: 70%; 
+    box-shadow: 3px 3px 5px #888888;
+    border-radius: 3pt;
 }
 
 
@@ -311,3 +329,19 @@ blockquote {
 table.table {
 	width: auto
 }
+
+a {
+    color: #4665A2;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.contents a:visited {
+    color: #4665A2;
+}
+
+ul.tablist.nav.nav-pills.nav-justified {
+	color: darkgreen;
+}
+
+

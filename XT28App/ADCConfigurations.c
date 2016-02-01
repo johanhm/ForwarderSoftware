@@ -1,4 +1,5 @@
 #include "ADCConfigurations.h"
+#include "XT28CANSupport.h"
 
 /* Defines */
 #define CONF_MSG_ID_2			0x17FE000A
@@ -120,55 +121,65 @@ void ADCFGManualTestingPlayground(bool state) {
 	ADPIDSetHeightControlParametersPID(heightP, heightI, 0);
 	ADPIDSetPhiControlParametersPID   (phiP,    phiI, 0);
 	ADPIDSetThetaControlParametersPID (thetaP,  thetaI, 0);
-	ADPIDSetForceControllerParametersPID(heightI, 0, 0);
+	ADSHSetSkyhookParameters         (0, 0, 0, 0);
 
-	// Get signal and put in array
-	float referenceCurrentArray[SUM_WHEELS] = {0};
-	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(referenceCurrentArray,
-			(heightReference - 270), 	/* Error in Z */
-			(phiReference    - 5),						/* Error in Phi */
-			(thetaReference  - 5)						/* Error in Theta */
+	// PID Height Theta Phi
+	float pesudoZPhiThetaForceArray[SUM_WHEELS] = {0};
+	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(pesudoZPhiThetaForceArray,
+			(heightReference - 230),
+			(phiReference    - 0),
+			(thetaReference  - 0)
 	);
 
-
-	float forceControllerOut[SUM_WHEELS] = {0};
-	int messuredCylinderForce[SUM_WHEELS] = {0};
-	int cylinderReferenceForce[SUM_WHEELS] = {0};
-	PAFGetMessuredCylinderLoadForceArray_dN(messuredCylinderForce);
-	PAFGetOptimalReferenceForceArray_N(cylinderReferenceForce);
-
-	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce,
-			cylinderReferenceForce,
-			forceControllerOut,
-			TRUE
+	// Skyhook
+	float skyhookSignalArray[SUM_WHEELS];
+	float wheelVelArray[SUM_WHEELS] = {0};
+	PAPOSGetVelDataArray(wheelVelArray);
+	ADSHGetSkyhookSignals(skyhookSignalArray,
+			wheelVelArray,
+			IMUGetAngleVelX(),
+			IMUGetAngleVelY(),
+			PAPOSGetAvrageHeightVelocityOfForwarder()
 	);
 
+	// Add to get the pesudo force
 	int wheel = 0;
-	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		PAASetReferenceForWheelWithUnit(wheel,
-				CURRENT_MA,
-				(referenceCurrentArray[wheel] + forceControllerOut[wheel])
-		);
-	}
+	float pesudoForceArray[SUM_WHEELS];
+	float referenceFlow[SUM_WHEELS];
 
-	/* Set reference current and actuate */
-
-	/*int wheel = 0;
-	float forceControllerReferenceSingal = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		forceControllerReferenceSingal = ADCGetForceControllerReferenceSignals(wheel,
-				PAFGetMessuredCylinderLoadForceForWheel_dN(wheel),
-				PAFGetOptimalReferenceForceForWheel_N(wheel),
+		pesudoForceArray[wheel] = (pesudoZPhiThetaForceArray[wheel] + skyhookSignalArray[wheel]);
+
+		/* Convert pesudo vertical force into cylinder load */
+		pesudoForceArray[wheel] = PAFConvertVerticalForceOnWheelToCylinderLoadForce(PAPOSGetPosDataForWheel_mm(wheel), pesudoForceArray[wheel]);
+
+		/* Calculate reference flow using the pesudo Force with optimal reference */
+		referenceFlow[wheel] = ADSMCalculateSlidingModeControllerForWheel(wheel,
+				PAFGetMessuredCylinderLoadForceForWheel_dN(wheel) * 10,
+				(PAFGetOptimalReferenceForceForWheel_N(wheel) * 10 + pesudoForceArray[wheel]),
+				(PAPRGetPressureForChamber_bar(wheel * 2)     * 1000),
+				(PAPRGetPressureForChamber_bar(wheel * 2 + 1) * 1000),
+				PAPOSGetVelDataForWheel(wheel),
 				TRUE
 		);
+
+		/* DEBUGG */
+		/*
+		g_debug1 = referenceFlow[0] * 100;
+		g_debug2 = referenceFlow[1] * 100;
+		g_debug3 = referenceFlow[2] * 100;
+		g_debug4 = referenceFlow[3] * 100;
+		g_debug5 = referenceFlow[4] * 100;
+		g_debug6 = referenceFlow[5] * 100;
+		*/
+		/* END DEBUG */
+
+		/* Set reference to actuate module with unit flow percentage */
 		PAASetReferenceForWheelWithUnit(wheel,
-				CURRENT_MA,
-				(referenceCurrentArray[wheel] + forceControllerReferenceSingal)
+				FLOW_PERCENTAGE,
+				referenceFlow[wheel]
 		);
-	}*/
-
-
-	// Set reference current and actuate
+	}
 }
 
 void ADCFGNivPIDSetup(bool state) {
@@ -190,7 +201,7 @@ void ADCFGNivPIDSetup(bool state) {
 	);
 
 	// Set reference current and actuate
-	PAASetReferenceArrayWithUnit(referenceCurrentArray, CURRENT_MA);
+	PAASetReferenceArrayWithUnit(referenceCurrentArray, FLOW_PERCENTAGE);
 	PAAActuatePendelumArms();
 }
 
@@ -353,3 +364,52 @@ void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state) {
 	/* Kaboom baby, this is it the arms reference is set and now it will be set as the actual output with no regrets. */
 	PAAActuatePendelumArms();
 }
+
+
+void ADCFGNivPIDAndForcePID(bool state) {
+
+	if (state == FALSE) {
+		return;
+	}
+
+	// Set parameters
+	ADPIDSetHeightControlParametersPID(heightP, heightI, 0);
+	ADPIDSetPhiControlParametersPID   (phiP,    phiI, 0);
+	ADPIDSetThetaControlParametersPID (thetaP,  thetaI, 0);
+	ADPIDSetForceControllerParametersPID(heightI, 0, 0);
+
+	// Get signal and put in array
+	float pesudoZPhiThetaForceArray[SUM_WHEELS] = {0};
+	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(pesudoZPhiThetaForceArray,
+			(heightReference - PAPOSGetAvrageHeightOfForwarder()),
+			(phiReference    - IMUGetPhi()),
+			(thetaReference  - IMUGetTheta())
+	);
+
+
+	float forceControllerOut[SUM_WHEELS] = {0};
+	int messuredCylinderForce[SUM_WHEELS] = {0};
+	int cylinderReferenceForce[SUM_WHEELS] = {0};
+	PAFGetMessuredCylinderLoadForceArray_dN(messuredCylinderForce);
+	PAFGetOptimalReferenceForceArray_N(cylinderReferenceForce);
+
+	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce,
+			cylinderReferenceForce,
+			forceControllerOut,
+			TRUE
+	);
+
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		PAASetReferenceForWheelWithUnit(wheel,
+				CURRENT_MA,
+				(pesudoZPhiThetaForceArray[wheel] + forceControllerOut[wheel])
+		);
+	}
+
+	PAAActuatePendelumArms();
+
+
+}
+
+

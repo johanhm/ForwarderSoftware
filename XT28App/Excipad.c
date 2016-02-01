@@ -85,16 +85,16 @@ static void exipadJoystickCallback(void) {
 	can_getDatabox(exipadCANChannel, exipadJoystrickDBNr, joyStickYMessage, &joystickYNumBytes_u8);
 }
 
-int EXPGetJoystickScaledValue(void) {
+float EXPGetJoystickScaledValue(void) {
 
 	uint16 joystickInput = ((joyStickYMessage[1] << 8) | joyStickYMessage[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
 
-	sint16 joyRef = 0;
+	float joyRef = 0;
 	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
 		joyRef = 0;
 	}
 	else if (joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {
-		joyRef = ((float)(joystickInput - JOYSTICK_Y_HIGH_DEADBAND) / (4300 - JOYSTICK_Y_HIGH_DEADBAND) * (float)300);
+		joyRef = (float)(joystickInput - JOYSTICK_Y_HIGH_DEADBAND) / (4300 - JOYSTICK_Y_HIGH_DEADBAND) * (float)300;
 	}  //Linear scaling
 	else if (joystickInput < JOYSTICK_Y_LOW_DEADBAND) {
 		joyRef = ((float)(joystickInput - JOYSTICK_Y_LOW_DEADBAND) / (JOYSTICK_Y_HIGH_DEADBAND - 350) * (float)300);

@@ -272,7 +272,7 @@ void PAFSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID,
 	sint32 forceErrorInPercent[SUM_WHEELS] = {0};
 	int convertToPercent = 100;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		forceErrorInPercent[wheel] = (float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel])
+		forceErrorInPercent[wheel] = -(float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel])
 				/
 				(float)forceRefOptDispForCylinderLoad_N[wheel] ) * convertToPercent;
 	}

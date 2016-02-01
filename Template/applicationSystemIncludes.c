@@ -209,6 +209,7 @@ void appl_configOutputs(void) {
 	out_cfg(OUT_24_DOH, 100, f_100Hz_DU16, 4000, 18000);
 
 
+
 } // appl_configOutputs
 
 void appl_configInputs(void) {
