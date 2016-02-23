@@ -47,7 +47,9 @@
  *  The allocation of signals for the height PID controller is presented in a table below.
  *
  * <CENTER>
- * __Height allocation constants__
+ * __Table 1: Height allocation constants__
+ * </CENTER>
+ * <CENTER>
  * | Position  | Left | Right |
  * |-----------|------|-------|
  * | Front     | 0.16 | 0.16  |
@@ -63,7 +65,9 @@
  *  The allocations constants for roll phi controller is seen in the table below.
  *
  * <CENTER>
- * __Angle__ \f$\varphi\f$ __allocation constants__
+ * __Table 2: Angle__ \f$\varphi\f$ __allocation constants__
+ * </CENTER>
+ * <CENTER>
  * | Constants | Left |  Right |
  * |-----------|------| -------|
  * | Front     | 0.33 | -0.33  |
@@ -75,7 +79,9 @@
  * Finaly the allocation constants for theta
  *
  * <CENTER>
- * __Angle__ \f$\theta\f$ __allocation constants__
+ * __Table 3: Angle__ \f$\theta\f$ __allocation constants__
+ * </CENTER>
+ * <CENTER>
  * | Constants | Left | Right |
  * |-----------|------|-------|
  * | Front     | 0.12 | 0.12  |
@@ -96,7 +102,9 @@
  * Finaly lets summerize that the this controller can do
  *
  *<CENTER>
- * __PID Niv achivments__
+ * __Table 4: PID Niv achivments__
+ * </CENTER>
+ * <CENTER>
  * | Active dampening Goals | PID leveling |
  * |:----------------------:|--------------|
  * | Leveling               | Yes          |
@@ -138,7 +146,9 @@ void PIDNivControl() {
  * In summery this sort of controller given that its possibole to calculate a force reference for all wheels:
  *
  * <CENTER>
- * __PID Force__
+ * __Table 5: PID Force__
+ * </CENTER>
+ * <CENTER>
  * | Active dampening Goals | PID leveling |
  * |:----------------------:|--------------|
  * | Leveling               | No           |
@@ -170,7 +180,9 @@ void PIDNivControl() {
  * This sort of controller will be it self achieve the following, given that it is possible to act fast egnouth on the velocity's changes:
  *
  * <CENTER>
- * __Skyhook control achivments__
+ * __Table 6: Skyhook control achivments__
+ * </CENTER>
+ * <CENTER>
  * | Active dampening Goals | PID leveling |
  * |:----------------------:|--------------|
  * | Leveling               | No           |
@@ -214,7 +226,7 @@ void PIDNivControl() {
  *
  * ### Implemented sliding mode
  *
- * The implemented slidind mode is based on
+ * The implemented sliding mode is based on
  * <a href="https://www.kth.se/social/upload/507ff5cbf276547b13000002/Compendium_2012.pdf">KTH Non linear control</a> , lecture 9 slide 26.
  *
  *
@@ -242,7 +254,7 @@ void PIDNivControl() {
  * \tag{9}
  * \f}
  *
- * The aurthours of this control law is Frank and Bruno. For futher details on this implementation see their report at KTH.se.
+ * The authors of this control law is Frank and Bruno. For further details on this implementation see their report at KTH.se.
  *
  *
  *
@@ -252,16 +264,13 @@ void PIDNivControl() {
  */
 
 
+/*! \defgroup AD Active Dampening
+ * \ingroup CONTROLLERS
+ * 	Different controllers for achieving active dampening.
+ */
 
-/*! \defgroup ADC Controllers
- *  \ingroup AD
+/*! \defgroup CONTROLLERS Controllers
  *
- *  \brief This module calculate the reference current for Active dampening controller.
- *
- *  This module requiere that the sensor modules are setup and operational. You can use this module to get
- *  what reference current that should be actuated on all wheels in order to achine active dampening.
- *  Different methods exist for calculating a reference signal. This module lets you costumize the PID parameters
- *  of Pitch and Roll controller for the machine for example.
  *  @{
  */
 

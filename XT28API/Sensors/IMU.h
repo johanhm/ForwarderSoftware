@@ -1,15 +1,27 @@
 /*! \defgroup SENSORS Sensors
  *
- *  This group conatains the API related to sensors on the forwarder. The
- *  installed sensors on the forwarder are:
- *  - \ref IMU
+ *  This group contains the API related to sensors on the forwarder.
+ *
+ *  In general to be able to use a sensor module the user need to do the following
+ *
+ *  1. Configure the sensor
+ *  2. Initialize the sensor
+ *  3. Call the update sensor data function periodically
+ *
  */
 
 /** \defgroup IMU IMU
  * \ingroup SENSORS
- * \brief This modules handels the configuration of the IMU and IMU Data.
+ * \brief XT28 IMU Configuration and setup.
  *
- *  From this module you can get the IMU data sunch as pitch angle and roll angle.
+ *  Does the following:
+ *
+ *  1. Configure the IMU.
+ *  2. Initialize the IMU.
+ *  3. Provide functionality to update angle data with complementary filter.
+ *  4. Provide functionality to read angels and gyroscope data.
+ *  5. Send IMU and filtered angels on CAN.
+ *
  *  @{
  */
 
@@ -18,80 +30,91 @@
 
 #include "api_lib_basic.h"
 
-
 /*!
- * Uppdate IMU data
+ * \name Setup and Initialize
  */
-void IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+///@{
 
-
-/*! This function configures the IMU. The IMU is a secret IMU from a secret company. It comminucates with the BODAS controller thought CAN.
- * Since the communication is thought CAN the configuration will register databoxes and callback functions. The IMU raw data will uppdate every 10ms after this functions has been called.
+/*! This function configures the IMU.
  *
+ *### Important: ####
+ * _This functions must be called in main() to be able to use the IMU Data_
  *
  * \param[in] CANchannel The CAN channel the IMU is connected to
- * \param[in] gyroDataboxNumber The databox the gyro should be registerd to.
- * \param[in] acceleometerDataboxNumber The databox the acceleometer data should be registerd to.
- *
- #### Example code: ###
- ~~~~~~~~~~{.c}
- #include "api_lib_basic.h"
-
- uint16 gyroBoxNr = 1;
- uint16 accBoxNr  = 2;
- IMUConfigure(CAN_2, gyroBoxNr, accBoxNr);
- ~~~~~~~~~~
+ * \param[in] gyroDataboxNumber The data box the gyroscope should be register to.
+ * \param[in] acceleometerDataboxNumber The data box the accelerometer data should be register to.
  *
  */
 void IMUConfigureInertialMeasurementUnit(uint8 CANchannel, uint16 gyroDataboxNumber, uint16 acceleometerDataboxNumber);
 
 /*!
- *  This function sends the start init message to the IMU. It has to be called after the CAN channels have been initilazied.
+ *  This function sends a CAN message that initialize the IMU.
  *
- *  \return Returns 0 if everything went ok. If it returns something else something went wrong.
+ *  ### Important: ####
+ *  This function must be called _after_ CAN init and IMUConfigure();
+ *
+ *  \return Returns 0 if success. Error messages are not implemented.
  */
 uint16 IMUInit(void);
+///@}
 
 
-/*! \brief Call to get lates value of Phi
+/*!
+ * \name Update IMU Data
+ */
+///@{
+/*!
+ * Update IMU data.
  *
- *  The filter used to calculate the angle the forwarder have is complementary filter.
+ * \note Must be called periodically every 10ms.
  *
- * \return Phi Returns the lates value of Phi
+ */
+void IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+/** @}*/
+
+
+/*!
+ * \name Get IMU Sensor data
+ */
+///@{
+
+
+/*! Call the get Phi
  *
- #### Example code: ###
- ~~~~~~~~~~{.c}
-float phiDegree = IMUGetTheta();
- ~~~~~~~~~~
+ * \return Returns the latest value of Phi
  *
  */
 float IMUGetPhi(void);
 
-/*! \brief Call to get lates value of Theta
+/*!  Call to get Theta
  *
- *  The filter used to calculate the angle the forwarder have is complementary filter.
- *
- * \return Phi Returns the lates value of Theta
- *
- #### Example code: ###
- ~~~~~~~~~~{.c}
-float thetaDegree = IMUGetTheta();
- ~~~~~~~~~~
- *
+ * \return Returns the latest value of Theta
  */
 float IMUGetTheta(void);
 
 /*!
  * Get angle velocity around Y axis. This axis is the same as angle Theta
+ *
+ * \return gyroVelY
  */
 float IMUGetAngleVelY(void);
 
 /*!
- * Get angle vel around x axis, this is PHI
+ * Get angle velocity around x axis, this is same axis as Phi
+ *
+ * \return gyroVelX
  */
 float IMUGetAngleVelX(void);
 
-/*! \brief This function will send out the raw values on corresponding can ID when called.
+///@}
+
+
+/*!
+ * \name CAN Support
+ */
+///@{
+
+/*! This function will send out the raw values on corresponding can ID when called.
  *
  * \param[in] CANChannel The channel the message should be sent on
  * \param[in] gyroID The id for IMU message. In short format
@@ -101,9 +124,13 @@ float IMUGetAngleVelX(void);
 void IMUSendIMURawValuesOnCAN(uint8 CANChannel, uint32 gyroID, uint32 accID);
 
 /*!
- * Sends the filterd angles on CAN
+ *  Send filtered angles Phi and Theta on CAN.
+ *
+ * @param CANChannel	CANChannel the message is sent on
+ * @param ID			ID used, extended format
  */
 void IMUSendFilterdAngleDataOnCAN(uint CANChannel, sint32 ID);
+///@}
 
 
 

@@ -1,6 +1,4 @@
 #include "PendelumArmForces.h"
-#include <math.h>
-#include "XT28CANSupport.h"
 
 //Private prototytpes
 static void calculateForceOnCylinderChambers(void);
@@ -192,21 +190,23 @@ static void calculateMassCenterLocation(void) {
 
 	float sumOfForcesOnWheels_N = sumOfVerticalForce;
 
-	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (calculatedVerticalForceOnWheel[FR] + calculatedVerticalForceOnWheel[MR] + calculatedVerticalForceOnWheel[BR]) * widthOfForwarder_m;
-	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((calculatedVerticalForceOnWheel[ML] + calculatedVerticalForceOnWheel[MR]) * lengthToMidOfForwarder_m + (calculatedVerticalForceOnWheel[BL] + calculatedVerticalForceOnWheel[BR]) * lengthOfForwarder_m);
+	float massCenterLocationX_mNew = 1 / sumOfForcesOnWheels_N * (calculatedVerticalForceOnWheel[FR] + calculatedVerticalForceOnWheel[MR] + calculatedVerticalForceOnWheel[BR]) * widthOfForwarder_m;
+	float massCenterLocationY_mNew = 1 / sumOfForcesOnWheels_N * ((calculatedVerticalForceOnWheel[ML] + calculatedVerticalForceOnWheel[MR]) * lengthToMidOfForwarder_m + (calculatedVerticalForceOnWheel[BL] + calculatedVerticalForceOnWheel[BR]) * lengthOfForwarder_m);
 
-	//temporary remove when logic is working
-	massCenterLocationX_m = 0.47 * widthOfForwarder_m;
-	massCenterLocationY_m = 0.34 * lengthOfForwarder_m;
-	//end of temporare to remove
+	// Low pass filter
+	massCenterLocationX_m = massCenterLocationX_m * 0.999 + 0.001 * massCenterLocationX_mNew;
+	massCenterLocationY_m = massCenterLocationY_m * 0.999 + 0.001 * massCenterLocationY_mNew;
+
 }
 
 void PAFSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
 	float lengthOfForwarder_m = LENGTH_OF_FORWARDER_m;
 	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 	int convertToPercent = 100;
+
 	sint16 massCenterLocationX_s16_10m = (massCenterLocationX_m / widthOfForwarder_m  * convertToPercent);
 	sint16 massCenterLocationY_s16_10m = (massCenterLocationY_m / lengthOfForwarder_m * convertToPercent);
+
 	CANSend_sint16(CANChannel, ID,
 			massCenterLocationX_s16_10m,
 			massCenterLocationY_s16_10m,
@@ -222,13 +222,18 @@ static void calculateOptimalForceForAllWheels(void) {
 	float lengthToMidOfForwarder_m = LENGTH_TO_MID_OFF_FORWARDER_m;
 	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
+	//temporary remove when logic is working
+	float massCenterLocationX_mLocal = 0.47 * widthOfForwarder_m;
+	float massCenterLocationY_mLocal = 0.43 * lengthOfForwarder_m;
+	//end of temporare to remove
+
 	float kMidScalingConstant = (float)1 / 3;
 
-	float kFront = (lengthOfForwarder_m - massCenterLocationY_m - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
-	float kLeft  = 1 - massCenterLocationX_m / widthOfForwarder_m;
+	float kFront = (lengthOfForwarder_m - massCenterLocationY_mLocal - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
+	float kLeft  = 1 - massCenterLocationX_mLocal / widthOfForwarder_m;
 	float kMid   = kMidScalingConstant;
-	float kRear  = (massCenterLocationY_m - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
-	float kRight = massCenterLocationX_m / widthOfForwarder_m;
+	float kRear  = (massCenterLocationY_mLocal - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
+	float kRight = massCenterLocationX_mLocal / widthOfForwarder_m;
 
 	//Optimal force ref vector vertical
 	forceReferenceOptimalDistrubutionVertical_N[FL]  = kFront * kLeft  * sumOfVerticalForce;

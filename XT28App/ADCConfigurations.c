@@ -5,6 +5,7 @@
 #define CONF_MSG_ID_2			0x17FE000A
 #define CONF_MSG_ID_3			0x17FE000B
 #define CONF_MSG_ID_4			0x17FE000C
+#define CONF_MSG_ID_5			0x17FE000D
 #define DATABOX_BUFFER_LENGTH 	5
 
 
@@ -12,6 +13,7 @@
 static float heightReference = 250;
 static float phiReference = 0;
 static float thetaReference = 0;
+static float forceReference = 0;
 
 /* Controll parameters set thouth CAN */
 static float heightP = 0;
@@ -32,15 +34,13 @@ static float skyWheelGain  = 0;
 static void heightParametersCallback(void);
 static void thetaPhiProportionalParametersCallback(void);
 static void integratorParametersCallback(void);
+static void referenceParametersCallback(void);
 
-void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1, uint16 databoxNr2, uint16 databoxNr3) {
-
-	static can_DataboxData_ts heightParameters_Buffer[DATABOX_BUFFER_LENGTH];
-	static can_DataboxData_ts thetaPhiProportionalParameters_Buffer[DATABOX_BUFFER_LENGTH];
-	static can_DataboxData_ts integratorParameters_Buffer[DATABOX_BUFFER_LENGTH];
+void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1, uint16 databoxNr2, uint16 databoxNr3, uint16 databoxNr4) {
 
 	int configMessageNumOfBytes = 8;
 
+	static can_DataboxData_ts heightParameters_Buffer[DATABOX_BUFFER_LENGTH];
 	can_initRxDatabox(CANChannel,
 			databoxNr1,
 			CONF_MSG_ID_2,
@@ -51,6 +51,7 @@ void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1,
 			heightParametersCallback
 	);
 
+	static can_DataboxData_ts thetaPhiProportionalParameters_Buffer[DATABOX_BUFFER_LENGTH];
 	can_initRxDatabox(CANChannel,
 			databoxNr2,
 			CONF_MSG_ID_3,
@@ -61,6 +62,7 @@ void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1,
 			thetaPhiProportionalParametersCallback
 	);
 
+	static can_DataboxData_ts integratorParameters_Buffer[DATABOX_BUFFER_LENGTH];
 	can_initRxDatabox(CANChannel,
 			databoxNr3,
 			CONF_MSG_ID_4,
@@ -71,7 +73,31 @@ void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1,
 			integratorParametersCallback
 	);
 
+	static can_DataboxData_ts referenceParameters_Buffer[DATABOX_BUFFER_LENGTH];
+	can_initRxDatabox(CANChannel,
+			databoxNr4,
+			CONF_MSG_ID_5,
+			CAN_EXD_DU8,
+			configMessageNumOfBytes,
+			referenceParameters_Buffer,
+			DATABOX_BUFFER_LENGTH,
+			referenceParametersCallback
+	);
 }
+
+static void referenceParametersCallback(void) {
+	sint8 confData_au8[8] = {0};
+	sint8 confNumBytes_u8;
+
+	/* Databox Get Message data and assign to variables */
+	if (0 == can_getDatabox(CAN_1, 8, confData_au8, &confNumBytes_u8)) {
+		phiReference 			= confData_au8[0];
+		thetaReference     		= confData_au8[1];
+		g_debug1 = phiReference;
+		g_debug2 = thetaReference;
+	}
+}
+
 
 static void heightParametersCallback(void) {
 	uint8 confData_au8[8] = {0};
@@ -79,10 +105,12 @@ static void heightParametersCallback(void) {
 
 	/* Databox Get Message data and assign to variables */
 	if (0 == can_getDatabox(CAN_1, 3, confData_au8, &confNumBytes_u8)) {
-		//sint16 forceRef 	= ((confData_au8[1] << 8) | (confData_au8[0]));   // Add two 8-bits to an unsigned 16-bit. Not sure what this dude was even used for
+		forceReference	 	= ((confData_au8[1] << 8) | (confData_au8[0])) / 10;   // Add two 8-bits to an unsigned 16-bit. Not sure what this dude was even used for
 		heightP       		= ((confData_au8[3] << 8) | (confData_au8[2]));
 		skyWheelGain    	= ((confData_au8[5] << 8) | (confData_au8[4]));
 		heightReference 	= ((confData_au8[7] << 8) | (confData_au8[6]));
+
+		g_debug3 = forceReference;
 	}
 }
 
@@ -201,7 +229,7 @@ void ADCFGNivPIDSetup(bool state) {
 	);
 
 	// Set reference current and actuate
-	PAASetReferenceArrayWithUnit(referenceCurrentArray, FLOW_PERCENTAGE);
+	PAASetReferenceArrayWithUnit(referenceCurrentArray, CURRENT_MA);
 	PAAActuatePendelumArms();
 }
 
@@ -365,7 +393,6 @@ void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state) {
 	PAAActuatePendelumArms();
 }
 
-
 void ADCFGNivPIDAndForcePID(bool state) {
 
 	if (state == FALSE) {
@@ -373,14 +400,14 @@ void ADCFGNivPIDAndForcePID(bool state) {
 	}
 
 	// Set parameters
-	ADPIDSetHeightControlParametersPID(heightP, heightI, 0);
-	ADPIDSetPhiControlParametersPID   (phiP,    phiI, 0);
-	ADPIDSetThetaControlParametersPID (thetaP,  thetaI, 0);
-	ADPIDSetForceControllerParametersPID(heightI, 0, 0);
+	ADPIDSetHeightControlParametersPID(heightP, 0, 0);
+	ADPIDSetPhiControlParametersPID   (phiP,    0, 0);
+	ADPIDSetThetaControlParametersPID (thetaP,  0, 0);
+	ADPIDSetForceControllerParametersPID(heightI, 0, 0); /* if parameters is heigfht I, fix and remove this comment. if fixed remove comment */
 
 	// Get signal and put in array
-	float pesudoZPhiThetaForceArray[SUM_WHEELS] = {0};
-	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(pesudoZPhiThetaForceArray,
+	float heightPhiThetaSignalArray[SUM_WHEELS] = {0};
+	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(heightPhiThetaSignalArray,
 			(heightReference - PAPOSGetAvrageHeightOfForwarder()),
 			(phiReference    - IMUGetPhi()),
 			(thetaReference  - IMUGetTheta())
@@ -393,6 +420,62 @@ void ADCFGNivPIDAndForcePID(bool state) {
 	PAFGetMessuredCylinderLoadForceArray_dN(messuredCylinderForce);
 	PAFGetOptimalReferenceForceArray_N(cylinderReferenceForce);
 
+	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce, /* messured force array  */
+			cylinderReferenceForce,										/* reference force array */
+			forceControllerOut,											/* output array          */
+			TRUE														/* Deadband              */
+	);
+
+	int wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		PAASetReferenceForWheelWithUnit(wheel,
+				CURRENT_MA,
+				(heightPhiThetaSignalArray[wheel] + forceControllerOut[wheel])
+		);
+	}
+
+	PAAActuatePendelumArms();
+}
+
+void ADCFGForceControllerTest(bool state) {
+	if (state == FALSE) {
+		return;
+	}
+
+	// Set parameters
+	ADPIDSetHeightControlParametersPID(heightP, 0, 0);
+	ADPIDSetPhiControlParametersPID   (phiP,    0, 0);
+	ADPIDSetThetaControlParametersPID (thetaP,  0, 0);
+	ADPIDSetForceControllerParametersPID(heightI, 0, 0);
+
+	// Get signal and put in array
+	float heightPhiThetaSignalArray[SUM_WHEELS] = {0};
+	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(heightPhiThetaSignalArray,
+			(heightReference - PAPOSGetAvrageHeightOfForwarder()),
+			(phiReference    - IMUGetPhi()),
+			(thetaReference  - IMUGetTheta())
+	);
+
+
+	float forceControllerOut[SUM_WHEELS] = {0};
+	int messuredCylinderForce[SUM_WHEELS] = {0};
+	int cylinderReferenceForce[SUM_WHEELS] = {0};
+	PAFGetMessuredCylinderLoadForceArray_dN(messuredCylinderForce);
+	PAFGetOptimalReferenceForceArray_N(cylinderReferenceForce);
+
+
+	if (forceReference == 0) {
+		cylinderReferenceForce[0] = messuredCylinderForce[0];
+		g_debug4 = (forceReference - messuredCylinderForce[0]) / (forceReference) * 100;
+	} else {
+		cylinderReferenceForce[0] = forceReference;
+	}
+	cylinderReferenceForce[1] = messuredCylinderForce[1];
+	cylinderReferenceForce[2] = messuredCylinderForce[2];
+	cylinderReferenceForce[3] = messuredCylinderForce[3];
+	cylinderReferenceForce[4] = messuredCylinderForce[4];
+	cylinderReferenceForce[5] = messuredCylinderForce[5];
+
 	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce,
 			cylinderReferenceForce,
 			forceControllerOut,
@@ -403,12 +486,11 @@ void ADCFGNivPIDAndForcePID(bool state) {
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		PAASetReferenceForWheelWithUnit(wheel,
 				CURRENT_MA,
-				(pesudoZPhiThetaForceArray[wheel] + forceControllerOut[wheel])
+				(heightPhiThetaSignalArray[wheel] + forceControllerOut[wheel])
 		);
 	}
 
 	PAAActuatePendelumArms();
-
 
 }
 

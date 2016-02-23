@@ -7,22 +7,22 @@
 \image html xt28Bild.jpeg "XT28 Extractor Forwarder" 
  
  ### So what is active Dampening? ###
- To minimize the damage to the soil while driving in the forest and making the driving more confterbole the 
- XT28 Forwarder wheels is equioped with pendelum arms and hydralic cylinders.
- With the hydralic cylinders the wheels can move upp and down, wich means that its 
- possibole to keep the machine leveld and the pressure between the wheels distribiuted. This
- amazing thecnolegy enables the drivers to drive up to twicve as fast while still beeing more confterbole while driving
- then you are today. This is the future of the forest industri.
+ To minimize the damage to the soil while driving in the forest and making the driving more comfortable the 
+ XT28 Forwarder wheels is equipped with pendulum arms and hydraulic cylinders.
+ With the hydraulic cylinders the wheels can move up and down, which means that its 
+ possible to keep the machine leveled and the pressure between the wheels distributed. This
+ amazing technology enables the drivers to drive up to twice as fast while still being more comfortable while driving
+ then you are today. This is the future of the forest industry.
  
- ### How to achive Active dampening? ###
+ ### How to achieve Active dampening? ###
  
- The Api struckture is seen in a figure below
+ The API structure is seen in a figure below
    
-\image html xt28API.png "XT28 api Structure and dependencys" 
+\image html xt28API.png "XT28 API Structure and dependency" 
 
-The api contains the following moduels and sub moduels
+The API contains the following modules and sub modules
 
- - \ref ADC
+ - \ref AD
 	+ \ref ADPID
 	+ \ref ADSH
 	+ \ref ADSM
@@ -42,20 +42,20 @@ The api contains the following moduels and sub moduels
  Where most of the API make use of hardware constants to function.
 
 
-## Supportin functionalitys #######
+## Supporting functionality #######
 
-   Part of the API is also the support, with the dependencys seen in the figure below
+   Part of the API is also the support, with the dependences seen in the figure below
    
-   \image html support28api.png "Supporting functinalitys"
+   \image html support28api.png "Supporting functionality's"
 
-The \ref XT28CAN module is included by the Sensors and Actuate in order to be able to send CAN messages stuch as sensor values and 
+The \ref XT28CAN module is included by the Sensors and Actuate in order to be able to send CAN messages such as sensor values and 
 reference current / actual current.
 
-The \ref ADCFG module contains several pre defined controll control structures of the machine.
+The \ref ADCFG module contains several pre-defined control control structures of the machine.
 
-### Guides and exampels #######
+### Guides and examples #######
  
- For exampels on different controller configurations see
+ For examples on different controller configurations see
  - \ref ADCONFIG
  - \ref ADCONTROLLERS
  - \ref EXCIPADEX

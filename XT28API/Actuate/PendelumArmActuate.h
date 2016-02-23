@@ -4,13 +4,20 @@
 
 
 
-/** \defgroup PAA Pendelum Arm
+/** \defgroup PAA Pendulum Arm
  * \ingroup ACTUATE
- * \brief Handle output to pendelum arm
+ * \brief Output to pendulum arm cylinders.
  *
- * This module handels the output to the pendelum arms on the forwarder.
- * The output will by defualt be saturated to a maximum for 800mA in order not to plow the solenoid valves up.
+ * This module handles the output to the pendulum arms on the forwarder. It does the following:
  *
+ * 1. Configure output ports to pendulum arm cylinders
+ * 2. Handle limitations on actuate pendulum arms.
+ * 3. Handle passive dampening ( ON / OFF )
+ * 4. Handle setting a reference for pendulum arm output
+ * 5. Actuate set reference for pendulum arm
+ *
+ * The output will by default be saturated to a maximum for 800mA in order not to blow the solenoid valves up.
+ * The valves also have a dead band of 400mA. This module adds it to set reference.
  *
  *  @{
  */
@@ -24,81 +31,119 @@
 #include "XT28HardwareConstants.h"
 
 /*!
- * THe unit for setting output
+ *	 Actuate unit
  */
 typedef enum {
-	CURRENT_MA,			/* Current   [mA] 	*/
-	FLOW_PERCENTAGE,	/* Flow      [%] 	*/
-	VELOCITY_MS			/* Velocity  [m/s] 	*/
+	CURRENT_MA,			/*!< Current   [mA] 	*/
+	FLOW_PERCENTAGE,	/*!< Flow      [%] 	    */
+	VELOCITY_MS			/*!< Velocity  [m/s] 	*/
 } PAAOutUnit;
 
+/*! \name Configure, Setup and Actuate */
 /*!
- * Configures the outputs on the forwarder. THis needs to be called in application setup in order to be able to
- * actuate anything at all on the pendelum arms.
+ * Configures the outputs on the forwarder. Needs to be called in application setup in order to be able to
+ * actuate anything at all on the pendulum arms.
  */
 void PAAConfigurePendelumArmOutputs(void);
 
 /*!
- * Set passive dampening state of the forwarder.
- * The machine have passive accamulators installd on each wheel. They can be activated by calling this function. They will all be activated at once.
- *
- * \param[in] Set passive dampening state to [TRUE, FALSE]
+ *  Actuate the last set reference to pendulum arm.
+ *  You typically call this function after setting the reference for all wheels using
+ *  PAASetReferenceForWheelWithUnit() or PAASetReferenceArrayWithUnit()
  */
-void PAASetPassiveDampeningState(bool state);
+void PAAActuatePendelumArms(void);
+/** @} */
 
-/*!
- * Use this function to investigate what the reference current on a wheel is at this point in time when you call it.
- *
- * \return Reference current on wheel
- */
-int PAAGetReferenceCurrentForWheel(int wheel);
 
+
+/*! \name Set */
 /*!
  * Set the reference current on a wheel to a specific value.
  * Valid values are in the range of [0 - 400]. This function will then add the deadband on the solenoids of 400 to the set value.
  * This function will also check if the input is valid.
  * If it is not valid the input will be saturated and the function will return an error parameter
  *
- * \return 0 Set current, valid range
- * \return 1 Set current, saturated.
+ *
+ * @param wheel
+ * @param unit
+ * @param referenceInput
+ * @return 0 = no problems, 1 = saturated
  */
 int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceInput);
 
 /*!
  * Set reference array for all wheels
+ *
+ * @param referenceArray	Input reference array
+ * @param unit				Selected unit
  */
 void PAASetReferenceArrayWithUnit(float referenceArray[static SUM_WHEELS], PAAOutUnit unit);
 
 /*!
- *  This function sends the current reference current actuate on pendelumarm.
- */
-void PAAActuatePendelumArms(void);
-
-/*!
- * Enabels or disables the pos limit
+ * If active then this functions does the following:
+ * 1. If the cylinder is close to a end position the reference output will be ser to zero.
+ *
+ * @param state		True = limit active, False = limit inactive
  */
 void PAASetPendelumArmPosLimitState(bool state);
 
 /*!
- * Set current output limit.  Not yet implemented
- */
+ *  Set current output limit.
+ * \note Not yet implemented
+  * @param currentLimit		Valid range [400 - 800]
+  */
 void PAASetReferenceCurrentSaturationLimit(int currentLimit);
 
 /*!
  *  Set if current output should be activated or not.
+ *
+ *  @param state True = its possible to actuate the pendulum arms. False = No current will be set even if PAAActuatePendelumArms() is called.
  */
 void PAASetPendelumArmActuateState(bool state);
 
 /*!
+ * Set passive dampening of the forwarder.
+ * The machine have passive accumulators installed on each pendulum arm cylinder. They can be activated by calling this function. They will all be activated at once.
+ *
+ * \param[in] state Set passive dampening state to [TRUE, FALSE]
+ */
+void PAASetPassiveDampeningState(bool state);
+/** @} */
+
+
+
+/*! \name Get */
+/*!
+ * Use this function to get current reference set on wheel
+ *
+ * \return Reference current on wheel
+ */
+int PAAGetReferenceCurrentForWheel(int wheel);
+/** @} */
+
+
+
+/*! \name CAN */
+/*!
  * Sends reference current on CAN
+ *
+ * @param CANChannel	CAN Channel
+ * @param frontID		Extended format
+ * @param middleID		Extended format
+ * @param backID		Extended format
  */
 void PAASendReferenceCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID);
 
 /*!
  * Send real actuated current on solenoid to CAN
+ *
+ * @param CANChannel	CAN Channel
+ * @param frontID		Extended format
+ * @param middleID		Extended format
+ * @param backID		Extended format
  */
 void PAASendRealCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID);
-
+/** @} */
 
 #endif /* XT28API_ACTUATE_PENDELUMARMACTUATE_H_ */
 /** @}*/

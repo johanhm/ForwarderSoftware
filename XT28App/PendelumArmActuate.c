@@ -3,8 +3,8 @@
 #include "XT28HardwareConstants.h"
 
 
-#define REFERENCE_CURRENT_MAXIMUM_B_mA   -200
-#define REFERENCE_CURRENT_MAXIMUM_A_mA   200
+#define REFERENCE_CURRENT_MAXIMUM_B_mA   -400
+#define REFERENCE_CURRENT_MAXIMUM_A_mA   400
 #define DEADZONE_FOR_SOLEONID_CURRENT_mA 400
 
 #define CYL_POS_MAX  490 			//Software cylinder position maximum limit (mm)

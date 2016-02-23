@@ -118,7 +118,9 @@ void ADPIDGetForceControllerReferenceSignalsArray(int messuredForceCylinder[stat
 static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	static int errorSignOld[SUM_WHEELS] = {0};
 	static int state[SUM_WHEELS] = {0};
+
 	static float deadBandLimit = 0.10;
+
 	int errorSign = 0;
 	float returnForceError = 0;
 

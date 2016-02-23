@@ -1,13 +1,18 @@
 /*! \defgroup SUPPORT Support
+ *
+ * The support group contains functionality that is mainly used for development of the machine.
  */
 
 
 
 /** \defgroup XT28CAN CAN
  * \ingroup SUPPORT
- * \brief This modules handels CAN stuff
+ * \brief CAN related functionality. This module does the following:
  *
- *  Configure CAN and get ID defined for xt28
+ * 1. Set up CAN channels with XT28 settings
+ * 2. Provide user with functions for sending signed and unsigned int16
+ * 3. Send Battery voltage and Debug variables on CAN
+ *
  *  @{
  */
 
@@ -16,6 +21,12 @@
 
 #include "api_lib_basic.h"
 
+/*!
+ *  \name CAN ID Defined in Canalyzer database
+ *
+ *
+ */
+///@{
 // CAN ID's retrieved
 #define CAN_ID_GYRODATA_DATA				0x1FD
 #define CAN_ID_ACCELOMETER_DATA				0x2FD
@@ -57,40 +68,89 @@
 #define CAN_ID_REFERENCE_CURRENT_FRONT		0x17FE0001	//Made up for testing purposes
 #define CAN_ID_REFERENCE_CURRENT_MID		0x17FE0002
 #define CAN_ID_REFERENCE_CURRENT_BACK		0x17FE0003
+///@}
 
+/*!
+ *  \name Global debug variables
+ *  For any module that import CAN Support its possible to use these global variables
+ *  to send any data on CAN. To send the data of global debug variables the user have to call CANSendDebuggMessage(uint8 CANChannel) periodically.
+ */
+///@{
 extern sint32 g_debug1;
 extern sint32 g_debug2;
 extern sint32 g_debug3;
 extern sint32 g_debug4;
 extern sint32 g_debug5;
 extern sint32 g_debug6;
+///@}
 
-
-/*! \brief what
- * This functions setup the retrive buffer and databoxed used by the rest of XT28 API.
+/*! \name Configure */
+/*!
+ * This functions does the following:
+ *
+ * + Configure retrieve buffers for CAN channels
+ *    - CAN 1
+ *    - CAN 2
+ *    - CAN 3
+ * + Configure transmit buffers for CAN channels
+ *    - CAN 1
+ *    - CAN 2
+ *    - CAN 3
+ * + Register the use of DataBoxes on CAN channels
+ *    - CAN 1
+ *    - CAN 2
+ *    - CAN 3
+ *
  */
 void CANConfigureXT28CANChannels(void);
+/** @}*/
 
-/*! \Brief what
- *  This functions sends four 16bit signed ints on a can channel with a id.
+
+
+/*! \name Public */
+/*!
+ * Send a message with four signed integers 16 bit.
+ *
+ * @param CANChannel	The CAN channel you like to transmit on
+ * @param ID			The CAN ID to use
+ * @param A				sint16
+ * @param B				sint16
+ * @param C				sint16
+ * @param D				sint16
  */
 void CANSend_sint16(uint8 CANChannel, uint32 ID, sint16 A, sint16 B, sint16 C, sint16 D);
 
-/*! \Brief what
- *  Sends unsigned int16.
+/*!
+ * Send a message with four unsigned integers 16 bit.
+ *
+ * @param CANChannel	The CAN channel you like to transmit on
+ * @param ID			The CAN ID to use
+ * @param A				uint16
+ * @param B				uint16
+ * @param C				uint16
+ * @param D				uint16
  */
 void CANSend_uint16(uint8 CANChannel, uint32 ID, uint16 A, uint16 B, uint16 C, uint16 D);
+/** @}*/
 
+
+
+/*! \name CAN Send */
 /*!
- * Sends the supply voltage on CAN
+ * 	Send the battery voltage on CAN
+ *
+ * @param CANChannel	The CAN channel you like to transmit on
+ * @param ID			The CAN ID to use
  */
 void CANSendSupplyVoltageOnCAN(uint8 CANChannel, uint32 ID);
 
 /*!
- * Use do send global debugg variabels
+ * Send Debug variables data on CAN
+ *
+ * @param CANChannel	The CAN channel you like to transmit on
  */
 void CANSendDebuggMessage(uint8 CANChannel);
-
+/** @}*/
 
 #endif /* XT28API_XT28CANSUPPORT_H_ */
 /** @}*/

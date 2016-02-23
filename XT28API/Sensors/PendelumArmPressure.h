@@ -1,6 +1,13 @@
 /** \defgroup PAPR Pressure
- * \ingroup SENSORS
- * \brief This modules handels configuration of pressure data.
+ * \ingroup PASENS
+ * \brief Pendulum arm cylinder pressure
+ *
+ * This module does the following:
+ *
+ * 1. Configure input ports of pressure sensors
+ * 2. Read pressure sensors and low pass filter
+ * 3. Provide functionality to read pressure data
+ * 4. Send pressure data on CAN
  *
  *  @{
  */
@@ -25,31 +32,50 @@
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B		11
 #define INDEX_SIZE_PRESSURESENS						12
 
-/*!
- * Get all pressure data in a array
- */
-void PAPRGetPressureDataArray_bar(int pressureDataOutput_bar[static INDEX_SIZE_PRESSURESENS]);
-
+/*! \name Configure and Update */
 /*!
  * This function configures the pressure sensors.
  */
 void PAPRConfigurePressureSensorsVoltageInput(void);
 
 /*!
- * Uppdates the pressure data
+ *	Does the following:
+ *	1. Read the pressure on input ports
+ *	2. low pass filter pressure data
+ *
+ * @param sampleTimeUppdate	The period this function is called in milliseconds.
  */
 void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate);
+/** @}*/
 
+/*! \name Get */
 /*!
- *  Sends pressureData on CAN
- */
-void PAPRSendPressureDataOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID);
-
-/*!
- * Get pressure data in bar for chamber
+ * Get pressure data in bar for a chamber. The order is defined in \ref XT28HWC
+ *
+ * @param chamber
+ * @return Pressure
  */
 float PAPRGetPressureForChamber_bar(int chamber);
 
+/*!
+ * Get all pressure data in a array.
+ *
+ * @param pressureDataOutput_bar	Pointer to output array that will be filled with latest pressure data
+ */
+void PAPRGetPressureDataArray_bar(int pressureDataOutput_bar[static INDEX_SIZE_PRESSURESENS]);
+/** @}*/
+
+/*! \name CAN */
+/*!
+ *  Sends pressureData on CAN
+ *
+ * @param CANChannel	CAN Channel
+ * @param frontID		Extended format
+ * @param middleID		Extended format
+ * @param backID		Extended format
+ */
+void PAPRSendPressureDataOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, uint32 backID);
+/** @}*/
 
 #endif /* XT28API_SENSORS_PENDELUMARMPRESSURE_H_ */
- /** @}*/
+/** @}*/

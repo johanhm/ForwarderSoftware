@@ -40,7 +40,8 @@ void sys_main(void) {
 	ADCFGConfigureParameterSettingsFromCAN(CAN_1,
 			3,
 			4,
-			7
+			7,
+			8
 	);
 
 	can_init(CAN_1, 1000000);
@@ -142,15 +143,17 @@ static void checkMachineStateAndActuate(void) {
 
 static void activeDampeningControl(void) {
 
-	/*
-	ADCFGManualTestingPlayground(FALSE);
-	ADCFGNivPIDSetup(FALSE);
-	ADCFGNivPIDAndSkyhookSetup(FALSE);
-	ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
-	ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
-	*/
-
+	//ADCFGNivPIDSetup(TRUE);
+	//ADCFGForceControllerTest(TRUE);
 	ADCFGNivPIDAndForcePID(TRUE);
+
+	//ADCFGManualTestingPlayground(FALSE);
+	//ADCFGNivPIDAndSkyhookSetup(FALSE);
+	//ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
+	//ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
+
+
+	//ADCFGNivPIDAndForcePID(TRUE);
 }
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
@@ -198,49 +201,61 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_GYRODATA_DATA,
 			CAN_ID_ACCELOMETER_DATA
 	);
+
 	IMUSendFilterdAngleDataOnCAN(CAN_1, CAN_ID_SENSOR_INFO_SMS_16);
+
 	PAPRSendPressureDataOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_1,
 			CAN_ID_SENSOR_INFO_SMS_2,
 			CAN_ID_SENSOR_INFO_SMS_3
 	);
+
 	PAPOSSendPosDataOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_4,
 			CAN_ID_SENSOR_INFO_SMS_5
 	);
+
 	PAPOSSendVelDataOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_6,
 			CAN_ID_SENSOR_INFO_SMS_7
 	);
+
 	PAFSendCylinderChamberForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_8,
 			CAN_ID_SENSOR_INFO_SMS_9,
 			CAN_ID_SENSOR_INFO_SMS_10
 	);
+
 	PAFSendCylinderLoadForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_12,
 			CAN_ID_SENSOR_INFO_SMS_13
 	);
+
 	PAFSendVerticalWheelForceOnCAN(CAN_1,
 			CAN_ID_SENSOR_INFO_SMS_14,
 			CAN_ID_SENSOR_INFO_SMS_15
 	);
+
 	PAFSendMassCenterLocationOnCAN(CAN_1,
 			0x18FF1001
 	);
+
 	PAFSendOptimalForceRefOnCAN(CAN_1,
 			0x18FF1002,
 			0x18FF1003
 	);
+
 	PAFSendForceErrorPercentageOnCAN(CAN_1,
 			0x18FF1004,
 			0x18FF1005
 	);
+
 	PAASendRealCurrentOnCAN(CAN_1,
 			CAN_ID_REAL_CURRENT_FRONT,
 			CAN_ID_REAL_CURRENT_MID,
 			CAN_ID_REAL_CURRENT_BACK
 	);
+
 	PAASendReferenceCurrentOnCAN(CAN_1,
 			CAN_ID_REFERENCE_CURRENT_FRONT,
 			CAN_ID_REFERENCE_CURRENT_MID,

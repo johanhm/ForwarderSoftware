@@ -110,6 +110,7 @@ void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	float IMUSensorSampleTime = 0.01;
 	int convertToDegreePerSecConstant = 50;
 	float alpha = 0.99;
+	float alphaPhi = 0.995;
 
 	//Phi (to avoid hazzle with static i did this copyphasta.)
 	static int oldFilterdPhiAngle = 0;
@@ -117,10 +118,10 @@ void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	float accAnglePhi = atan((float)accelometerXRaw / accelometerZRaw) * 180 / M_PI * multConstantForFilter;
 	float gyroAnglePhi = (float)gyroPhiRaw / convertToDegreePerSecConstant * IMUSensorSampleTime * multConstantForFilter;
 
-	float filterdAnglePhi  = (oldFilterdPhiAngle + gyroAnglePhi) * alpha + (1 - alpha) * accAnglePhi;
+	float filterdAnglePhi  = (oldFilterdPhiAngle + gyroAnglePhi) * alphaPhi + (1 - alphaPhi) * accAnglePhi;
 	oldFilterdPhiAngle = filterdAnglePhi;
 
-	phiAngleInDegree = filterdAnglePhi * 10 / multConstantForFilter;
+	phiAngleInDegree = filterdAnglePhi  / multConstantForFilter;
 
 	//Theta
 	static int oldFilterdThetaAngle = 0;
@@ -131,7 +132,7 @@ void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	float filterdAngleTheta  = (oldFilterdThetaAngle + gyroAngleTheta) * alpha + (1 - alpha) * accAngleTheta;
 	oldFilterdThetaAngle = filterdAngleTheta;
 
-	thetaAngleInDegree = filterdAngleTheta * 10 / multConstantForFilter;
+	thetaAngleInDegree = filterdAngleTheta  / multConstantForFilter;
 
 
 	//DEBUGG
@@ -182,8 +183,8 @@ void IMUSendIMURawValuesOnCAN(uint8 CANChannel, uint32 gyroID, uint32 accID) {
 
 void IMUSendFilterdAngleDataOnCAN(uint CANChannel, sint32 ID) {
 
-	sint32 Theta_deg = thetaAngleInDegree;
-	sint32 Phi_deg = phiAngleInDegree;
+	sint32 Theta_deg = thetaAngleInDegree * 100;
+	sint32 Phi_deg = phiAngleInDegree * 100;
 
 	sint32 avrageHeight = PAPOSGetAvrageHeightOfForwarder();
 	sint32 avrageVel    = PAPOSGetAvrageHeightVelocityOfForwarder();

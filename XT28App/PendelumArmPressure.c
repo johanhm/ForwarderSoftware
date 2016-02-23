@@ -61,15 +61,15 @@ void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 		pressureData_Bar[x] = (float)pressureData_mV[x] * 6.25 - 3125;
 	}
 
-	g_debug1 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
-	g_debug3 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
+	//g_debug1 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
+	//g_debug3 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
 
 	//Low pass filter pressure signals
 	lowPassFilterPressureSensor(sampleTime);
 
 	//deubb
-	g_debug2 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A];
-	g_debug4 = pressureData_Bar[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B];
+	//g_debug2 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
+	//g_debug4 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
 }
 
 static void lowPassFilterPressureSensor(float sampleTime) {
