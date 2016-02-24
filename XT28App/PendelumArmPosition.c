@@ -29,6 +29,7 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	uint8 x = 0; //index used in FOR loops
 
+
 	//////////////////////read Position sensors  and calculate velocities
 	//Save Pos(k-1)
 	for (x = 0; x < SUM_WHEELS; x++) {
