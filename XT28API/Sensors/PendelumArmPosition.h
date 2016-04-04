@@ -16,8 +16,13 @@
 #ifndef XT28API_SENSORS_PENDELUMARMPOSITION_H_
 #define XT28API_SENSORS_PENDELUMARMPOSITION_H_
 
+#include "math.h"
+#include "XT28CANSupport.h"
 #include "api_lib_basic.h"
 #include "XT28HardwareConstants.h"
+
+#define POS_UPPDATED_WITH_NO_ERRORS	(0x00)
+#define POS_ERROR					(0x01)
 
 /*! \name Configure, Setup and Update */
 /*!
@@ -32,8 +37,9 @@ void PAPOSConfigurePositionSensorsVoltageInput(void);
  *  This function need to be periodical called.
  *
  * @param sampleTime_ms  The sample time this function is called, in unit milliseconds.
+ * @return error code
  */
-void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
+int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
 /** @} */
 
 /*! \name Get Sensor Data */
@@ -81,6 +87,12 @@ float PAPOSGetAvrageHeightOfForwarder(void);
  */
 float PAPOSGetAvrageHeightVelocityOfForwarder(void);
 /** @} */
+
+/**!
+ *  Get the angle between front wheels and back wheels
+ * @return beta in degree
+ */
+float PAPOSGetBeta(void);
 
 /*! \name CAN Send */
 /*!

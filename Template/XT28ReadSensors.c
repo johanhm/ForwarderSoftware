@@ -432,7 +432,7 @@ void send_CAN_sensors_values_Task(void)
 	//Construct Debugmsg 1
 
 	debug1[0] = sl_debug_1;
-	debug1[1] = sl_debug_1>>8;
+	debug1[1] = sl_debug_1 >> 8;
 	debug1[2] = sl_debug_1>>16;
 	debug1[3] = sl_debug_1>>24;
 	debug1[4] = sl_debug_2;

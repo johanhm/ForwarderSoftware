@@ -43,7 +43,7 @@ void PAAConfigurePendelumArmOutputs(void) {
 	out_cfg(OUT_11_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
 	out_cfg(OUT_12_POH_CL, cfg_debounce, cfg_frequency, cfg_minLoad, cfg_maxLoad);
 
-	//Set PI constants for all outputs
+	/* Set PI constants for all outputs */
 	out_cfgPI(OUT_1_POH_CL, 157, 136);
 	out_cfgPI(OUT_2_POH_CL, 157, 136);
 	out_cfgPI(OUT_3_POH_CL, 157, 136);
@@ -152,13 +152,13 @@ static int convertFlowToCurrent(float requestedFlowPercentage) {
 }
 
 static int convertVelocityToCurrent(float requestedVel_ms) {
-	// Not yet implemented
+	/* Not yet implemented */
 	requestedVel_ms = 0;
 	return 0;
 }
 
 void PAASetReferenceCurrentSaturationLimit(int currentLimit) {
-	// Not implemented yet
+	/* Not implemented yet */
 	currentLimit = 0;
 }
 

@@ -28,8 +28,8 @@
 #define JOYSTICK_Y_MID_POINT				2350
 #define JOYSTICK_Y_LOW_POINT				350
 #define JOYSTICK_Y_DEADBAND					200
-#define JOYSTICK_Y_HIGH_DEADBAND			JOYSTICK_Y_MID_POINT+JOYSTICK_Y_DEADBAND
-#define JOYSTICK_Y_LOW_DEADBAND				JOYSTICK_Y_MID_POINT-JOYSTICK_Y_DEADBAND
+#define JOYSTICK_Y_HIGH_DEADBAND			(JOYSTICK_Y_MID_POINT+JOYSTICK_Y_DEADBAND)
+#define JOYSTICK_Y_LOW_DEADBAND				(JOYSTICK_Y_MID_POINT-JOYSTICK_Y_DEADBAND)
 
 /* Priave Prototypes */
 static void exipadButtonsCallback(void);
@@ -87,7 +87,8 @@ static void exipadJoystickCallback(void) {
 
 float EXPGetJoystickScaledValue(void) {
 
-	uint16 joystickInput = ((joyStickYMessage[1] << 8) | joyStickYMessage[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
+	uint16 joystickInputRaw = ((joyStickYMessage[1] << 8) | joyStickYMessage[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
+	float joystickInput = (float)joystickInputRaw;
 
 	float joyRef = 0;
 	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
@@ -137,7 +138,7 @@ void EXPSetLastPressedButtonToNone(void) {
 }
 
 exipadButton EXPGetCurrentlyPressedButton(void) {
-	static exipadButton exipadButtonPresed = NONE;
+	exipadButton exipadButtonPresed = NONE;
 	if (leftExcipadButtonsMessage[3] == BUTTON_ID_1) {
 		exipadButtonPresed = BUTTON_1;
 	}
@@ -175,6 +176,7 @@ exipadButton EXPGetCurrentlyPressedButton(void) {
 }
 
 bool EXPGetUserIsHoldingAButtonDown(void) {
+	/* Using local global "leftExcipadButtonsMessage" */
 	uint16 statusSum = 0;
 	int i = 0;
 	int sumBytes = 8;

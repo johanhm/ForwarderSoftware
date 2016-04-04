@@ -18,7 +18,8 @@
  
  The API structure is seen in a figure below
    
-\image html xt28API.png "XT28 API Structure and dependency" 
+\image html xt28API.png "XT28 API Structure and dependency"
+@image latex xt28API.png "XT28 API Structure and dependency"
 
 The API contains the following modules and sub modules
 

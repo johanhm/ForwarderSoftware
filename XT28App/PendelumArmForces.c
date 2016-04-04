@@ -70,7 +70,9 @@ static void calculateVerticalForceOnWheelAndTotalMass(void) {
 	//Get vertical force depending on pendulum arm current position
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		calculatedVerticalForceOnWheel[wheel] = convertCylinderLoadForceToVericalOnWheel(posData_mm[wheel], messuredForceCylinderLoad_deciN[wheel]);
-		sumOfVerticalForce = sumOfVerticalForce + calculatedVerticalForceOnWheel[wheel];
+		if (calculatedVerticalForceOnWheel[wheel] > 0) {
+			sumOfVerticalForce = sumOfVerticalForce + calculatedVerticalForceOnWheel[wheel];
+		}
 	}  //Get vertical force depending on pendulum arm current position
 }
 
@@ -223,8 +225,9 @@ static void calculateOptimalForceForAllWheels(void) {
 	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
 	//temporary remove when logic is working
-	float massCenterLocationX_mLocal = 0.47 * widthOfForwarder_m;
-	float massCenterLocationY_mLocal = 0.43 * lengthOfForwarder_m;
+	float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
+	//float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
+	float massCenterLocationY_mLocal = massCenterLocationY_m;
 	//end of temporare to remove
 
 	float kMidScalingConstant = (float)1 / 3;

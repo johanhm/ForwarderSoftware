@@ -1,13 +1,13 @@
 #include "PendelumArmPosition.h"
-#include "api_lib_basic.h"
-#include "XT28CANSupport.h"
 
 //private prototypes
 static void uppdateForwarderAvrageHeightAndVelocity(void);
+static float getVerticalHeightForWheel_m(int wheel);
+static int checkPosSensorsForErrors(void);
 
 
 void PAPOSConfigurePositionSensorsVoltageInput(void) {
-	// configure pos sensors
+	/* Configure pos sensors */
 	in_cfgVoltageInput(IN_1_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front right
 	in_cfgVoltageInput(IN_2_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front left
 	in_cfgVoltageInput(IN_3_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Mid right
@@ -18,25 +18,30 @@ void PAPOSConfigurePositionSensorsVoltageInput(void) {
 
 static uint16 posData_mm[SUM_WHEELS] = {0};
 static sint16 velData[SUM_WHEELS] = {0};
-void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
+int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
+	/* Check for errors first */
+	if (checkPosSensorsForErrors() > 0) {
+		return POS_ERROR;
+	}
 
-	sampleTime_ms = 0; /* Not used rigtht now */
+	sampleTime_ms = 0; /* Not used rigtht now , uppdate so the filters depend on this and remove this comment !!! */
 
 	static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
 	static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
 	static uint16 posData_last[SUM_WHEELS] = {0};
 	static sint16 velData_last[SUM_WHEELS] = {0};
 
-	uint8 x = 0; //index used in FOR loops
+	uint8 x = 0; /* Index used in FOR loops */
 
-	//////////////////////read Position sensors  and calculate velocities
+	/* Read Position sensors  and calculate velocities */
 	//Save Pos(k-1)
 	for (x = 0; x < SUM_WHEELS; x++) {
 		posData_last[x] = posData_mm[x];
 	}
 
 	uint16 posData_mV[SUM_WHEELS] = {0};
-	//Get new sensor readings and scale from mV to mm
+
+	/* Get new sensor readings and scale from mV to mm */
 	posData_mV[FR] = in(IN_1_AIV);
 	posData_mV[FL] = in(IN_2_AIV);
 	posData_mV[MR] = in(IN_3_AIV);
@@ -44,18 +49,19 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	posData_mV[BR] = in(IN_6_AIV);
 	posData_mV[BL] = in(IN_5_AIV);
 
+	/* Scale to [mm] */
 	for (x = 0; x < SUM_WHEELS; x++) {
 		posData_mm[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 500;
-	} //scale to mm
+	}
 
-	//Save Vel(k-1);
+	/* Save Vel(k-1); */
 	for (x = 0; x < SUM_WHEELS; x++) {
 		velData_last[x] = velData[x];
 	}
 
 
-	//Calculate Vel(k)
-	int velocityFilterCoficient = 5; //Filter coefficient for velocity calculation lower value is more filtering
+	/* Calculate Vel(k) */
+	int velocityFilterCoficient = 5; /* Filter coefficient for velocity calculation lower value is more filtering */
 	float Ts = 0.02;
 	float a_vel = 1 / (1 + velocityFilterCoficient * Ts);
 	for (x = 0; x < 6; x++) {
@@ -63,6 +69,19 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	}
 
 	uppdateForwarderAvrageHeightAndVelocity();
+
+	return POS_UPPDATED_WITH_NO_ERRORS;
+}
+static int checkPosSensorsForErrors(void) {
+
+	int error = 0;
+	error += in_getStatus(IN_1_AIV);
+	error += in_getStatus(IN_2_AIV);
+	error += in_getStatus(IN_3_AIV);
+	error += in_getStatus(IN_4_AIV);
+	error += in_getStatus(IN_5_AIV);
+	error += in_getStatus(IN_6_AIV);
+	return error;
 }
 
 static uint16 forwarderAvrageHeightZc = 0;
@@ -90,7 +109,7 @@ int PAPOSGetPosDataForWheel_mm(int wheel) {
 void PAPOSGetPosDataArray(int posDataOutput[static SUM_WHEELS]) {
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		posDataOutput[wheel] = (int)posData_mm[wheel];
+		posDataOutput[wheel] = PAPOSGetPosDataForWheel_mm(wheel);
 	}
 }
 
@@ -101,7 +120,7 @@ int PAPOSGetVelDataForWheel(int wheel) {
 void PAPOSGetVelDataArray(float velDataOutput[static SUM_WHEELS]) {
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		velDataOutput[wheel] = (float)velData[wheel];
+		velDataOutput[wheel] = PAPOSGetVelDataForWheel(wheel);
 	}
 }
 
@@ -111,6 +130,43 @@ float PAPOSGetAvrageHeightOfForwarder(void) {
 
 float PAPOSGetAvrageHeightVelocityOfForwarder(void) {
 	return forwarderAvrageVelZc;
+}
+
+/* Needs to be debugged */
+float PAPOSGetBeta(void) {
+
+	float hFrontAvg  = (getVerticalHeightForWheel_m(FR) + getVerticalHeightForWheel_m(FL) ) / 2;
+	float hMiddleAvg = (getVerticalHeightForWheel_m(MR) + getVerticalHeightForWheel_m(ML) ) / 2;
+	float hBackAvg   = (getVerticalHeightForWheel_m(BR) + getVerticalHeightForWheel_m(BL) ) / 2;
+
+	float beta1 = atan( (hFrontAvg - hMiddleAvg) / LENGTH_TO_MID_OFF_FORWARDER_m );
+	float beta2 = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
+	float betaAvg = (beta1 + beta2) / 2;
+
+	return betaAvg;
+}
+
+/* Needs to be debugged */
+static float getVerticalHeightForWheel_m(int wheel) {
+	/* Meter [m] */
+	const float bCylArm = 0.4991;
+	const float lengthArmWheel = 1.008;
+	const float lengtharmCyl = 1.211;
+	const float cylinderLengthOfsett = 0.85;
+
+	/* Randians [rad] */
+	const float theta3 = 0.2983;
+	const float theta2 =  0.3370;
+
+	/* Estimate beta */
+	int cylinderExtraction = PAPOSGetPosDataForWheel_mm(wheel);
+	float lengthMessured = (float)cylinderExtraction / 1000 + cylinderLengthOfsett;
+	float alpha = acos( (pow(lengthMessured, 2) - pow(bCylArm, 2) - pow(lengtharmCyl, 2)) / (-2 * bCylArm * lengtharmCyl) );
+	float gamma = (alpha + theta2 + theta3) - M_PI / 2;
+
+	float estimatedHeightVertical = lengthArmWheel * sin(gamma);
+
+	return estimatedHeightVertical;
 }
 
 void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 frontID) {
@@ -123,7 +179,7 @@ void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 front
 	);
 
 	uint8 data_au8_sms_5[4];
-	//Construct msg
+	/* Construct msg */
 	data_au8_sms_5[0] = posData_mm[FR];
 	data_au8_sms_5[1] = posData_mm[FR] >> 8;
 	data_au8_sms_5[2] = posData_mm[FL];
@@ -142,7 +198,7 @@ void PAPOSSendVelDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 front
 
 	uint8 data_au8_sms_5[4];
 
-	//Construct msg
+	/* Construct msg for front wheels */
 	data_au8_sms_5[0] = velData[FR];
 	data_au8_sms_5[1] = velData[FR] >> 8;
 	data_au8_sms_5[2] = velData[FL];

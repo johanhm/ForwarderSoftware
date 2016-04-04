@@ -16,13 +16,13 @@ static float thetaReference = 0;
 static float forceReference = 0;
 
 /* Controll parameters set thouth CAN */
-static float heightP = 0;
-static float heightI = 0;
+static float heightP = 10;
+static float heightI = 50;
 
-static float phiP = 0;
+static float phiP = 100;
 static float phiI = 0;
 
-static float thetaP = 0;
+static float thetaP = 300;
 static float thetaI = 0;
 
 static float skyChassiGain = 0;
@@ -401,7 +401,7 @@ void ADCFGNivPIDAndForcePID(bool state) {
 
 	// Set parameters
 	ADPIDSetHeightControlParametersPID(heightP, 0, 0);
-	ADPIDSetPhiControlParametersPID   (phiP,    0, 0);
+	ADPIDSetPhiControlParametersPID   (phiP,    0, thetaI);
 	ADPIDSetThetaControlParametersPID (thetaP,  0, 0);
 	ADPIDSetForceControllerParametersPID(heightI, 0, 0); /* if parameters is heigfht I, fix and remove this comment. if fixed remove comment */
 
@@ -413,14 +413,13 @@ void ADCFGNivPIDAndForcePID(bool state) {
 			(thetaReference  - IMUGetTheta())
 	);
 
-
 	float forceControllerOut[SUM_WHEELS] = {0};
 	int messuredCylinderForce[SUM_WHEELS] = {0};
 	int cylinderReferenceForce[SUM_WHEELS] = {0};
 	PAFGetMessuredCylinderLoadForceArray_dN(messuredCylinderForce);
 	PAFGetOptimalReferenceForceArray_N(cylinderReferenceForce);
 
-	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce, /* messured force array  */
+	ADPIDGetForceControllerReferenceSignalsArray(messuredCylinderForce, /* Messured force array  */
 			cylinderReferenceForce,										/* reference force array */
 			forceControllerOut,											/* output array          */
 			TRUE														/* Deadband              */

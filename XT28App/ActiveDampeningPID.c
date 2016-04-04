@@ -8,8 +8,10 @@ static float phiPID  (float refPhi);
 static float thetaPID(float refTheta);
 static float deadbandCheckForceError(float forceErrorPercentage, int wheel);
 
+static float sampleTime = 0.01; /* [s] */
+
 // MARK: Height related signal calculations
-static float heightP = 0;
+static float heightP = 10;
 static float heightI = 0;
 static float heightD = 0;
 int ADPIDSetHeightControlParametersPID(float P, float I, float D) {
@@ -20,17 +22,24 @@ int ADPIDSetHeightControlParametersPID(float P, float I, float D) {
 }
 
 static float hightPID(float heightError) {
+	static float previousHeightError = 0.0;
+	static float deriativeTermFilterd = 0.0;
+	static float alpha = 0.99;
 
 	float propTerm       = heightP * heightError;
-	float integratorTerm = heightI * 0;
-	float deriativeTerm  = heightD * 0;
+	//float integratorTerm = heightI * 0;
 
-	return propTerm + integratorTerm + deriativeTerm;
+	/* D part with low pass filter */
+	float deriativeTermRaw  = heightD * (heightError - previousHeightError) / sampleTime;
+	previousHeightError = heightError;
+	deriativeTermFilterd = deriativeTermFilterd * alpha + (1-alpha) * deriativeTermRaw;
+
+	return propTerm;
 }
 
 
 // MARK: Phi related signal stuff
-static float phiP = 0;
+static float phiP = 100;
 static float phiI = 0;
 static float phiD = 0;
 int ADPIDSetPhiControlParametersPID(float P, float I, float D) {
@@ -41,15 +50,31 @@ int ADPIDSetPhiControlParametersPID(float P, float I, float D) {
 }
 
 static float phiPID(float phiError) {
+	static float previousPhiError = 0.0;
+	static float deriativeTermFilterd = 0.0;
+	static float alpha = 0.97;
 
 	float propTerm       = phiP * phiError;
-	float integratorTerm = phiI * 0;
-	float deriativeTerm  = phiD * 0;
+	//float integratorTerm = phiI * 0;
 
-	return propTerm + integratorTerm + deriativeTerm;
+	/* D part with low pass filter */
+	float deriativeTermRaw  = phiD * (phiError - previousPhiError) / sampleTime;
+	previousPhiError = phiError;
+	deriativeTermFilterd = deriativeTermFilterd * alpha + (1-alpha) * deriativeTermRaw;
+
+	/* Debugg remove qwhen done */
+	float mult = 10.0;
+	g_debug1 = mult * deriativeTermRaw;
+	g_debug2 = mult * deriativeTermFilterd;
+	g_debug3 = mult * propTerm;
+	g_debug4 = mult * (propTerm + deriativeTermFilterd);
+	/* emd debugg */
+
+	return propTerm;
 }
+
 // MARK: Theta related stuff
-static float thetaP = 0;
+static float thetaP = 300;
 static float thetaI = 0;
 static float thetaD = 0;
 int ADPIDSetThetaControlParametersPID(float P, float I, float D) {
@@ -60,12 +85,21 @@ int ADPIDSetThetaControlParametersPID(float P, float I, float D) {
 }
 
 static float thetaPID(float thetaError) {
+	static float previousThetaError = 0.0;
+	static float deriativeTermFilterd = 0.0;
+	static float alpha = 0.99;
 
 	float propTerm       = thetaP * thetaError;
-	float integratorTerm = thetaI * 0;
-	float deriativeTerm  = thetaD * 0;
 
-	return propTerm + integratorTerm + deriativeTerm;
+	/* Not implemented */
+	//float integratorTerm = thetaI * 0;
+
+	/* D part with low pass filter */
+	float deriativeTermRaw  = phiD * (thetaError - previousThetaError) / sampleTime;
+	previousThetaError = thetaError;
+	deriativeTermFilterd = deriativeTermFilterd * alpha + (1-alpha) * deriativeTermRaw;
+
+	return propTerm;
 }
 
 // MARK: Get PID signals
@@ -91,7 +125,7 @@ void ADPIDGetPIDSignalsForHeightPhiAndThetaArray(float signalArrayOut[static SUM
 	signalArrayOut[BL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.1152 * thetaSignal;
 }
 
-static float forceP = 0.0;
+static float forceP = 50.0;
 static float forceI = 0.0;
 static float forceD = 0.0;
 int ADPIDSetForceControllerParametersPID(float P, float I, float D) {
@@ -102,13 +136,15 @@ int ADPIDSetForceControllerParametersPID(float P, float I, float D) {
 }
 
 void ADPIDGetForceControllerReferenceSignalsArray(int messuredForceCylinder[static SUM_WHEELS], int forceReferenceArray[static SUM_WHEELS], float signalArrayOut[static SUM_WHEELS], bool deadbandState) {
+	/* This functions should use "ADPIDGetForceControllerReferenceSignals" to calculate contol signal for consitensy */
 	float forceError = 0;
 
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		forceError = (float)( forceReferenceArray[wheel] - messuredForceCylinder[wheel] ) / forceReferenceArray[wheel];
 		if (deadbandState == TRUE) {
-			signalArrayOut[wheel] = -forceP * deadbandCheckForceError(forceError, wheel);
+			float deadbandForceError = deadbandCheckForceError(forceError, wheel);;
+			signalArrayOut[wheel] = -forceP * deadbandForceError;
 		} else {
 			signalArrayOut[wheel] = -forceP * forceError;
 		}
