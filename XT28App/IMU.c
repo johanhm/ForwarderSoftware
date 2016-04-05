@@ -104,7 +104,7 @@ static void IMUAcceleometerUppdateDataCANCallback(void) {
 
 static float phiAngleInDegree = 0;
 static float thetaAngleInDegree = 0;
-void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
+int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 
 	int multConstantForFilter = 1000;
 	float IMUSensorSampleTime = 0.01;
@@ -140,6 +140,7 @@ void IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	//g_debug2 = 1000 * accAnglePhi;
 	//g_debug3 = 1000 * gyroAnglePhi;
 	//END DEBUGG
+	return 0; /* no error */
 }
 
 

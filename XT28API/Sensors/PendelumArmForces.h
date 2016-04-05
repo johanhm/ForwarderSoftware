@@ -32,7 +32,13 @@
 #include <math.h>
 #include "XT28CANSupport.h"
 
+/* Maby rethink this, only pressure module i needed and thats duh to the defines so its in the same order. */
+#include "PendelumArmPressure.h"
+#include "PendelumArmPosition.h"
+/* emd, still to enforce that this module does not depend on the other two it should maby ce changed */
+
 // Pressure sensor index
+/*
 #define ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A		0
 #define ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_B		1
 #define ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A		2
@@ -46,7 +52,7 @@
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_A		10
 #define ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B		11
 #define INDEX_SIZE_PRESSURESENS						12
-
+*/
 
 /*!	\name Update */
 /*!

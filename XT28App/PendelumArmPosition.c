@@ -139,9 +139,9 @@ float PAPOSGetBeta(void) {
 	float hMiddleAvg = (getVerticalHeightForWheel_m(MR) + getVerticalHeightForWheel_m(ML) ) / 2;
 	float hBackAvg   = (getVerticalHeightForWheel_m(BR) + getVerticalHeightForWheel_m(BL) ) / 2;
 
-	float beta1 = atan( (hFrontAvg - hMiddleAvg) / LENGTH_TO_MID_OFF_FORWARDER_m );
-	float beta2 = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
-	float betaAvg = (beta1 + beta2) / 2;
+	float betaMiddle = atan( (hFrontAvg - hMiddleAvg) / LENGTH_TO_MID_OFF_FORWARDER_m );
+	float betaBack = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
+	float betaAvg = (betaMiddle + betaBack) / 2;
 
 	return betaAvg;
 }

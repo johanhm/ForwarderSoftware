@@ -1,13 +1,9 @@
 #include "PendelumArmPressure.h"
-#include <math.h>
-#include "XT28CANSupport.h"
-#include "PendelumArmPosition.h"
-#include "XT28HardwareConstants.h"
-#include "XT28CANSupport.h"
 
 
-//Private prototytpes
+/* Private prototytpes */
 static void lowPassFilterPressureSensor(float sampleTime);
+static int checkPressureSensorsForErrors(void);
 
 // Start of implementations
 void PAPRConfigurePressureSensorsVoltageInput(void) {
@@ -39,21 +35,26 @@ void PAPRConfigurePressureSensorsVoltageInput(void) {
 
 static uint16 pressureData_mV[INDEX_SIZE_PRESSURESENS]  = {0};
 static uint16 pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
-void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
+int PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
+
+	if (checkPressureSensorsForErrors() > 0) {
+		return PRESSURE_UPDATE_ERROR;
+	}
+
 	float sampleTime = (float)sampleTimeUppdate_ms / 1000;
-	//read Pressure sensors and calculate Cylinder Forces
-	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A] = in(IN_8_AIV);
-	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_B] = in(IN_7_AIV);
-	pressureData_mV[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A]  = in(IN_10_AIV);
-	pressureData_mV[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B]  = in(IN_9_AIV);
-	pressureData_mV[ANALOG_MID_RIGHT_PENDULUM_PRESSURE_A]   = in(IN_11_AIV);
-	pressureData_mV[ANALOG_MID_RIGHT_PENDULUM_PRESSURE_B]   = in(IN_14_AIV);
-	pressureData_mV[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A]    = in(IN_13_AIV);
-	pressureData_mV[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B]    = in(IN_12_AIV);
-	pressureData_mV[ANALOG_REAR_RIGHT_PENDULUM_PRESSURE_A]  = in(IN_15_AIV);
-	pressureData_mV[ANALOG_REAR_RIGHT_PENDULUM_PRESSURE_B]  = in(IN_18_AIV);
-	pressureData_mV[ANALOG_REAR_LEFT_PENDULUM_PRESSURE_A]   = in(IN_17_AIV);
-	pressureData_mV[ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B]   = in(IN_16_AIV);
+	/* Read Pressure sensors and calculate Cylinder Forces */
+	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_A] = in(IN_FR_A);//in(IN_8_AIV);
+	pressureData_mV[ANALOG_FRONT_RIGHT_PENDULUM_PRESSURE_B] = in(IN_FR_B);//in(IN_7_AIV);
+	pressureData_mV[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A]  = in(IN_FL_A);//in(IN_10_AIV);
+	pressureData_mV[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B]  = in(IN_FL_B);//in(IN_9_AIV);
+	pressureData_mV[ANALOG_MID_RIGHT_PENDULUM_PRESSURE_A]   = in(IN_MR_A);//in(IN_11_AIV);
+	pressureData_mV[ANALOG_MID_RIGHT_PENDULUM_PRESSURE_B]   = in(IN_MR_B);//in(IN_14_AIV);
+	pressureData_mV[ANALOG_MID_LEFT_PENDULUM_PRESSURE_A]    = in(IN_ML_A);//in(IN_13_AIV);
+	pressureData_mV[ANALOG_MID_LEFT_PENDULUM_PRESSURE_B]    = in(IN_ML_B);//in(IN_12_AIV);
+	pressureData_mV[ANALOG_REAR_RIGHT_PENDULUM_PRESSURE_A]  = in(IN_BR_A);//in(IN_15_AIV);
+	pressureData_mV[ANALOG_REAR_RIGHT_PENDULUM_PRESSURE_B]  = in(IN_BR_B);//in(IN_18_AIV);
+	pressureData_mV[ANALOG_REAR_LEFT_PENDULUM_PRESSURE_A]   = in(IN_BL_A);//in(IN_17_AIV);
+	pressureData_mV[ANALOG_REAR_LEFT_PENDULUM_PRESSURE_B]   = in(IN_BL_B);//in(IN_16_AIV);
 
 	//Scale pressures into KiloPascals for sending  [KPa]
 	uint8 x = 0;
@@ -70,7 +71,27 @@ void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 	//deubb
 	//g_debug2 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
 	//g_debug4 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
+	return PRESSURE_UPPDATED;
 }
+
+static int checkPressureSensorsForErrors(void) {
+
+	int error = 0;
+	error += in_getStatus(IN_FR_A);
+	error += in_getStatus(IN_FR_B);
+	error += in_getStatus(IN_FL_A);
+	error += in_getStatus(IN_FL_B);
+	error += in_getStatus(IN_MR_A);
+	error += in_getStatus(IN_MR_B);
+	error += in_getStatus(IN_ML_A);
+	error += in_getStatus(IN_ML_B);
+	error += in_getStatus(IN_BR_A);
+	error += in_getStatus(IN_BR_B);
+	error += in_getStatus(IN_BL_A);
+	error += in_getStatus(IN_BL_B);
+	return error;
+}
+
 
 static void lowPassFilterPressureSensor(float sampleTime) {
 	static uint32 pressureDataLast_Bar[INDEX_SIZE_PRESSURESENS];

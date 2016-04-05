@@ -13,6 +13,7 @@
 #define XT28API_EXCIPAD_EXCIPAD_H_
 
 #include "api_lib_basic.h"
+#include "XT28CANSupport.h"
 
 /*!
  * Excipad Button Enum. Used for Excipad related functions.
@@ -29,7 +30,7 @@ typedef enum {
 	BUTTON_17,	/**< Button 17 			*/
 	BUTTON_18,	/**< Button 18 			*/
 	BUTTON_19,	/**< Button 19 			*/
-	BUTTON_20	/**< Button 20 			*/
+	BUTTON_21	/**< Button 20 			*/
 } exipadButton;
 
 

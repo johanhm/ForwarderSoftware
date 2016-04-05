@@ -11,9 +11,9 @@ static float deadbandCheckForceError(float forceErrorPercentage, int wheel);
 static float sampleTime = 0.01; /* [s] */
 
 // MARK: Height related signal calculations
-static float heightP = 10;
-static float heightI = 0;
-static float heightD = 0;
+static float heightP = 0.0;
+static float heightI = 0.0;
+static float heightD = 0.0;
 int ADPIDSetHeightControlParametersPID(float P, float I, float D) {
 	heightP = P;
 	heightI = I;
@@ -39,9 +39,9 @@ static float hightPID(float heightError) {
 
 
 // MARK: Phi related signal stuff
-static float phiP = 100;
-static float phiI = 0;
-static float phiD = 0;
+static float phiP = 0.0;
+static float phiI = 0.0;
+static float phiD = 0.0;
 int ADPIDSetPhiControlParametersPID(float P, float I, float D) {
 	phiP = P;
 	phiI = I;
@@ -74,9 +74,9 @@ static float phiPID(float phiError) {
 }
 
 // MARK: Theta related stuff
-static float thetaP = 300;
-static float thetaI = 0;
-static float thetaD = 0;
+static float thetaP = 0.0;
+static float thetaI = 0.0;
+static float thetaD = 0.0;
 int ADPIDSetThetaControlParametersPID(float P, float I, float D) {
 	thetaP = P;
 	thetaI = I;
@@ -125,7 +125,7 @@ void ADPIDGetPIDSignalsForHeightPhiAndThetaArray(float signalArrayOut[static SUM
 	signalArrayOut[BL] = zAllocationConstant * heightSignal + phiAllocationConstant * phiSignal + 0.1152 * thetaSignal;
 }
 
-static float forceP = 50.0;
+static float forceP = 0.0;
 static float forceI = 0.0;
 static float forceD = 0.0;
 int ADPIDSetForceControllerParametersPID(float P, float I, float D) {
@@ -137,26 +137,39 @@ int ADPIDSetForceControllerParametersPID(float P, float I, float D) {
 
 void ADPIDGetForceControllerReferenceSignalsArray(int messuredForceCylinder[static SUM_WHEELS], int forceReferenceArray[static SUM_WHEELS], float signalArrayOut[static SUM_WHEELS], bool deadbandState) {
 	/* This functions should use "ADPIDGetForceControllerReferenceSignals" to calculate contol signal for consitensy */
-	float forceError = 0;
 
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
-		forceError = (float)( forceReferenceArray[wheel] - messuredForceCylinder[wheel] ) / forceReferenceArray[wheel];
-		if (deadbandState == TRUE) {
-			float deadbandForceError = deadbandCheckForceError(forceError, wheel);;
-			signalArrayOut[wheel] = -forceP * deadbandForceError;
-		} else {
-			signalArrayOut[wheel] = -forceP * forceError;
-		}
+		signalArrayOut[wheel] = ADPIDGetForceControllerReferenceSignalForWheel(wheel,
+				messuredForceCylinder[wheel],
+				forceReferenceArray[wheel],
+				deadbandState
+		);
 	}
 }
 
+float ADPIDGetForceControllerReferenceSignalForWheel(int wheel, float messuredForce, float forceReference, bool deadbandState) {
+
+	float forceError = (forceReference - messuredForce) / forceReference;
+	if (deadbandState == TRUE) {
+		forceError = deadbandCheckForceError(forceError, wheel);
+	}
+	return -(forceError * forceP);
+}
+
+typedef enum {
+	DEADBAND_STATE_ACTIVE,
+	DEADBAND_STATE_INACTIVE
+} deadbandStateEnum;
+
 static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	static int errorSignOld[SUM_WHEELS] = {0};
-	static int state[SUM_WHEELS] = {0};
+	static deadbandStateEnum state[SUM_WHEELS] = {DEADBAND_STATE_ACTIVE};
 
-	static float deadBandLimit = 0.10;
+	/* Limit for state change, constant */
+	const float deadBandLimit = 0.10;
 
+	/* Check if the error have reached zero or changed sign */
 	int errorSign = 0;
 	float returnForceError = 0;
 
@@ -165,16 +178,19 @@ static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	} else {
 		errorSign = -1;
 	}
+	const bool errorChangedSignOrReachedZero = (errorSignOld[wheel] != errorSign);
+
+	/* Switch on state */
 	switch (state[wheel]) {
-	case 0:
+	case DEADBAND_STATE_ACTIVE:
 		if (fabs(forceErrorPercentage) > deadBandLimit) {
-			state[wheel] = 1;
+			state[wheel] = DEADBAND_STATE_INACTIVE;
 		}
 		returnForceError = 0;
 		break;
-	case 1:
-		if (errorSignOld[wheel] != errorSign) {
-			state[wheel] = 0;
+	case DEADBAND_STATE_INACTIVE:
+		if (errorChangedSignOrReachedZero) {
+			state[wheel] = DEADBAND_STATE_ACTIVE;
 		}
 		returnForceError = forceErrorPercentage;
 		break;
@@ -183,16 +199,5 @@ static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	}
 	errorSignOld[wheel] = errorSign;
 	return returnForceError;
-}
-
-float ADPIDGetForceControllerReferenceSignals(int wheel, float messuredForce, float forceReference, bool deadbandState) {
-	float forceError = 0;
-	if (deadbandState == TRUE) {
-		forceError = (forceReference - messuredForce) / forceReference;
-		forceError = deadbandCheckForceError(forceError, wheel);
-	} else {
-		forceError = (forceReference - messuredForce) / forceReference;
-	}
-	return -(forceError * forceP);
 }
 

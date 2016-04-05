@@ -67,9 +67,10 @@ uint16 IMUInit(void);
  * Update IMU data.
  *
  * \note Must be called periodically every 10ms.
+ * @return Return if the sensor data was uppdated correctly or not
  *
  */
-void IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+int IMUUppdateFilterdAngelsWithComplementaryFilter(void);
 /** @}*/
 
 

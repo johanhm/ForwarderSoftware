@@ -18,6 +18,7 @@ static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static void activeDampeningControl(float timeSinceActivated);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
+static float getBootupAngle(float startingAngle, float endAngle, float maxTime, float currentTime);
 
 /* Start of program */
 void sys_main(void) {
@@ -80,18 +81,24 @@ void sys_main(void) {
 }
 
 static void readSensorsTask_10ms(void) {
+	/* System checkpoint and enable sensor voltage */
 	sys_triggerTC(0);
-	sys_setVP(VP_1, ON); // This could maby be intergrated into PAActuate module with logic that check the return values.
+	sys_setVP(VP_1, ON);
 	sys_setVP(VP_2, ON);
+
+	/* Enable actuation of pendelum arms and set that the arms should respect limits */
 	PAASetPendelumArmActuateState(TRUE);
 	PAASetPendelumArmPosLimitState(TRUE);
 
 	/* Uppdate presure and recalculate force data */
-	IMUUppdateFilterdAngelsWithComplementaryFilter();
-	PAPOSUppdatePosSensorsDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
-	PAPRUppdatePressureDataWithSampleTime(READ_SENSORS_TASK_TIME_MS);
+	int posError;
+	int pressureError;
+	int imuError;
+	imuError      = IMUUppdateFilterdAngelsWithComplementaryFilter();
+	posError      = PAPOSUppdatePosSensorsDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+	pressureError = PAPRUppdatePressureDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
 
-	/* Get new valus for force calculations and uppdate force data */
+	/* Get new valus for force calculations and update force data */
 	int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
 	int posData_mm[SUM_WHEELS] = {0};
 	PAPRGetPressureDataArray_bar(pressureData_Bar);
@@ -154,7 +161,7 @@ static void checkMachineStateAndActuate(void) {
 	case BUTTON_19: /* All Upp */
 		buttonHoldControl(UPP, UPP, UPP, UPP, UPP, UPP);
 		break;
-	case BUTTON_20: /* Front Down */
+	case BUTTON_21: /* Front Down */
 		buttonHoldControl(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN);
 		break;
 	}
@@ -164,6 +171,18 @@ static void checkMachineStateAndActuate(void) {
 static void activeDampeningControl(float timeSinceActivated_s) {
 
 	g_debug1 = timeSinceActivated_s * 1000;
+	g_debug2 = PAPOSGetBeta() * 1000;
+	g_debug3 = getBootupAngle(-1.0f, 0.0f, 5, timeSinceActivated_s) * 1000;
+
+
+	if (timeSinceActivated_s < 5) {
+		//float thetaRef = 0.0; //get boot angle theta
+		//float phiRef = 0.0; //get boot angle phi
+		//ADFGSetReferencePhiAndTheta();
+		ADCFGForceControllerTest(TRUE);
+	} else {
+		ADCFGForceControllerTest(TRUE);
+	}
 
 	//ADCFGNivPIDSetup(TRUE);
 	//ADCFGForceControllerTest(TRUE);
@@ -180,6 +199,15 @@ static void activeDampeningControl(float timeSinceActivated_s) {
 
 	//ADCFGNivPIDAndForcePID(TRUE);
 }
+
+static float getBootupAngle(float startingAngle, float endAngle, float maxTime, float currentTime) {
+
+	/* https://en.wikipedia.org/wiki/Logistic_function */
+	float angleReference = startingAngle - ( (startingAngle - endAngle) / (1 + exp(-(9.5 / maxTime) * (currentTime - (maxTime / 2))) ) );
+	return angleReference;
+
+}
+
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
 

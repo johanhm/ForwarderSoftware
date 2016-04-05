@@ -89,8 +89,8 @@ float PAPOSGetAvrageHeightVelocityOfForwarder(void);
 /** @} */
 
 /**!
- *  Get the angle between front wheels and back wheels
- * @return beta in degree
+ *  Get the angle between front and back wheels
+ * @return beta in radians
  */
 float PAPOSGetBeta(void);
 

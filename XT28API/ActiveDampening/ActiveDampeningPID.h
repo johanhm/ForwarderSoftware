@@ -51,7 +51,7 @@ void ADPIDGetPIDSignalsForHeightPhiAndThetaArray(float signalArray[static SUM_WH
  * \return P * Error
  *
  */
-float ADPIDGetForceControllerReferenceSignals(int wheel, float messuredForce, float forceReference, bool deadbandState);
+float ADPIDGetForceControllerReferenceSignalForWheel(int wheel, float messuredForce, float forceReference, bool deadbandState);
 
 /*!
  *  Get an array of signals from force controller

@@ -98,7 +98,6 @@ static void referenceParametersCallback(void) {
 	}
 }
 
-
 static void heightParametersCallback(void) {
 	uint8 confData_au8[8] = {0};
 	uint8 confNumBytes_u8;
@@ -399,13 +398,13 @@ void ADCFGNivPIDAndForcePID(bool state) {
 		return;
 	}
 
-	// Set parameters
+	/* 1. Set parameters */
 	ADPIDSetHeightControlParametersPID(heightP, 0, 0);
 	ADPIDSetPhiControlParametersPID   (phiP,    0, thetaI);
 	ADPIDSetThetaControlParametersPID (thetaP,  0, 0);
 	ADPIDSetForceControllerParametersPID(heightI, 0, 0); /* if parameters is heigfht I, fix and remove this comment. if fixed remove comment */
 
-	// Get signal and put in array
+	/* 2. Get signal and put in array */
 	float heightPhiThetaSignalArray[SUM_WHEELS] = {0};
 	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(heightPhiThetaSignalArray,
 			(heightReference - PAPOSGetAvrageHeightOfForwarder()),
@@ -413,6 +412,7 @@ void ADCFGNivPIDAndForcePID(bool state) {
 			(thetaReference  - IMUGetTheta())
 	);
 
+	/* 3. Get force signals and put in array */
 	float forceControllerOut[SUM_WHEELS] = {0};
 	int messuredCylinderForce[SUM_WHEELS] = {0};
 	int cylinderReferenceForce[SUM_WHEELS] = {0};
@@ -425,6 +425,7 @@ void ADCFGNivPIDAndForcePID(bool state) {
 			TRUE														/* Deadband              */
 	);
 
+	/* 4. Set reference current */
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		PAASetReferenceForWheelWithUnit(wheel,
@@ -433,6 +434,7 @@ void ADCFGNivPIDAndForcePID(bool state) {
 		);
 	}
 
+	/* 5. Actuate */
 	PAAActuatePendelumArms();
 }
 
