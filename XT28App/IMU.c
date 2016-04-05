@@ -64,11 +64,12 @@ uint16 IMUInit(void) {
 // --------------------------------------------------
 // Private
 
-static sint16 gyroThetaRaw = 0;
-static sint16 gyroPhiRaw   = 0;
+static sint16 gyroThetaRaw   = 0;
+static sint16 gyroPhiRaw     = 0;
+static int gyroUpdateTime_ms = 0;
 
 static void IMUUppdateGyroDataCANCallback(void) {
-	//Save gyro data
+	/* Save gyro data */
 	uint8 angleMessageData_au8[6];
 	uint8 angleMessageNumBytes_u8;
 	can_getDatabox(IMUCANChannel,
@@ -79,14 +80,16 @@ static void IMUUppdateGyroDataCANCallback(void) {
 
 	gyroThetaRaw = (angleMessageData_au8[1] << 8 | angleMessageData_au8[0]);  //Gyro around IMU x axis
 	gyroPhiRaw   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);  //Gyro around IMU y axis
+	gyroUpdateTime_ms = 0;
 }
 
-static sint16 accelometerXRaw = 0;
-static sint16 accelometerYRaw = 0;
-static sint16 accelometerZRaw = 0;
+static sint16 accelometerXRaw        = 0;
+static sint16 accelometerYRaw        = 0;
+static sint16 accelometerZRaw        = 0;
+static int accelometerUppdateTime_ms = 0;
 
 static void IMUAcceleometerUppdateDataCANCallback(void) {
-	//Save accelerometer data
+	/* Save accelerometer data */
 	uint8 angleMessageData_au8[6];
 	uint8 angleMessageNumBytes_u8;
 	can_getDatabox(IMUCANChannel,
@@ -100,17 +103,30 @@ static void IMUAcceleometerUppdateDataCANCallback(void) {
 	accelometerZRaw = (angleMessageData_au8[5] << 8 | angleMessageData_au8[4]);
 
 	//uppdateFilterdAngelsWithComplementaryFilter();
+	accelometerUppdateTime_ms = 0;
 }
 
 static float phiAngleInDegree = 0;
 static float thetaAngleInDegree = 0;
 int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 
-	int multConstantForFilter = 1000;
-	float IMUSensorSampleTime = 0.01;
-	int convertToDegreePerSecConstant = 50;
-	float alpha = 0.99;
-	float alphaPhi = 0.995;
+	/* Check timeout error */
+	{
+		if (accelometerUppdateTime_ms > 40) {
+			return 1;
+		}
+		else if (gyroUpdateTime_ms > 40) {
+			return 2;
+		}
+		accelometerUppdateTime_ms += 10;
+		gyroUpdateTime_ms += 10;
+	}
+
+	const int multConstantForFilter = 1000;
+	const float IMUSensorSampleTime = 0.01;
+	const int convertToDegreePerSecConstant = 50;
+	const float alpha = 0.99;
+	const float alphaPhi = 0.995;
 
 	//Phi (to avoid hazzle with static i did this copyphasta.)
 	static int oldFilterdPhiAngle = 0;
@@ -133,7 +149,6 @@ int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	oldFilterdThetaAngle = filterdAngleTheta;
 
 	thetaAngleInDegree = filterdAngleTheta  / multConstantForFilter;
-
 
 	//DEBUGG
 	//g_debug1 = 1000 * phiAngleInDegree;
