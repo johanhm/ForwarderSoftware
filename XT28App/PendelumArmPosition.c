@@ -8,12 +8,12 @@ static int checkPosSensorsForErrors(void);
 
 void PAPOSConfigurePositionSensorsVoltageInput(void) {
 	/* Configure pos sensors */
-	in_cfgVoltageInput(IN_1_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front right
-	in_cfgVoltageInput(IN_2_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Front left
-	in_cfgVoltageInput(IN_3_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Mid right
-	in_cfgVoltageInput(IN_4_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Mid left
-	in_cfgVoltageInput(IN_5_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Rear right
-	in_cfgVoltageInput(IN_6_AIV, 1000, 4000, 100, 200, 4800, 200); //angle sensor Rear left
+	in_cfgVoltageInput(IN_1_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Front right
+	in_cfgVoltageInput(IN_2_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Front left
+	in_cfgVoltageInput(IN_3_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Mid right
+	in_cfgVoltageInput(IN_4_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Mid left
+	in_cfgVoltageInput(IN_5_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Rear right
+	in_cfgVoltageInput(IN_6_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Rear left
 }
 
 static uint16 posData_mm[SUM_WHEELS] = {0};
@@ -21,13 +21,19 @@ static sint16 velData[SUM_WHEELS] = {0};
 int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	/* Check for errors first */
 	if (checkPosSensorsForErrors() > 0) {
-		return POS_ERROR;
+		//return POS_ERROR;
 	}
 
 	sampleTime_ms = 0; /* Not used rigtht now , uppdate so the filters depend on this and remove this comment !!! */
 
-	static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
-	static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
+	/* old */
+	//static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
+	//static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
+	/* end old wil remove when check that new works */
+
+	static uint16 minPos[SUM_WHEELS] = {500, 500, 500, 500, 500, 500}; //current mV
+	static uint16 maxPos[SUM_WHEELS] = {4500, 4500, 4500, 4500, 4500, 4500}; //current mV
+
 	static uint16 posData_last[SUM_WHEELS] = {0};
 	static sint16 velData_last[SUM_WHEELS] = {0};
 
@@ -46,12 +52,24 @@ int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	posData_mV[FL] = in(IN_2_AIV);
 	posData_mV[MR] = in(IN_3_AIV);
 	posData_mV[ML] = in(IN_4_AIV);
-	posData_mV[BR] = in(IN_6_AIV);
-	posData_mV[BL] = in(IN_5_AIV);
+	posData_mV[BR] = in(IN_5_AIV);
+	posData_mV[BL] = in(IN_6_AIV);
+
+	/* debug */
+	/*
+	g_debug1 = posData_mV[FL];
+	g_debug2 = posData_mV[FR];
+	g_debug3 = posData_mV[ML];
+	g_debug4 = posData_mV[MR];
+	g_debug5 = posData_mV[BL];
+	g_debug6 = posData_mV[BR];
+	*/
+	/* end debug */
+
 
 	/* Scale to [mm] */
 	for (x = 0; x < SUM_WHEELS; x++) {
-		posData_mm[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 500;
+		posData_mm[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 485;
 	}
 
 	/* Save Vel(k-1); */
@@ -81,6 +99,7 @@ static int checkPosSensorsForErrors(void) {
 	error += in_getStatus(IN_4_AIV);
 	error += in_getStatus(IN_5_AIV);
 	error += in_getStatus(IN_6_AIV);
+
 	return error;
 }
 

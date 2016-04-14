@@ -16,13 +16,13 @@ static float thetaReference = 0;
 static float forceReference = 0;
 
 /* Controll parameters set thouth CAN */
-static float heightP = 10;
-static float heightI = 50;
+static float heightP = 0;
+static float heightI = 0;
 
-static float phiP = 100;
+static float phiP = 0;
 static float phiI = 0;
 
-static float thetaP = 300;
+static float thetaP = 0;
 static float thetaI = 0;
 
 static float skyChassiGain = 0;
@@ -93,8 +93,10 @@ static void referenceParametersCallback(void) {
 	if (0 == can_getDatabox(CAN_1, 8, confData_au8, &confNumBytes_u8)) {
 		phiReference 			= confData_au8[0];
 		thetaReference     		= confData_au8[1];
-		g_debug1 = phiReference;
-		g_debug2 = thetaReference;
+		/* debugg */
+		//g_debug1 = phiReference;
+		//g_debug2 = thetaReference;
+		/* end debugg */
 	}
 }
 
@@ -109,7 +111,9 @@ static void heightParametersCallback(void) {
 		skyWheelGain    	= ((confData_au8[5] << 8) | (confData_au8[4]));
 		heightReference 	= ((confData_au8[7] << 8) | (confData_au8[6]));
 
-		g_debug3 = forceReference;
+		/* debugg */
+		//g_debug3 = forceReference;
+		/* end debugg */
 	}
 }
 
@@ -400,7 +404,7 @@ void ADCFGNivPIDAndForcePID(bool state) {
 
 	/* 1. Set parameters */
 	ADPIDSetHeightControlParametersPID(heightP, 0, 0);
-	ADPIDSetPhiControlParametersPID   (phiP,    0, thetaI);
+	ADPIDSetPhiControlParametersPID   (phiP,    0, 0);
 	ADPIDSetThetaControlParametersPID (thetaP,  0, 0);
 	ADPIDSetForceControllerParametersPID(heightI, 0, 0); /* if parameters is heigfht I, fix and remove this comment. if fixed remove comment */
 
@@ -467,7 +471,9 @@ void ADCFGForceControllerTest(bool state) {
 
 	if (forceReference == 0) {
 		cylinderReferenceForce[0] = messuredCylinderForce[0];
-		g_debug4 = (forceReference - messuredCylinderForce[0]) / (forceReference) * 100;
+		/* deubgg */
+		//g_debug4 = (forceReference - messuredCylinderForce[0]) / (forceReference) * 100;
+		/* end debugg */
 	} else {
 		cylinderReferenceForce[0] = forceReference;
 	}

@@ -16,9 +16,9 @@ static void sendSensorDataOnCAN(void);
 //static void sendSensorDataOnCAN_1ms(void);
 static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static void activeDampeningControl(float timeSinceActivated);
+static void activeDampeningControl(int timeSinceActivated_ms);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static float getBootupAngle(float startingAngle, float endAngle, float maxTime, float currentTime);
+static float getBootupAngle(float startingAngle, float endAngle, float maxTime, int currentTime_ms);
 
 /* Start of program */
 void sys_main(void) {
@@ -88,15 +88,19 @@ static void readSensorsTask_10ms(void) {
 
 	/* Enable actuation of pendelum arms and set that the arms should respect limits */
 	PAASetPendelumArmActuateState(TRUE);
-	PAASetPendelumArmPosLimitState(TRUE);
+	PAASetPendelumArmPosLimitState(FALSE);
 
 	/* Uppdate presure and recalculate force data */
-	int posError;
-	int pressureError;
-	int imuError;
-	imuError      = IMUUppdateFilterdAngelsWithComplementaryFilter();
-	posError      = PAPOSUppdatePosSensorsDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
-	pressureError = PAPRUppdatePressureDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+	int imuError 	  = IMUUppdateFilterdAngelsWithComplementaryFilter();
+	int posError  	  = PAPOSUppdatePosSensorsDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+	int pressureError = PAPRUppdatePressureDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+
+	bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE);
+	if (sensorError == TRUE) {
+		/*!
+		 * do some sort of logic with disabeling PAAD.
+		 */
+	}
 
 	/* Get new valus for force calculations and update force data */
 	int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
@@ -113,38 +117,63 @@ static void readSensorsTask_10ms(void) {
 }
 
 static void checkMachineStateAndActuate(void) {
+	/*! Fixme
+	 * Absolutli need to add a timeout for the excipad message, if timeout set reference to zero
+	 */
 	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
 	static exipadButton machineStateOld = NONE;
-	static float timeSinceChangedState_s = 0.0;
+	static int timeSinceChangedState_ms = 0;
 
 	bool newMachineStateHasBeenSet = machineState != machineStateOld;
 	if (newMachineStateHasBeenSet) {
-		timeSinceChangedState_s = 0.0;
+		timeSinceChangedState_ms = 0;
+		/*!
+		 * Set output for all wheels to zero.
+		 */
+		joystickControl(OFF, OFF, OFF, OFF, OFF, OFF); /* temporary set all to zero */
 	}
 
 	switch (machineState) {
 	case NONE: /* All off */
 		joystickControl(OFF, OFF, OFF, OFF, OFF, OFF);
 		break;
-	case BUTTON_1: /* Front Right */
-		joystickControl(ON, OFF, OFF, OFF, OFF, OFF);
-		//PAASetPassiveDampeningState(TRUE);
-		break;
-	case BUTTON_3: /* Front Left */
+	case BUTTON_1: /* Front Left */
 		joystickControl(OFF, ON, OFF, OFF, OFF, OFF);
-		//PAASetPassiveDampeningState(FALSE);
 		break;
-	case BUTTON_4: /* Mid Right */
-		joystickControl(OFF, OFF, ON, OFF, OFF, OFF);
+	case BUTTON_2: /* Passive dampening activated */
+		PAASetPassiveDampeningState(TRUE);
 		break;
-	case BUTTON_6: /* Mid Left */
+	case BUTTON_3: /* Front Right */
+		joystickControl(ON, OFF, OFF, OFF, OFF, OFF);
+		break;
+	case BUTTON_4: /* Mid Left */
 		joystickControl(OFF, OFF, OFF, ON, OFF, OFF);
 		break;
-	case BUTTON_7: /* Back Right */
+	case BUTTON_5: /* Passive dampening deactivated */
+		PAASetPassiveDampeningState(FALSE);
+		break;
+	case BUTTON_6: /* Mid Right */
+		joystickControl(OFF, OFF, ON, OFF, OFF, OFF);
+		break;
+	case BUTTON_7: /* Back Left */
+		joystickControl(OFF, OFF, OFF, OFF, OFF, ON);
+		break;
+	case BUTTON_8: /* Nothing */
+		break;
+	case BUTTON_9: /* Back Right */
 		joystickControl(OFF, OFF, OFF, OFF, ON, OFF);
 		break;
-	case BUTTON_9: /* Back Left */
-		joystickControl(OFF, OFF, OFF, OFF, OFF, ON);
+	case BUTTON_10: /* Nothing */
+		break;
+	case BUTTON_11: /* Nothing */
+		break;
+	case BUTTON_12: /* Nothing */
+		break;
+	case BUTTON_13: /* Nothing */
+		break;
+	case BUTTON_14: /* Nothing */
+		break;
+	case BUTTON_15: /* Nothing */
 		break;
 	case BUTTON_16: /* Tilt Phi */
 		joystickControl(UPP, DOWN, UPP, DOWN, UPP, DOWN);
@@ -153,13 +182,16 @@ static void checkMachineStateAndActuate(void) {
 		joystickControl(UPP, UPP, OFF, OFF, DOWN, DOWN);
 		break;
 	case BUTTON_18: /* ADC Control */
-		timeSinceChangedState_s = timeSinceChangedState_s + (READ_SENSORS_TASK_TIME_MS / 1000);
+		timeSinceChangedState_ms = timeSinceChangedState_ms + (READ_SENSORS_TASK_TIME_MS);
 		activeDampeningControl(
-				timeSinceChangedState_s
+				timeSinceChangedState_ms
 		);
 		break;
 	case BUTTON_19: /* All Upp */
 		buttonHoldControl(UPP, UPP, UPP, UPP, UPP, UPP);
+		break;
+	case BUTTON_20:
+		/* Nothing */
 		break;
 	case BUTTON_21: /* Front Down */
 		buttonHoldControl(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN);
@@ -168,21 +200,25 @@ static void checkMachineStateAndActuate(void) {
 	machineStateOld = machineState;
 }
 
-static void activeDampeningControl(float timeSinceActivated_s) {
+static void activeDampeningControl(int timeSinceActivated_ms) {
 
-	g_debug1 = timeSinceActivated_s * 1000;
-	g_debug2 = PAPOSGetBeta() * 1000;
-	g_debug3 = getBootupAngle(-1.0f, 0.0f, 5, timeSinceActivated_s) * 1000;
+	ADCFGNivPIDAndForcePID(TRUE);
+
+	//g_debug1 = timeSinceActivated_ms;
+	//g_debug2 = PAPOSGetBeta() * 1000;
+	//g_debug3 = getBootupAngle(-4.2f, 9.6f, 5, timeSinceActivated_ms) * 1000;
 
 
-	if (timeSinceActivated_s < 5) {
+/*
+	if (timeSinceActivated_ms < 5) {
 		//float thetaRef = 0.0; //get boot angle theta
 		//float phiRef = 0.0; //get boot angle phi
 		//ADFGSetReferencePhiAndTheta();
-		ADCFGForceControllerTest(TRUE);
+		//ADCFGNivPIDAndForcePID(TRUE);
 	} else {
-		ADCFGForceControllerTest(TRUE);
+		//ADCFGNivPIDAndForcePID(TRUE);
 	}
+*/
 
 	//ADCFGNivPIDSetup(TRUE);
 	//ADCFGForceControllerTest(TRUE);
@@ -195,15 +231,13 @@ static void activeDampeningControl(float timeSinceActivated_s) {
 	//ADCFGNivPIDAndSkyhookSetup(FALSE);
 	//ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
 	//ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
-
-
-	//ADCFGNivPIDAndForcePID(TRUE);
 }
 
-static float getBootupAngle(float startingAngle, float endAngle, float maxTime, float currentTime) {
+static float getBootupAngle(float startingAngle, float endAngle, float maxTime, int currentTime_ms) {
 
-	/* https://en.wikipedia.org/wiki/Logistic_function */
-	float angleReference = startingAngle - ( (startingAngle - endAngle) / (1 + exp(-(9.5 / maxTime) * (currentTime - (maxTime / 2))) ) );
+	float timeInSec = (float)currentTime_ms / 1000;
+	/* S curve logistic function: https://en.wikipedia.org/wiki/Logistic_function */
+	float angleReference = startingAngle - ( (startingAngle - endAngle) / (1 + exp(-(9.5 / maxTime) * (timeInSec - (maxTime / 2))) ) );
 	return angleReference;
 
 }
@@ -330,6 +364,5 @@ static void sendSensorDataOnCAN_1ms(void) {
 			CAN_ID_REFERENCE_CURRENT_MID,
 			CAN_ID_REFERENCE_CURRENT_BACK
 	);
-	g_debug1++;
 }
  */

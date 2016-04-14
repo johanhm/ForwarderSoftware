@@ -192,12 +192,12 @@ static void calculateMassCenterLocation(void) {
 
 	float sumOfForcesOnWheels_N = sumOfVerticalForce;
 
-	float massCenterLocationX_mNew = 1 / sumOfForcesOnWheels_N * (calculatedVerticalForceOnWheel[FR] + calculatedVerticalForceOnWheel[MR] + calculatedVerticalForceOnWheel[BR]) * widthOfForwarder_m;
-	float massCenterLocationY_mNew = 1 / sumOfForcesOnWheels_N * ((calculatedVerticalForceOnWheel[ML] + calculatedVerticalForceOnWheel[MR]) * lengthToMidOfForwarder_m + (calculatedVerticalForceOnWheel[BL] + calculatedVerticalForceOnWheel[BR]) * lengthOfForwarder_m);
+	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (calculatedVerticalForceOnWheel[FR] + calculatedVerticalForceOnWheel[MR] + calculatedVerticalForceOnWheel[BR]) * widthOfForwarder_m;
+	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((calculatedVerticalForceOnWheel[ML] + calculatedVerticalForceOnWheel[MR]) * lengthToMidOfForwarder_m + (calculatedVerticalForceOnWheel[BL] + calculatedVerticalForceOnWheel[BR]) * lengthOfForwarder_m);
 
 	// Low pass filter
-	massCenterLocationX_m = massCenterLocationX_m * 0.999 + 0.001 * massCenterLocationX_mNew;
-	massCenterLocationY_m = massCenterLocationY_m * 0.999 + 0.001 * massCenterLocationY_mNew;
+	//massCenterLocationX_m = massCenterLocationX_m * 0.999 + 0.001 * massCenterLocationX_mNew;
+	//massCenterLocationY_m = massCenterLocationY_m * 0.999 + 0.001 * massCenterLocationY_mNew;
 
 }
 
@@ -226,8 +226,9 @@ static void calculateOptimalForceForAllWheels(void) {
 
 	//temporary remove when logic is working
 	float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
-	//float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
-	float massCenterLocationY_mLocal = massCenterLocationY_m;
+	//float massCenterLocationX_mLocal = massCenterLocationX_m;//0.48 * widthOfForwarder_m;
+	float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
+	//float massCenterLocationY_mLocal = massCenterLocationY_m;
 	//end of temporare to remove
 
 	float kMidScalingConstant = (float)1 / 3;

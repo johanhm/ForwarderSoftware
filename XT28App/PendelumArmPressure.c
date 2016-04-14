@@ -38,7 +38,7 @@ static uint16 pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
 int PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 
 	if (checkPressureSensorsForErrors() > 0) {
-		return PRESSURE_UPDATE_ERROR;
+		//return PRESSURE_UPDATE_ERROR;
 	}
 
 	float sampleTime = (float)sampleTimeUppdate_ms / 1000;

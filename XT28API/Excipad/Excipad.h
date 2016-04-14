@@ -21,16 +21,26 @@
 typedef enum {
 	NONE,		/**< No Button pressed 	*/
 	BUTTON_1 ,	/**< Button 1 			*/
+	BUTTON_2 ,	/**< Button 2 			*/
 	BUTTON_3 ,	/**< Button 3 			*/
 	BUTTON_4 ,	/**< Button 4 			*/
+	BUTTON_5 ,	/**< Button 5 			*/
 	BUTTON_6 ,	/**< Button 6 			*/
 	BUTTON_7 ,	/**< Button 7 			*/
+	BUTTON_8 ,	/**< Button 8 			*/
 	BUTTON_9 ,	/**< Button 9 			*/
+	BUTTON_10,	/**< Button 10 			*/
+	BUTTON_11,	/**< Button 11 			*/
+	BUTTON_12,	/**< Button 12 			*/
+	BUTTON_13,	/**< Button 13 			*/
+	BUTTON_14,	/**< Button 14 			*/
+	BUTTON_15,	/**< Button 15 			*/
 	BUTTON_16,	/**< Button 16 			*/
 	BUTTON_17,	/**< Button 17 			*/
 	BUTTON_18,	/**< Button 18 			*/
 	BUTTON_19,	/**< Button 19 			*/
-	BUTTON_21	/**< Button 20 			*/
+	BUTTON_20,	/**< Button 20 			*/
+	BUTTON_21	/**< Button 21 			*/
 } exipadButton;
 
 

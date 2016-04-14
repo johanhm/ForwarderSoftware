@@ -95,6 +95,7 @@ static float thetaPID(float thetaError) {
 	//float integratorTerm = thetaI * 0;
 
 	/* D part with low pass filter */
+	/* Pls Johan why retarded??? maby use IMU gyro */
 	float deriativeTermRaw  = phiD * (thetaError - previousThetaError) / sampleTime;
 	previousThetaError = thetaError;
 	deriativeTermFilterd = deriativeTermFilterd * alpha + (1-alpha) * deriativeTermRaw;

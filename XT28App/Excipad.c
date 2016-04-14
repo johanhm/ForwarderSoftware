@@ -10,29 +10,33 @@
 #define CAN_ID_JOYSTICK_Y					(0x18FE010B)
 
 /* CAN message exipad */
-#define BUTTON_ID_1		(0x10) //16	 //Byte 4, bit 5
-#define BUTTON_ID_3 	(0x01) //1	 //Byte 4, bit 1
-#define BUTTON_ID_4		(0x04) //4   //Byte 5, bit 3
-#define BUTTON_ID_6		(0x40) //64	 //Byte 4, bit 7
-#define BUTTON_ID_7		(0x01) //1	 //Byte 6, bit 1
-#define BUTTON_ID_9		(0x10) //16	 //Byte 5, bit 5
-#define BUTTON_ID_19	(0x40) //64	 //Byte 3, bit 3
-#define BUTTON_ID_21	(0x04) //4	 //Byte 3, bit 7
-#define BUTTON_ID_16	(0x10) //16	 //Byte 2, bit 5
-#define BUTTON_ID_17	(0x40) //64	 //Byte 2, bit 7
-#define BUTTON_ID_18	(0x01) //1 	 //Byte 3, bit 1
+#define BUTTON_ID_1		(0x01) /* 1,  byte 3 */
+#define BUTTON_ID_2	 	(0x04) /* 4,  byte 3 */
+#define BUTTON_ID_3 	(0x10) /* 16, byte 3 */
+#define BUTTON_ID_4		(0x40) /* 64, byte 3 */
 
-/* Add new bottons, merge with paragraph above when tested */
-#define BUTTON_ID_2	 	(0x40) //byte 4
-#define BUTTON_ID_5	 	(0x10) //byte
-#define BUTTON_ID_8	 	(0x04) //byte
-#define BUTTON_ID_10	(0x00)
-#define BUTTON_ID_11	(0x00)
-#define BUTTON_ID_12	(0x00)
-#define BUTTON_ID_13	(0x00)
-#define BUTTON_ID_14	(0x00)
-#define BUTTON_ID_15	(0x00)
-#define BUTTON_ID_20	(0x00)
+#define BUTTON_ID_5	 	(0x01) /* 1,  byte 4 */
+#define BUTTON_ID_6		(0x04) /* 4,  byte 4 */
+#define BUTTON_ID_7		(0x10) /* 16, byte 4 */
+#define BUTTON_ID_8	 	(0x40) /* 64, byte 4 */
+
+#define BUTTON_ID_9		(0x01) /* 1,  byte 5 */
+
+#define BUTTON_ID_10	(0x01) /* 1,  byte 0 */
+#define BUTTON_ID_11	(0x04) /* 4,  byte 0 */
+#define BUTTON_ID_12	(0x10) /* 16, byte 0 */
+#define BUTTON_ID_13	(0x40) /* 64, byte 0 */
+
+#define BUTTON_ID_14	(0x01) /* 1,  byte 1 */
+#define BUTTON_ID_15	(0x04) /* 4,  byte 1 */
+#define BUTTON_ID_16	(0x10) /* 16, byte 1 */
+#define BUTTON_ID_17	(0x40) /* 64, byte 1 */
+
+#define BUTTON_ID_18	(0x01) /* 1,  byte 2 */
+#define BUTTON_ID_19	(0x04) /* 4,  byte 2 */
+#define BUTTON_ID_20	(0x10) /* 16, byte 2 */
+#define BUTTON_ID_21	(0x40) /* 64, byte 2 */
+
 
 /* Joystick */
 #define JOYSTICK_Y_HIGH_POINT		(4300)
@@ -150,29 +154,55 @@ void EXPSetLastPressedButtonToNone(void) {
 
 exipadButton EXPGetCurrentlyPressedButton(void) {
 	exipadButton exipadButtonPresed = NONE;
+	/* byte 3 */
 	if (leftExcipadButtonsMessage[3] == BUTTON_ID_1) {
 		exipadButtonPresed = BUTTON_1;
+	}
+	if (leftExcipadButtonsMessage[3] == BUTTON_ID_2) {
+		exipadButtonPresed = BUTTON_2;
 	}
 	if (leftExcipadButtonsMessage[3] == BUTTON_ID_3) {
 		exipadButtonPresed = BUTTON_3;
 	}
-	if (leftExcipadButtonsMessage[4] == BUTTON_ID_4) {
+	if (leftExcipadButtonsMessage[3] == BUTTON_ID_4) {
 		exipadButtonPresed = BUTTON_4;
 	}
-	if (leftExcipadButtonsMessage[3] == BUTTON_ID_6) {
+	/* byte 4 */
+	if (leftExcipadButtonsMessage[4] == BUTTON_ID_5) {
+		exipadButtonPresed = BUTTON_5;
+	}
+	if (leftExcipadButtonsMessage[4] == BUTTON_ID_6) {
 		exipadButtonPresed = BUTTON_6;
 	}
-	if (leftExcipadButtonsMessage[5] == BUTTON_ID_7) {
+	if (leftExcipadButtonsMessage[4] == BUTTON_ID_7) {
 		exipadButtonPresed = BUTTON_7;
 	}
-	if (leftExcipadButtonsMessage[4] == BUTTON_ID_9) {
+	if (leftExcipadButtonsMessage[4] == BUTTON_ID_8) {
+		exipadButtonPresed = BUTTON_8;
+	}
+	/* byte 5 */
+	if (leftExcipadButtonsMessage[5] == BUTTON_ID_9) {
 		exipadButtonPresed = BUTTON_9;
 	}
-	if (leftExcipadButtonsMessage[2] == BUTTON_ID_19) {
-		exipadButtonPresed = BUTTON_19;
+	/* byte 0 */
+	if (leftExcipadButtonsMessage[0] == BUTTON_ID_10) {
+		exipadButtonPresed = BUTTON_10;
 	}
-	if (leftExcipadButtonsMessage[2] == BUTTON_ID_21) {
-		exipadButtonPresed = BUTTON_21;
+	if (leftExcipadButtonsMessage[0] == BUTTON_ID_11) {
+		exipadButtonPresed = BUTTON_11;
+	}
+	if (leftExcipadButtonsMessage[0] == BUTTON_ID_12) {
+		exipadButtonPresed = BUTTON_12;
+	}
+	if (leftExcipadButtonsMessage[0] == BUTTON_ID_13) {
+		exipadButtonPresed = BUTTON_13;
+	}
+	/* byte 1 */
+	if (leftExcipadButtonsMessage[1] == BUTTON_ID_14) {
+		exipadButtonPresed = BUTTON_14;
+	}
+	if (leftExcipadButtonsMessage[1] == BUTTON_ID_15) {
+		exipadButtonPresed = BUTTON_15;
 	}
 	if (leftExcipadButtonsMessage[1] == BUTTON_ID_16) {
 		exipadButtonPresed = BUTTON_16;
@@ -180,9 +210,31 @@ exipadButton EXPGetCurrentlyPressedButton(void) {
 	if (leftExcipadButtonsMessage[1] == BUTTON_ID_17) {
 		exipadButtonPresed = BUTTON_17;
 	}
+	/* byte 2 */
 	if (leftExcipadButtonsMessage[2] == BUTTON_ID_18) {
 		exipadButtonPresed = BUTTON_18;
 	}
+	if (leftExcipadButtonsMessage[2] == BUTTON_ID_19) {
+		exipadButtonPresed = BUTTON_19;
+	}
+	if (leftExcipadButtonsMessage[2] == BUTTON_ID_20) {
+		exipadButtonPresed = BUTTON_20;
+	}
+	if (leftExcipadButtonsMessage[2] == BUTTON_ID_21) {
+		exipadButtonPresed = BUTTON_21;
+	}
+
+	/* debugg, find the id of all bottons */
+	/*
+	g_debug1 = leftExcipadButtonsMessage[0];
+	g_debug2 = leftExcipadButtonsMessage[1];
+	g_debug3 = leftExcipadButtonsMessage[2];
+	g_debug4 = leftExcipadButtonsMessage[3];
+	g_debug5 = leftExcipadButtonsMessage[4];
+	g_debug6 = leftExcipadButtonsMessage[5];
+	*/
+	/* end debugg */
+
 	return exipadButtonPresed;
 }
 

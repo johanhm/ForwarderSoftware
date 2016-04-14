@@ -67,8 +67,8 @@ uint16 IMUInit(void) {
 static sint16 gyroThetaRaw   = 0;
 static sint16 gyroPhiRaw     = 0;
 static int gyroUpdateTime_ms = 0;
-
 static void IMUUppdateGyroDataCANCallback(void) {
+	gyroUpdateTime_ms = 0;
 	/* Save gyro data */
 	uint8 angleMessageData_au8[6];
 	uint8 angleMessageNumBytes_u8;
@@ -80,15 +80,15 @@ static void IMUUppdateGyroDataCANCallback(void) {
 
 	gyroThetaRaw = (angleMessageData_au8[1] << 8 | angleMessageData_au8[0]);  //Gyro around IMU x axis
 	gyroPhiRaw   = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);  //Gyro around IMU y axis
-	gyroUpdateTime_ms = 0;
 }
 
 static sint16 accelometerXRaw        = 0;
 static sint16 accelometerYRaw        = 0;
 static sint16 accelometerZRaw        = 0;
 static int accelometerUppdateTime_ms = 0;
-
 static void IMUAcceleometerUppdateDataCANCallback(void) {
+	accelometerUppdateTime_ms = 0;
+
 	/* Save accelerometer data */
 	uint8 angleMessageData_au8[6];
 	uint8 angleMessageNumBytes_u8;
@@ -103,7 +103,6 @@ static void IMUAcceleometerUppdateDataCANCallback(void) {
 	accelometerZRaw = (angleMessageData_au8[5] << 8 | angleMessageData_au8[4]);
 
 	//uppdateFilterdAngelsWithComplementaryFilter();
-	accelometerUppdateTime_ms = 0;
 }
 
 static float phiAngleInDegree = 0;
@@ -122,6 +121,7 @@ int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 		gyroUpdateTime_ms += 10;
 	}
 
+	/* Uppdate filterd angle from latest raw data */
 	const int multConstantForFilter = 1000;
 	const float IMUSensorSampleTime = 0.01;
 	const int convertToDegreePerSecConstant = 50;
@@ -157,7 +157,6 @@ int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 	//END DEBUGG
 	return 0; /* no error */
 }
-
 
 float IMUGetPhi(void) {
 	return phiAngleInDegree;

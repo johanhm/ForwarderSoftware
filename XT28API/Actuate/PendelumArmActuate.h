@@ -31,6 +31,7 @@
 #include "XT28HardwareConstants.h"
 
 /** \name  Defines for pendulum outputs */
+
 #define OUT_PENDELURM_FRONT_RIGHT_A		OUT_1_POH_CL
 #define OUT_PENDELURM_FRONT_RIGHT_B		OUT_2_POH_CL
 #define OUT_PENDELURM_FRONT_LEFT_A		OUT_3_POH_CL

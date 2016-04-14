@@ -77,6 +77,8 @@ void CANSendSupplyVoltageOnCAN(uint8 CANChannel, uint32 ID) {
 	sint16 batterySupplyVoltage = sys_getSupply(VB);
 	sint16 sensorSupplyVoltage1 = sys_getSupply(VSS_1);
 	sint16 sensorSupplyVoltage3 = sys_getSupply(VSS_3);
+
+	g_debug6 = batterySupplyVoltage;
 	CANSend_sint16(CANChannel, ID,
 			batterySupplyVoltage,
 			sensorSupplyVoltage1,

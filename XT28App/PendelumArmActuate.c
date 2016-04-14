@@ -7,8 +7,8 @@
 #define REFERENCE_CURRENT_MAXIMUM_A_mA   400
 #define DEADZONE_FOR_SOLEONID_CURRENT_mA 400
 
-#define CYL_POS_MAX  490 			//Software cylinder position maximum limit (mm)
-#define CYL_POS_MIN  100 			//Software cylinder minimum position limit (mm)
+#define CYL_POS_MAX  (460) 			//Software cylinder position maximum limit (mm)
+#define CYL_POS_MIN  (20) 			//Software cylinder minimum position limit (mm)
 
 // setting current error codes
 #define SUCESS_SETTING_CURRENT   0
@@ -87,7 +87,7 @@ void PAASetPassiveDampeningState(bool state) {
 	out(OUT_24_DOH, passiveState);
 }
 
-static int referenceSoleonidOutputCurrent_ma[SUM_WHEELS];
+static int referenceSoleonidOutputCurrent_ma[SUM_WHEELS]; /* move this shit into function idiot */
 int PAAGetReferenceCurrentForWheel(int wheel) {
 	return referenceSoleonidOutputCurrent_ma[wheel];
 }
@@ -116,6 +116,7 @@ int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceI
 		return ERROR_SETTING_CURRENT;
 	}
 
+	/* Saturation */
 	int errorMessage = 0;
 	referenceSoleonidOutputCurrent_ma[wheel] = referenceCurrentInput_ma;
 	if (referenceCurrentInput_ma < REFERENCE_CURRENT_MAXIMUM_B_mA) {
@@ -126,6 +127,11 @@ int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceI
 		referenceSoleonidOutputCurrent_ma[wheel] = REFERENCE_CURRENT_MAXIMUM_A_mA;
 		errorMessage = CURRENT_SET_TO_MAXIMUM;
 	}
+
+	/* debugg */
+	//g_debug2 = referenceSoleonidOutputCurrent_ma[0];
+	/* debugg end */
+
 	addDeadbandCurrentToOutputAndSplitIntoAB(wheel);
 	errorMessage = SUCESS_SETTING_CURRENT;
 	return errorMessage;
@@ -172,8 +178,8 @@ void PAASetPendelumArmPosLimitState(bool state) {
 	pendelumArmPosLimit = state;
 }
 
-static volatile sint16 referenceCurrentPortA[SUM_WHEELS] = {0};
-static volatile sint16 referenceCurrentPortB[SUM_WHEELS] = {0};
+static volatile uint16 referenceCurrentPortA[SUM_WHEELS] = {0};
+static volatile uint16 referenceCurrentPortB[SUM_WHEELS] = {0};
 void PAAActuatePendelumArms(void) {
 	if (pendelumArmPosLimit) {
 		checkCylinderPosLimit();
@@ -211,6 +217,10 @@ static void addDeadbandCurrentToOutputAndSplitIntoAB(int wheel) {
 	else if (referenceSoleonidOutputCurrent_ma[wheel] < 0) {//Output scaled on B  turn off A
 		referenceCurrentPortA[wheel] = 0;
 		referenceCurrentPortB[wheel] = (-1 * referenceSoleonidOutputCurrent_ma[wheel]) + DEADZONE_FOR_SOLEONID_CURRENT_mA;	} //Out between 400 and 800
+	/* debugg */
+	//g_debug3 = referenceCurrentPortA[0];
+	//g_debug4 = referenceCurrentPortB[0];
+
 }
 
 static void checkCylinderPosLimit(void) {
@@ -232,36 +242,36 @@ void PAASendReferenceCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middl
 
 	// Motorola standard bifshift tt, every other messages uses INTEL.
 	uint8 data_au8_cylinders_front[8] = {0};
-	data_au8_cylinders_front[0] = referenceCurrentPortA[FR] >> 8;
-	data_au8_cylinders_front[1] = referenceCurrentPortA[FR];
-	data_au8_cylinders_front[2] = referenceCurrentPortB[FR] >>8;
-	data_au8_cylinders_front[3] = referenceCurrentPortB[FR];
-	data_au8_cylinders_front[4] = referenceCurrentPortA[FL] >> 8;
-	data_au8_cylinders_front[5] = referenceCurrentPortA[FL];
-	data_au8_cylinders_front[6] = referenceCurrentPortB[FL] >>8;
-	data_au8_cylinders_front[7] = referenceCurrentPortB[FL];
+	data_au8_cylinders_front[0] = referenceCurrentPortA[FR];
+	data_au8_cylinders_front[1] = referenceCurrentPortA[FR] >> 8;
+	data_au8_cylinders_front[2] = referenceCurrentPortB[FR];
+	data_au8_cylinders_front[3] = referenceCurrentPortB[FR] >> 8;
+	data_au8_cylinders_front[4] = referenceCurrentPortA[FL];
+	data_au8_cylinders_front[5] = referenceCurrentPortA[FL] >> 8;
+	data_au8_cylinders_front[6] = referenceCurrentPortB[FL];
+	data_au8_cylinders_front[7] = referenceCurrentPortB[FL] >> 8;
 	can_sendData(CANChannel, frontID, CAN_EXD_DU8, 8, data_au8_cylinders_front);
 
 	uint8 data_au8_cylinders_mid[8]   = {0};
-	data_au8_cylinders_mid[0] = referenceCurrentPortA[MR] >> 8;
-	data_au8_cylinders_mid[1] = referenceCurrentPortA[MR];
-	data_au8_cylinders_mid[2] = referenceCurrentPortB[MR] >> 8;
-	data_au8_cylinders_mid[3] = referenceCurrentPortB[MR];
-	data_au8_cylinders_mid[4] = referenceCurrentPortA[ML] >> 8;
-	data_au8_cylinders_mid[5] = referenceCurrentPortA[ML];
-	data_au8_cylinders_mid[6] = referenceCurrentPortB[ML] >> 8;
-	data_au8_cylinders_mid[7] = referenceCurrentPortB[ML];
+	data_au8_cylinders_mid[0] = referenceCurrentPortA[MR];
+	data_au8_cylinders_mid[1] = referenceCurrentPortA[MR] >> 8;
+	data_au8_cylinders_mid[2] = referenceCurrentPortB[MR];
+	data_au8_cylinders_mid[3] = referenceCurrentPortB[MR] >> 8;
+	data_au8_cylinders_mid[4] = referenceCurrentPortA[ML];
+	data_au8_cylinders_mid[5] = referenceCurrentPortA[ML] >> 8;
+	data_au8_cylinders_mid[6] = referenceCurrentPortB[ML];
+	data_au8_cylinders_mid[7] = referenceCurrentPortB[ML] >> 8;
 	can_sendData(CANChannel, middleID, CAN_EXD_DU8, 8, data_au8_cylinders_mid);
 
 	uint8 data_au8_cylinders_rear[8]  = {0};
-	data_au8_cylinders_rear[0] = referenceCurrentPortA[BR] >>8;
-	data_au8_cylinders_rear[1] = referenceCurrentPortA[BR];
-	data_au8_cylinders_rear[2] = referenceCurrentPortB[BR] >>8;
-	data_au8_cylinders_rear[3] = referenceCurrentPortB[BR];
-	data_au8_cylinders_rear[4] = referenceCurrentPortA[BL] >> 8;
-	data_au8_cylinders_rear[5] = referenceCurrentPortA[BL];
-	data_au8_cylinders_rear[6] = referenceCurrentPortB[BL] >>8;
-	data_au8_cylinders_rear[7] = referenceCurrentPortB[BL];
+	data_au8_cylinders_rear[0] = referenceCurrentPortA[BR];
+	data_au8_cylinders_rear[1] = referenceCurrentPortA[BR] >> 8;
+	data_au8_cylinders_rear[2] = referenceCurrentPortB[BR];
+	data_au8_cylinders_rear[3] = referenceCurrentPortB[BR] >> 8;
+	data_au8_cylinders_rear[4] = referenceCurrentPortA[BL];
+	data_au8_cylinders_rear[5] = referenceCurrentPortA[BL] >> 8;
+	data_au8_cylinders_rear[6] = referenceCurrentPortB[BL];
+	data_au8_cylinders_rear[7] = referenceCurrentPortB[BL] >> 8;
 	can_sendData(CANChannel, backID, CAN_EXD_DU8, 8, data_au8_cylinders_rear);
 
 }
@@ -277,12 +287,12 @@ void PAASendRealCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, 
 	uint16 i_mA_RightB;
 
 	//FRONT
-	out_getStatusxt(OUT_3_POH, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_4_POH, &out_s2);
+	out_getStatusxt(OUT_PENDELURM_FRONT_LEFT_A, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_FRONT_LEFT_B, &out_s2);
 	i_mA_LeftA = out_s1.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_LeftB = out_s2.out_po_s.i_mA_u16; //actual current in mA
-	out_getStatusxt(OUT_1_POH, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_2_POH, &out_s4);
+	out_getStatusxt(OUT_PENDELURM_FRONT_RIGHT_A, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_FRONT_RIGHT_B, &out_s4);
 	i_mA_RightA = out_s3.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_RightB = out_s4.out_po_s.i_mA_u16; //actual current in mA
 	uint8 data_au8_currentCylinders[8];
@@ -297,12 +307,12 @@ void PAASendRealCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, 
 	if (0 == can_sendData(CANChannel, frontID, CAN_EXD_DU8, 8, data_au8_currentCylinders)) {}
 
 	//MID
-	out_getStatusxt(OUT_7_POH, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_8_POH, &out_s2);
+	out_getStatusxt(OUT_PENDELURM_MID_LEFT_A, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_MID_LEFT_B, &out_s2);
 	i_mA_LeftA = out_s1.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_LeftB = out_s2.out_po_s.i_mA_u16; //actual current in mA
-	out_getStatusxt(OUT_5_POH, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_6_POH, &out_s4);
+	out_getStatusxt(OUT_PENDELURM_MID_RIGHT_A, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_MID_RIGHT_B, &out_s4);
 	i_mA_RightA = out_s3.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_RightB = out_s4.out_po_s.i_mA_u16; //actual current in mA
 	// uint8 data_au8_currentCylinders[8];
@@ -317,12 +327,12 @@ void PAASendRealCurrentOnCAN(uint8 CANChannel, uint32 frontID, uint32 middleID, 
 	if (0 == can_sendData(CANChannel, middleID, CAN_EXD_DU8, 8, data_au8_currentCylinders)) {}
 
 	//BACK
-	out_getStatusxt(OUT_11_POH, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_12_POH, &out_s2);
+	out_getStatusxt(OUT_PENDELURM_REAR_LEFT_A, &out_s1); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_REAR_LEFT_B, &out_s2);
 	i_mA_LeftA = out_s1.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_LeftB = out_s2.out_po_s.i_mA_u16; //actual current in mA
-	out_getStatusxt(OUT_9_POH, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
-	out_getStatusxt(OUT_10_POH, &out_s4);
+	out_getStatusxt(OUT_PENDELURM_REAR_RIGHT_A, &out_s3); // obtain the data in output port 11 and save it to pointer out_s1
+	out_getStatusxt(OUT_PENDELURM_REAR_RIGHT_B, &out_s4);
 	i_mA_RightA = out_s3.out_po_s.i_mA_u16;  //actual current in mA
 	i_mA_RightB = out_s4.out_po_s.i_mA_u16; //actual current in mA
 	// uint8 data_au8_currentCylinders[8];
