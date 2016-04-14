@@ -99,6 +99,7 @@ static void readSensorsTask_10ms(void) {
 	if (sensorError == TRUE) {
 		/*!
 		 * do some sort of logic with disabeling PAAD.
+		 * add comment for fun
 		 */
 	}
 
