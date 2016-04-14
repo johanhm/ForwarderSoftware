@@ -39,7 +39,12 @@ int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	uint8 x = 0; /* Index used in FOR loops */
 
+<<<<<<< HEAD
 	/* Read Position sensors  and calculate velocities */
+=======
+
+	//////////////////////read Position sensors  and calculate velocities
+>>>>>>> 4830f3709f85a3b40ef012470d82fbdfdd71693f
 	//Save Pos(k-1)
 	for (x = 0; x < SUM_WHEELS; x++) {
 		posData_last[x] = posData_mm[x];
