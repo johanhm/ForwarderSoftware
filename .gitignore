@@ -1,2 +1,5 @@
 XT28App/obj/
 Template/obj/
+.settings/
+.cproject
+.project
