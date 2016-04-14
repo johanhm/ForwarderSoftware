@@ -3138,7 +3138,7 @@ Disassembly of section .text:
 
 800200a0 <_main>:
 800200a0:	91 20 00 ad 	movh.a %sp,53250
-800200a4:	d9 aa f8 f9 	lea %sp,[%sp]-24584 <d0019ff8 <__RAM0_END>>
+800200a4:	d9 aa f8 f9 	lea %sp,[%sp]-24584 <d0019ff8 <__USTACK>>
 800200a8:	91 10 20 08 	movh.a %a0,33281
 800200ac:	d9 00 e8 06 	lea %a0,[%a0]27688 <82016c28 <_SMALL_DATA_>>
 800200b0:	a0 01       	mov.a %a1,0
@@ -3224,7 +3224,7 @@ Disassembly of section .text:
 80020194:	6d 01 f6 8c 	call 80051b80 <MemLay_CacheInit>
 80020198:	91 00 20 28 	movh.a %a2,33280
 8002019c:	d9 ff 00 00 	lea %a15,[%a15]0 <100000 <__EXT_RAM_SIZE>>
-800201a0:	d9 22 00 00 	lea %a2,[%a2]0 <82000000 <__EXT_RAM_START>>
+800201a0:	d9 22 00 00 	lea %a2,[%a2]0 <82000000 <EXTRAM_START>>
 800201a4:	b0 ff       	add.a %a15,-1
 800201a6:	24 2f       	st.b [%a2+],%d15
 800201a8:	fc ff       	loop %a15,800201a6 <CSA_LOOP+0x3a>
@@ -3363,7 +3363,7 @@ Disassembly of section .text:
 8002030a:	37 0f 70 80 	extr.u %d8,%d15,0,16
 8002030e:	91 00 00 fd 	movh.a %a15,53248
 80020312:	d9 ff 7e 54 	lea %a15,[%a15]17790 <d000457e <sys_TCnum_s>>
-80020316:	d9 fc 01 00 	lea %a12,[%a15]1 <d0000001 <__LD_RAM_START+0x1>>
+80020316:	d9 fc 01 00 	lea %a12,[%a15]1 <d0000001 <__RAM0_START+0x1>>
 8002031a:	0c c0       	ld.bu %d15,[%a12]0
 8002031c:	df 0f 94 01 	jeq %d15,0,80020644 <__copy_table_done+0x3ec>
 80020320:	82 14       	mov %d4,1
@@ -3390,11 +3390,11 @@ Disassembly of section .text:
 80020360:	1b 02 40 2d 	addi %d2,%d2,-11264
 80020364:	3b 50 02 30 	mov %d3,37
 80020368:	91 00 00 dd 	movh.a %a13,53248
-8002036c:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__LD_RAM_START>>,%e0
+8002036c:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__RAM0_START>>,%e0
 80020370:	0b 20 40 00 	addx %d0,%d0,%d2
 80020374:	0b 31 50 10 	addc %d1,%d1,%d3
 80020378:	d9 dd 58 45 	lea %a13,[%a13]21784 <d0005518 <tiNextSoh_u64.0>>
-8002037c:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__LD_RAM_START>>,%e0
+8002037c:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__RAM0_START>>,%e0
 80020380:	6d 00 c6 e0 	call 8003c50c <sys_realizeOffset>
 80020384:	0d 00 40 03 	disable 
 80020388:	00 00       	nop 
@@ -3437,9 +3437,9 @@ Disassembly of section .text:
 80020408:	a6 51       	or %d1,%d5
 8002040a:	2e 83       	jz.t %d15,8,80020410 <__copy_table_done+0x1b8>
 8002040c:	0d 00 00 03 	enable 
-80020410:	09 d2 40 09 	ld.d %e2,[%a13]0 <d0000000 <__LD_RAM_START>>
+80020410:	09 d2 40 09 	ld.d %e2,[%a13]0 <d0000000 <__RAM0_START>>
 80020414:	3a 31       	eq %d15,%d1,%d3
-80020416:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__LD_RAM_START>>,%e0
+80020416:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__RAM0_START>>,%e0
 8002041a:	0b 02 50 f2 	and.ge.u %d15,%d2,%d0
 8002041e:	0b 31 a0 f2 	or.lt.u %d15,%d1,%d3
 80020422:	6e 24       	jz %d15,8002046a <__copy_table_done+0x212>
@@ -3467,10 +3467,10 @@ Disassembly of section .text:
 8002046e:	7b 40 7f 2b 	movh %d2,47092
 80020472:	1b 02 40 2d 	addi %d2,%d2,-11264
 80020476:	3b 50 02 30 	mov %d3,37
-8002047a:	09 c0 40 09 	ld.d %e0,[%a12]0 <d0000000 <__LD_RAM_START>>
+8002047a:	09 c0 40 09 	ld.d %e0,[%a12]0 <d0000000 <__RAM0_START>>
 8002047e:	0b 20 40 00 	addx %d0,%d0,%d2
 80020482:	0b 31 50 10 	addc %d1,%d1,%d3
-80020486:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__LD_RAM_START>>,%e0
+80020486:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__RAM0_START>>,%e0
 8002048a:	6d 00 93 82 	call 800309b0 <mo_getTransferAPIError_u16>
 8002048e:	6d 00 6e de 	call 8003c16a <sys_IdleTasks>
 80020492:	0c f0       	ld.bu %d15,[%a15]0
@@ -3492,7 +3492,7 @@ Disassembly of section .text:
 800204c6:	82 10       	mov %d0,1
 800204c8:	d9 ff 40 64 	lea %a15,[%a15]17792 <d0004580 <sys_TCdata_as>>
 800204cc:	3b 20 01 40 	mov %d4,18
-800204d0:	d9 f4 01 00 	lea %a4,[%a15]1 <d0000001 <__LD_RAM_START+0x1>>
+800204d0:	d9 f4 01 00 	lea %a4,[%a15]1 <d0000001 <__RAM0_START+0x1>>
 800204d4:	91 00 00 fd 	movh.a %a15,53248
 800204d8:	19 f1 84 65 	ld.w %d1,[%a15]22916 <d0005984 <sys_emergencyTaskFunc_pf>>
 800204dc:	df 01 aa 00 	jeq %d1,0,80020630 <__copy_table_done+0x3d8>
@@ -3561,11 +3561,11 @@ Disassembly of section .text:
 800205a4:	1b 02 40 2d 	addi %d2,%d2,-11264
 800205a8:	3b 50 02 30 	mov %d3,37
 800205ac:	91 00 00 dd 	movh.a %a13,53248
-800205b0:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__LD_RAM_START>>,%e0
+800205b0:	89 c0 40 09 	st.d [%a12]0 <d0000000 <__RAM0_START>>,%e0
 800205b4:	0b 20 40 00 	addx %d0,%d0,%d2
 800205b8:	0b 31 50 10 	addc %d1,%d1,%d3
 800205bc:	d9 dd 58 45 	lea %a13,[%a13]21784 <d0005518 <tiNextSoh_u64.0>>
-800205c0:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__LD_RAM_START>>,%e0
+800205c0:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__RAM0_START>>,%e0
 800205c4:	6d 00 a4 df 	call 8003c50c <sys_realizeOffset>
 800205c8:	0d 00 40 03 	disable 
 800205cc:	00 00       	nop 
@@ -10115,7 +10115,7 @@ Disassembly of section .text:
 800255cc:	6e 41       	jz %d15,8002564e <can_RxIntrAnalysis+0x192>
 800255ce:	d9 4f 08 00 	lea %a15,[%a4]8
 800255d2:	09 50 c2 08 	ld.hu %d0,[%a5]2
-800255d6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800255d6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 800255da:	5f f0 54 00 	jeq %d0,%d15,80025682 <can_RxIntrAnalysis+0x1c6>
 800255de:	01 6a 00 46 	addsc.a %a4,%a6,%d10,0
 800255e2:	82 00       	mov %d0,0
@@ -10431,7 +10431,7 @@ Disassembly of section .text:
 8002592c:	91 00 00 fd 	movh.a %a15,53248
 80025930:	82 2d       	mov %d13,2
 80025932:	d9 ff 18 43 	lea %a15,[%a15]12568 <d0003118 <can_TxDataboxInfo_as>>
-80025936:	d9 f2 04 00 	lea %a2,[%a15]4 <d0000004 <__LD_RAM_START+0x4>>
+80025936:	d9 f2 04 00 	lea %a2,[%a15]4 <d0000004 <__RAM0_START+0x4>>
 8002593a:	01 2a 03 26 	addsc.a %a2,%a2,%d10,3
 8002593e:	b4 2b       	st.h [%a2],%d11
 80025940:	3b c0 03 b0 	mov %d11,60
@@ -10468,7 +10468,7 @@ Disassembly of section .text:
 800259ac:	8b 05 20 f2 	ne %d15,%d5,0
 800259b0:	91 00 00 fd 	movh.a %a15,53248
 800259b4:	d9 ff 18 43 	lea %a15,[%a15]12568 <d0003118 <can_TxDataboxInfo_as>>
-800259b8:	d9 f2 04 00 	lea %a2,[%a15]4 <d0000004 <__LD_RAM_START+0x4>>
+800259b8:	d9 f2 04 00 	lea %a2,[%a15]4 <d0000004 <__RAM0_START+0x4>>
 800259bc:	01 24 03 26 	addsc.a %a2,%a2,%d4,3
 800259c0:	09 20 c0 08 	ld.hu %d0,[%a2]0
 800259c4:	0b 50 50 f2 	and.ge.u %d15,%d0,%d5
@@ -10847,7 +10847,7 @@ Disassembly of section .text:
 80025e7a:	ee 38       	jnz %d15,80025eea <can_sendMsg+0x120>
 80025e7c:	09 ff c4 08 	ld.hu %d15,[%a15]4
 80025e80:	6e 35       	jz %d15,80025eea <can_sendMsg+0x120>
-80025e82:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__LD_RAM_START>>
+80025e82:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__RAM0_START>>
 80025e86:	48 00       	ld.w %d0,[%a15]0
 80025e88:	13 0f 21 f0 	madd %d15,%d0,%d15,16
 80025e8c:	60 f4       	mov.a %a4,%d15
@@ -11657,7 +11657,7 @@ Disassembly of section .text:
 800267dc:	d9 ff 30 23 	lea %a15,[%a15]12464 <d00030b0 <can_RxDataboxInfo_as>>
 800267e0:	01 fe 00 26 	addsc.a %a2,%a15,%d14,0
 800267e4:	d9 2f 04 00 	lea %a15,[%a2]4
-800267e8:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+800267e8:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 800267ec:	0b 80 50 f2 	and.ge.u %d15,%d0,%d8
 800267f0:	df 0f 2f 01 	jeq %d15,0,80026a4e <can_initRxDatabox+0x34a>
 800267f4:	8b f8 1f 00 	add %d0,%d8,-1
@@ -11667,7 +11667,7 @@ Disassembly of section .text:
 80026802:	8b 0c 20 02 	ne %d0,%d12,0
 80026806:	26 0f       	and %d15,%d0
 80026808:	df 0f 00 01 	jeq %d15,0,80026a08 <can_initRxDatabox+0x304>
-8002680c:	09 ff c2 08 	ld.hu %d15,[%a15]2 <d0000002 <__LD_RAM_START+0x2>>
+8002680c:	09 ff c2 08 	ld.hu %d15,[%a15]2 <d0000002 <__RAM0_START+0x2>>
 80026810:	3f 8f 8e 80 	jlt.u %d15,%d8,8002692c <can_initRxDatabox+0x228>
 80026814:	82 0f       	mov %d15,0
 80026816:	09 24 88 08 	ld.h %d4,[%a2]8
@@ -12763,8 +12763,8 @@ Disassembly of section .text:
 800274f0:	91 00 00 fd 	movh.a %a15,53248
 800274f4:	d9 cc 7c 05 	lea %a12,[%a12]21564 <d000543c <eeBuf_wr_u16>>
 800274f8:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-800274fc:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__LD_RAM_START>>
-80027500:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800274fc:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__RAM0_START>>
+80027500:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80027504:	5f f0 5a 00 	jeq %d0,%d15,800275b8 <ee_saveValue+0x124>
 80027508:	02 84       	mov %d4,%d8
 8002750a:	5c b9       	call 8002747c <ee_checkDetectReeCmd_l>
@@ -12777,7 +12777,7 @@ Disassembly of section .text:
 80027522:	3b 80 20 f0 	mov %d15,520
 80027526:	a8 0b       	st.h [%a15]0,%d11
 80027528:	91 10 20 f8 	movh.a %a15,33281
-8002752c:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__LD_RAM_START>>
+8002752c:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__RAM0_START>>
 80027530:	e2 f0       	mul %d0,%d15
 80027532:	d9 ff 08 08 	lea %a15,[%a15]-32760 <82008008 <eepr_buf_as>>
 80027536:	da 18       	mov %d15,24
@@ -12896,8 +12896,8 @@ Disassembly of section .text:
 8002767c:	91 00 00 fd 	movh.a %a15,53248
 80027680:	d9 dd 7c 05 	lea %a13,[%a13]21564 <d000543c <eeBuf_wr_u16>>
 80027684:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-80027688:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
-8002768c:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80027688:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
+8002768c:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80027690:	5f f0 6c 00 	jeq %d0,%d15,80027768 <ee_saveArray+0x176>
 80027694:	02 84       	mov %d4,%d8
 80027696:	6d ff f3 fe 	call 8002747c <ee_checkDetectReeCmd_l>
@@ -12918,7 +12918,7 @@ Disassembly of section .text:
 800276c2:	99 54 54 45 	ld.a %a4,[%a5]21780 <d0005514 <eepr_mirror_ps>>
 800276c6:	3b 80 20 f0 	mov %d15,520
 800276ca:	91 10 20 f8 	movh.a %a15,33281
-800276ce:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
+800276ce:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
 800276d2:	91 10 20 38 	movh.a %a3,33281
 800276d6:	e2 f0       	mul %d0,%d15
 800276d8:	d9 ff 08 08 	lea %a15,[%a15]-32760 <82008008 <eepr_buf_as>>
@@ -13017,12 +13017,12 @@ Disassembly of section .text:
 800277ee:	d9 77 7c 05 	lea %a7,[%a7]21564 <d000543c <eeBuf_wr_u16>>
 800277f2:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
 800277f6:	d9 cc 11 05 	lea %a12,[%a12]20497 <d0005011 <eeBuf_empty_l>>
-800277fa:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__LD_RAM_START>>
-800277fe:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800277fa:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__RAM0_START>>
+800277fe:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80027802:	5f f0 5a 00 	jeq %d0,%d15,800278b6 <ee_savePage+0x118>
 80027806:	3b 80 20 f0 	mov %d15,520
 8002780a:	91 10 20 f8 	movh.a %a15,33281
-8002780e:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__LD_RAM_START>>
+8002780e:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__RAM0_START>>
 80027812:	82 02       	mov %d2,0
 80027814:	91 10 20 38 	movh.a %a3,33281
 80027818:	e2 f0       	mul %d0,%d15
@@ -13105,8 +13105,8 @@ Disassembly of section .text:
 800278f8:	91 00 00 2d 	movh.a %a2,53248
 800278fc:	d9 ff 7c 05 	lea %a15,[%a15]21564 <d000543c <eeBuf_wr_u16>>
 80027900:	d9 22 7e 05 	lea %a2,[%a2]21566 <d000543e <eeBuf_rd_u16>>
-80027904:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__LD_RAM_START>>
-80027908:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__LD_RAM_START>>
+80027904:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__RAM0_START>>
+80027908:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__RAM0_START>>
 8002790c:	0b f1 00 11 	eq %d1,%d1,%d15
 80027910:	ab 10 80 21 	sel %d2,%d1,%d0,1
 80027914:	4d c0 e2 ff 	mfcr %d15,$icr
@@ -13535,8 +13535,8 @@ Disassembly of section .text:
 80027e1c:	1b 1d 01 d5 	addi %d13,%d13,20497
 80027e20:	d9 dd 7c 05 	lea %a13,[%a13]21564 <d000543c <eeBuf_wr_u16>>
 80027e24:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-80027e28:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
-80027e2c:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80027e28:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
+80027e2c:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80027e30:	5f f0 7e 00 	jeq %d0,%d15,80027f2c <ee_saveSysValueWoe_s16+0x172>
 80027e34:	8f 98 20 b0 	sha %d11,%d8,9
 80027e38:	91 00 00 ed 	movh.a %a14,53248
@@ -13547,7 +13547,7 @@ Disassembly of section .text:
 80027e4a:	01 f9 01 f6 	addsc.a %a15,%a15,%d9,1
 80027e4e:	a8 06       	st.h [%a15]0,%d6
 80027e50:	91 10 20 f8 	movh.a %a15,33281
-80027e54:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
+80027e54:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
 80027e58:	e2 f0       	mul %d0,%d15
 80027e5a:	d9 ff 08 08 	lea %a15,[%a15]-32760 <82008008 <eepr_buf_as>>
 80027e5e:	da 18       	mov %d15,24
@@ -13566,7 +13566,7 @@ Disassembly of section .text:
 80027e86:	99 e2 54 45 	ld.a %a2,[%a14]21780 <d0005514 <eepr_mirror_ps>>
 80027e8a:	c5 0f 3f 30 	lea %a15,ff <__MO_RAMCYCLICCHECK_SIZE+0x1f>
 80027e8e:	1b 0f 01 f8 	addi %d15,%d15,-32752
-80027e92:	09 d1 c0 08 	ld.hu %d1,[%a13]0 <d0000000 <__LD_RAM_START>>
+80027e92:	09 d1 c0 08 	ld.hu %d1,[%a13]0 <d0000000 <__RAM0_START>>
 80027e96:	01 2b 00 26 	addsc.a %a2,%a2,%d11,0
 80027e9a:	03 01 0a ff 	madd %d15,%d15,%d1,%d0
 80027e9e:	60 f5       	mov.a %a5,%d15
@@ -13604,7 +13604,7 @@ Disassembly of section .text:
 80027efc:	91 10 20 f8 	movh.a %a15,33281
 80027f00:	d9 22 e0 e2 	lea %a2,[%a2]12192 <d0002fa0 <DATA_CORE_END>>
 80027f04:	d9 ff 60 ee 	lea %a15,[%a15]-6240 <8200e7a0 <APPL_EXT_RAM_START>>
-80027f08:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+80027f08:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 80027f0c:	5f f0 1e 00 	jeq %d0,%d15,80027f48 <ee_saveSysValueWoe_s16+0x18e>
 80027f10:	8c f0       	ld.h %d15,[%a15]0
 80027f12:	46 0f       	not %d15
@@ -13641,8 +13641,8 @@ Disassembly of section .text:
 80027f7a:	1b 1d 01 d5 	addi %d13,%d13,20497
 80027f7e:	d9 dd 7c 05 	lea %a13,[%a13]21564 <d000543c <eeBuf_wr_u16>>
 80027f82:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-80027f86:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
-80027f8a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80027f86:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
+80027f8a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80027f8e:	5f f0 53 ff 	jne %d0,%d15,80027e34 <ee_saveSysValueWoe_s16+0x7a>
 80027f92:	3c cd       	j 80027f2c <ee_saveSysValueWoe_s16+0x172>
 80027f94:	82 0f       	mov %d15,0
@@ -13655,7 +13655,7 @@ Disassembly of section .text:
 80027fa6:	7b 10 20 f8 	movh %d15,33281
 80027faa:	6d ff ef fb 	call 80027788 <ee_setDetectReeCmd>
 80027fae:	3b 80 20 00 	mov %d0,520
-80027fb2:	09 d1 c0 08 	ld.hu %d1,[%a13]0 <d0000000 <__LD_RAM_START>>
+80027fb2:	09 d1 c0 08 	ld.hu %d1,[%a13]0 <d0000000 <__RAM0_START>>
 80027fb6:	1b 0f 01 f8 	addi %d15,%d15,-32752
 80027fba:	99 e2 54 45 	ld.a %a2,[%a14]21780
 80027fbe:	01 2b 00 26 	addsc.a %a2,%a2,%d11,0
@@ -13742,8 +13742,8 @@ Disassembly of section .text:
 8002809e:	1b 1d 01 d5 	addi %d13,%d13,20497
 800280a2:	d9 dd 7c 05 	lea %a13,[%a13]21564 <d000543c <eeBuf_wr_u16>>
 800280a6:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-800280aa:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
-800280ae:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800280aa:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
+800280ae:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 800280b2:	5f f0 77 00 	jeq %d0,%d15,800281a0 <ee_saveSysArrayWoe_s16+0x174>
 800280b6:	8f 88 20 f0 	sha %d15,%d8,8
 800280ba:	91 00 00 ed 	movh.a %a14,53248
@@ -13762,7 +13762,7 @@ Disassembly of section .text:
 800280dc:	3b 80 20 f0 	mov %d15,520
 800280e0:	91 10 20 f8 	movh.a %a15,33281
 800280e4:	02 84       	mov %d4,%d8
-800280e6:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
+800280e6:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
 800280ea:	e2 f0       	mul %d0,%d15
 800280ec:	d9 ff 08 08 	lea %a15,[%a15]-32760 <82008008 <eepr_buf_as>>
 800280f0:	da 30       	mov %d15,48
@@ -13776,7 +13776,7 @@ Disassembly of section .text:
 80028108:	89 c9 84 08 	st.h [%a12]4,%d9
 8002810c:	a8 2a       	st.h [%a15]4,%d10
 8002810e:	7b 10 20 f8 	movh %d15,33281
-80028112:	09 d2 c0 08 	ld.hu %d2,[%a13]0 <d0000000 <__LD_RAM_START>>
+80028112:	09 d2 c0 08 	ld.hu %d2,[%a13]0 <d0000000 <__RAM0_START>>
 80028116:	3b 80 20 10 	mov %d1,520
 8002811a:	99 e2 54 45 	ld.a %a2,[%a14]21780 <d0005514 <eepr_mirror_ps>>
 8002811e:	8f 98 20 00 	sha %d0,%d8,9
@@ -13809,7 +13809,7 @@ Disassembly of section .text:
 80028170:	91 10 20 f8 	movh.a %a15,33281
 80028174:	d9 22 e0 e2 	lea %a2,[%a2]12192 <d0002fa0 <DATA_CORE_END>>
 80028178:	d9 ff 60 ee 	lea %a15,[%a15]-6240 <8200e7a0 <APPL_EXT_RAM_START>>
-8002817c:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+8002817c:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 80028180:	5f f0 1e 00 	jeq %d0,%d15,800281bc <ee_saveSysArrayWoe_s16+0x190>
 80028184:	8c f0       	ld.h %d15,[%a15]0
 80028186:	46 0f       	not %d15
@@ -13846,8 +13846,8 @@ Disassembly of section .text:
 800281ee:	1b 1d 01 d5 	addi %d13,%d13,20497
 800281f2:	d9 dd 7c 05 	lea %a13,[%a13]21564 <d000543c <eeBuf_wr_u16>>
 800281f6:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
-800281fa:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__LD_RAM_START>>
-800281fe:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800281fa:	09 d0 c0 08 	ld.hu %d0,[%a13]0 <d0000000 <__RAM0_START>>
+800281fe:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80028202:	5f f0 5a ff 	jne %d0,%d15,800280b6 <ee_saveSysArrayWoe_s16+0x8a>
 80028206:	3c cd       	j 800281a0 <ee_saveSysArrayWoe_s16+0x174>
 80028208:	82 0f       	mov %d15,0
@@ -13928,12 +13928,12 @@ Disassembly of section .text:
 800282e0:	d9 77 7c 05 	lea %a7,[%a7]21564 <d000543c <eeBuf_wr_u16>>
 800282e4:	d9 ff 7e 05 	lea %a15,[%a15]21566 <d000543e <eeBuf_rd_u16>>
 800282e8:	d9 cc 11 05 	lea %a12,[%a12]20497 <d0005011 <eeBuf_empty_l>>
-800282ec:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__LD_RAM_START>>
-800282f0:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800282ec:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__RAM0_START>>
+800282f0:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 800282f4:	5f f0 60 00 	jeq %d0,%d15,800283b4 <ee_saveSysPageWoe_s16+0x120>
 800282f8:	3b 80 20 f0 	mov %d15,520
 800282fc:	91 10 20 f8 	movh.a %a15,33281
-80028300:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__LD_RAM_START>>
+80028300:	09 70 c0 08 	ld.hu %d0,[%a7]0 <d0000000 <__RAM0_START>>
 80028304:	82 02       	mov %d2,0
 80028306:	91 10 20 38 	movh.a %a3,33281
 8002830a:	e2 f0       	mul %d0,%d15
@@ -13978,7 +13978,7 @@ Disassembly of section .text:
 80028384:	91 10 20 f8 	movh.a %a15,33281
 80028388:	d9 22 e0 e2 	lea %a2,[%a2]12192 <d0002fa0 <DATA_CORE_END>>
 8002838c:	d9 ff 60 ee 	lea %a15,[%a15]-6240 <8200e7a0 <APPL_EXT_RAM_START>>
-80028390:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+80028390:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 80028394:	5f f0 26 00 	jeq %d0,%d15,800283e0 <ee_saveSysPageWoe_s16+0x14c>
 80028398:	8c f0       	ld.h %d15,[%a15]0
 8002839a:	46 0f       	not %d15
@@ -14005,7 +14005,7 @@ Disassembly of section .text:
 800283da:	6d ff d7 f9 	call 80027788 <ee_setDetectReeCmd>
 800283de:	3c c4       	j 80028366 <ee_saveSysPageWoe_s16+0xd2>
 800283e0:	bb f0 50 fa 	mov.u %d15,42255
-800283e4:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+800283e4:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 800283e8:	5f f0 69 7f 	jeq %d0,%d15,800282ba <ee_saveSysPageWoe_s16+0x26>
 800283ec:	8c f0       	ld.h %d15,[%a15]0
 800283ee:	46 0f       	not %d15
@@ -14127,16 +14127,16 @@ Disassembly of section .text:
 80028532:	0d 00 c0 04 	isync 
 80028536:	91 00 00 cd 	movh.a %a12,53248
 8002853a:	d9 cc 40 15 	lea %a12,[%a12]21568 <d0005440 <eepr_commandStep_u16>>
-8002853e:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__LD_RAM_START>>
+8002853e:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__RAM0_START>>
 80028542:	6e 53       	jz %d15,800285e8 <eepr_Server+0xf8>
-80028544:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__LD_RAM_START>>
+80028544:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__RAM0_START>>
 80028548:	6e 4f       	jz %d15,800285e6 <eepr_Server+0xf6>
 8002854a:	7b 10 20 28 	movh %d2,33281
 8002854e:	91 00 00 ed 	movh.a %a14,53248
 80028552:	3b 80 20 00 	mov %d0,520
 80028556:	1b 82 00 28 	addi %d2,%d2,-32760
 8002855a:	d9 ee 7e 05 	lea %a14,[%a14]21566 <d000543e <eeBuf_rd_u16>>
-8002855e:	09 ef c0 08 	ld.hu %d15,[%a14]0 <d0000000 <__LD_RAM_START>>
+8002855e:	09 ef c0 08 	ld.hu %d15,[%a14]0 <d0000000 <__RAM0_START>>
 80028562:	03 0f 0a f2 	madd %d15,%d2,%d15,%d0
 80028566:	60 ff       	mov.a %a15,%d15
 80028568:	3b 00 03 00 	mov %d0,48
@@ -14149,7 +14149,7 @@ Disassembly of section .text:
 80028580:	3b 00 00 f1 	mov %d15,4096
 80028584:	ac c0       	st.h [%a12]0,%d15
 80028586:	3b 00 00 f1 	mov %d15,4096
-8002858a:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__LD_RAM_START>>
+8002858a:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__RAM0_START>>
 8002858e:	5f f0 2c 80 	jne %d0,%d15,800285e6 <eepr_Server+0xf6>
 80028592:	4d c0 e2 0f 	mfcr %d0,$icr
 80028596:	8f f0 0f 21 	and %d2,%d0,255
@@ -14166,8 +14166,8 @@ Disassembly of section .text:
 800285ba:	91 00 00 fd 	movh.a %a15,53248
 800285be:	ac e0       	st.h [%a14]0,%d15
 800285c0:	d9 ff 7c 05 	lea %a15,[%a15]21564 <d000543c <eeBuf_wr_u16>>
-800285c4:	09 ef c0 08 	ld.hu %d15,[%a14]0 <d0000000 <__LD_RAM_START>>
-800285c8:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+800285c4:	09 ef c0 08 	ld.hu %d15,[%a14]0 <d0000000 <__RAM0_START>>
+800285c8:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 800285cc:	5f 0f 52 00 	jeq %d15,%d0,80028670 <eepr_Server+0x180>
 800285d0:	4d c0 e2 ff 	mfcr %d15,$icr
 800285d4:	8f ff cf f1 	andn %d15,%d15,255
@@ -14217,7 +14217,7 @@ Disassembly of section .text:
 8002865c:	91 00 00 fd 	movh.a %a15,53248
 80028660:	09 ef c0 08 	ld.hu %d15,[%a14]0
 80028664:	d9 ff 7c 05 	lea %a15,[%a15]21564 <d000543c <eeBuf_wr_u16>>
-80028668:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80028668:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 8002866c:	5f 0f b2 ff 	jne %d15,%d0,800285d0 <eepr_Server+0xe0>
 80028670:	60 bf       	mov.a %a15,%d11
 80028672:	82 1f       	mov %d15,1
@@ -14237,7 +14237,7 @@ Disassembly of section .text:
 8002869e:	91 00 00 fd 	movh.a %a15,53248
 800286a2:	ac c0       	st.h [%a12]0,%d15
 800286a4:	d9 ff 78 05 	lea %a15,[%a15]21560 <d0005438 <eepr_commandError_u16.0>>
-800286a8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+800286a8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 800286ac:	df 0f 6d 7f 	jeq %d15,0,80028586 <eepr_Server+0x96>
 800286b0:	3b 60 51 40 	mov %d4,1302
 800286b4:	37 08 68 50 	extr.u %d5,%d8,0,8
@@ -14959,7 +14959,7 @@ Disassembly of section .text:
 80028fbc:	3b 20 22 12 	mov %d1,8738
 80028fc0:	91 00 00 fd 	movh.a %a15,53248
 80028fc4:	d9 ff ec e2 	lea %a15,[%a15]12204 <d0002fac <emcy_powerState_u16>>
-80028fc8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80028fc8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80028fcc:	5f 1f 15 00 	jeq %d15,%d1,80028ff6 <emcy_setPowerOff+0x3a>
 80028fd0:	4d c0 e2 0f 	mfcr %d0,$icr
 80028fd4:	0d 00 40 03 	disable 
@@ -15029,7 +15029,7 @@ Disassembly of section .text:
 80029090:	3b 10 11 f1 	mov %d15,4369
 80029094:	91 00 00 fd 	movh.a %a15,53248
 80029098:	d9 ff ec e2 	lea %a15,[%a15]12204 <d0002fac <emcy_powerState_u16>>
-8002909c:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002909c:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 800290a0:	5f f0 24 00 	jeq %d0,%d15,800290e8 <emcy_setPowerOn+0x58>
 800290a4:	4d c0 e2 1f 	mfcr %d1,$icr
 800290a8:	0d 00 40 03 	disable 
@@ -15225,7 +15225,7 @@ Disassembly of section .text:
 8002932a:	6e 09       	jz %d15,8002933c <emcy_execTask+0xbc>
 8002932c:	91 00 00 dd 	movh.a %a13,53248
 80029330:	d9 dd f2 e2 	lea %a13,[%a13]12210 <d0002fb2 <emcy_errorCode_u16>>
-80029334:	09 d4 c0 08 	ld.hu %d4,[%a13]0 <d0000000 <__LD_RAM_START>>
+80029334:	09 d4 c0 08 	ld.hu %d4,[%a13]0 <d0000000 <__RAM0_START>>
 80029338:	df 04 89 80 	jne %d4,0,8002944a <emcy_execTask+0x1ca>
 8002933c:	7b 00 01 01 	movh %d0,4112
 80029340:	19 cf f8 e2 	ld.w %d15,[%a12]12216 <d0002fb8 <emcy_execTask_u32>>
@@ -15239,12 +15239,12 @@ Disassembly of section .text:
 8002935a:	3b 10 11 f1 	mov %d15,4369
 8002935e:	91 00 00 fd 	movh.a %a15,53248
 80029362:	d9 ff fe e2 	lea %a15,[%a15]12222 <d0002fbe <emcy_inputMode_u16>>
-80029366:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80029366:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 8002936a:	5f f0 ea 00 	jeq %d0,%d15,8002953e <emcy_execTask+0x2be>
 8002936e:	3b 10 11 f1 	mov %d15,4369
 80029372:	91 00 00 fd 	movh.a %a15,53248
 80029376:	d9 ff c0 f2 	lea %a15,[%a15]12224 <d0002fc0 <emcy_powerOn_u16>>
-8002937a:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002937a:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__RAM0_START>>
 8002937e:	5f f1 ec 00 	jeq %d1,%d15,80029556 <emcy_execTask+0x2d6>
 80029382:	3b 50 c0 40 	mov %d4,3077
 80029386:	82 45       	mov %d5,4
@@ -15795,7 +15795,7 @@ Disassembly of section .text:
 80029b12:	91 00 00 fd 	movh.a %a15,53248
 80029b16:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80029b1a:	d9 ff ec e2 	lea %a15,[%a15]12204 <d0002fac <emcy_powerState_u16>>
-80029b1e:	09 f9 c0 08 	ld.hu %d9,[%a15]0 <d0000000 <__LD_RAM_START>>
+80029b1e:	09 f9 c0 08 	ld.hu %d9,[%a15]0 <d0000000 <__RAM0_START>>
 80029b22:	5f f9 b8 ff 	jne %d9,%d15,80029a92 <emcy_execMain+0x26>
 80029b26:	7b 00 00 cd 	movh %d12,53248
 80029b2a:	91 10 20 f8 	movh.a %a15,33281
@@ -15814,7 +15814,7 @@ Disassembly of section .text:
 80029b54:	91 00 00 fd 	movh.a %a15,53248
 80029b58:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80029b5c:	d9 ff c0 f2 	lea %a15,[%a15]12224 <d0002fc0 <emcy_powerOn_u16>>
-80029b60:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80029b60:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 80029b64:	5f f0 97 ff 	jne %d0,%d15,80029a92 <emcy_execMain+0x26>
 80029b68:	7b 10 20 d8 	movh %d13,33281
 80029b6c:	60 df       	mov.a %a15,%d13
@@ -16137,7 +16137,7 @@ Disassembly of section .text:
 80029f90:	3b 20 22 f2 	mov %d15,8738
 80029f94:	91 00 00 3d 	movh.a %a3,53248
 80029f98:	d9 33 fe e2 	lea %a3,[%a3]12222 <d0002fbe <emcy_inputMode_u16>>
-80029f9c:	09 30 c0 08 	ld.hu %d0,[%a3]0 <d0000000 <__LD_RAM_START>>
+80029f9c:	09 30 c0 08 	ld.hu %d0,[%a3]0 <d0000000 <__RAM0_START>>
 80029fa0:	5f f0 66 00 	jeq %d0,%d15,8002a06c <emcy_enableInput+0xdc>
 80029fa4:	4d c0 e2 1f 	mfcr %d1,$icr
 80029fa8:	0d 00 40 03 	disable 
@@ -16200,7 +16200,7 @@ Disassembly of section .text:
 8002a06e:	3b 20 22 12 	mov %d1,8738
 8002a072:	91 00 00 fd 	movh.a %a15,53248
 8002a076:	d9 ff c0 f2 	lea %a15,[%a15]12224 <d0002fc0 <emcy_powerOn_u16>>
-8002a07a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002a07a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8002a07e:	5f 1f 13 00 	jeq %d15,%d1,8002a0a4 <emcy_lockPowerOn+0x36>
 8002a082:	4d c0 e2 0f 	mfcr %d0,$icr
 8002a086:	0d 00 40 03 	disable 
@@ -16218,7 +16218,7 @@ Disassembly of section .text:
 8002a0a6:	3b 10 11 11 	mov %d1,4369
 8002a0aa:	91 00 00 fd 	movh.a %a15,53248
 8002a0ae:	d9 ff c0 f2 	lea %a15,[%a15]12224 <d0002fc0 <emcy_powerOn_u16>>
-8002a0b2:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002a0b2:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8002a0b6:	5f 1f 13 00 	jeq %d15,%d1,8002a0dc <emcy_unlockPowerOn+0x36>
 8002a0ba:	4d c0 e2 0f 	mfcr %d0,$icr
 8002a0be:	0d 00 40 03 	disable 
@@ -20138,18 +20138,18 @@ Disassembly of section .text:
 8002d3ea:	6d 00 b1 9d 	call 80040f4c <Cpu_Watchdog_Proc>
 8002d3ee:	91 00 00 4d 	movh.a %a4,53248
 8002d3f2:	91 20 00 5d 	movh.a %a5,53250
-8002d3f6:	d9 44 00 00 	lea %a4,[%a4]0 <d0000000 <__LD_RAM_START>>
+8002d3f6:	d9 44 00 00 	lea %a4,[%a4]0 <d0000000 <__RAM0_START>>
 8002d3fa:	d9 55 00 0a 	lea %a5,[%a5]-24576 <d001a000 <__LD_RAM_END>>
 8002d3fe:	5c b9       	call 8002d370 <moCMem_rewriteRAM>
 8002d400:	6d 00 a6 9d 	call 80040f4c <Cpu_Watchdog_Proc>
 8002d404:	91 50 00 4f 	movh.a %a4,61445
 8002d408:	91 50 00 5f 	movh.a %a5,61445
-8002d40c:	d9 44 00 00 	lea %a4,[%a4]0 <f0050000 <__PCP_DRAM_START>>
+8002d40c:	d9 44 00 00 	lea %a4,[%a4]0 <f0050000 <PRAM_START>>
 8002d410:	d9 55 00 02 	lea %a5,[%a5]8192 <f0052000 <__PCP_DRAM_END>>
 8002d414:	5c ae       	call 8002d370 <moCMem_rewriteRAM>
 8002d416:	91 60 00 4f 	movh.a %a4,61446
 8002d41a:	91 60 00 5f 	movh.a %a5,61446
-8002d41e:	d9 44 00 00 	lea %a4,[%a4]0 <f0060000 <__PCP_PRAM_START>>
+8002d41e:	d9 44 00 00 	lea %a4,[%a4]0 <f0060000 <Pcp_Load>>
 8002d422:	d9 55 00 04 	lea %a5,[%a5]16384 <f0064000 <__PCP_PRAM_END>>
 8002d426:	5c a5       	call 8002d370 <moCMem_rewriteRAM>
 8002d428:	6d 00 92 9d 	call 80040f4c <Cpu_Watchdog_Proc>
@@ -20567,7 +20567,7 @@ Disassembly of section .text:
 8002d8fe:	3b a0 a5 f5 	mov %d15,23130
 8002d902:	91 00 00 fd 	movh.a %a15,53248
 8002d906:	d9 ff 62 25 	lea %a15,[%a15]21666 <d00054a2 <mo_testActiveExtRam_u16>>
-8002d90a:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002d90a:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 8002d90e:	5f f0 21 00 	jeq %d0,%d15,8002d950 <moCSOP_isrCPLD+0x74>
 8002d912:	7b e0 ea fd 	movh %d15,57006
 8002d916:	91 50 00 f8 	movh.a %a15,32773
@@ -20615,7 +20615,7 @@ Disassembly of section .text:
 8002d992:	3b a0 a5 f5 	mov %d15,23130
 8002d996:	91 00 00 fd 	movh.a %a15,53248
 8002d99a:	d9 ff 64 25 	lea %a15,[%a15]21668 <d00054a4 <mo_testActive3V31V5Ouvd_u16>>
-8002d99e:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002d99e:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 8002d9a2:	5f f0 21 00 	jeq %d0,%d15,8002d9e4 <moCSOP_isrST_INH_H+0x74>
 8002d9a6:	7b e0 ea fd 	movh %d15,57006
 8002d9aa:	91 50 00 f8 	movh.a %a15,32773
@@ -21447,7 +21447,7 @@ Disassembly of section .text:
 8002e42a:	00 00       	nop 
 8002e42c:	dc 0f       	ji %a15
 8002e42e:	91 00 20 f8 	movh.a %a15,33280
-8002e432:	d9 ff 00 00 	lea %a15,[%a15]0 <82000000 <__EXT_RAM_START>>
+8002e432:	d9 ff 00 00 	lea %a15,[%a15]0 <82000000 <EXTRAM_START>>
 8002e436:	4c f0       	ld.w %d15,[%a15]0
 8002e438:	ab 0f 80 8f 	sel %d8,%d15,%d15,0
 8002e43c:	7b e0 ea fd 	movh %d15,57006
@@ -21670,16 +21670,16 @@ Disassembly of section .text:
 8002e726:	89 20 1b 08 	st.b [%a2]27 <d000001b <ZBSS_END+0x3>>,%d0
 8002e72a:	89 3f 1b 08 	st.b [%a3]27 <8201001b <can_1_TxBuf_as.3+0xf4b>>,%d15
 8002e72e:	28 00       	st.b [%a15]0,%d0
-8002e730:	d9 2f 0e 00 	lea %a15,[%a2]14 <d000000e <__LD_RAM_START+0xe>>
+8002e730:	d9 2f 0e 00 	lea %a15,[%a2]14 <d000000e <__RAM0_START+0xe>>
 8002e734:	89 3f 1a 08 	st.b [%a3]26 <8201001a <can_1_TxBuf_as.3+0xf4a>>,%d15
 8002e738:	2c 3e       	st.b [%a3]14,%d15
 8002e73a:	28 00       	st.b [%a15]0,%d0
-8002e73c:	d9 2f 10 00 	lea %a15,[%a2]16 <d0000010 <__LD_RAM_START+0x10>>
+8002e73c:	d9 2f 10 00 	lea %a15,[%a2]16 <d0000010 <__RAM0_START+0x10>>
 8002e740:	89 3f 10 08 	st.b [%a3]16 <82010010 <can_1_TxBuf_as.3+0xf40>>,%d15
 8002e744:	89 3f 12 08 	st.b [%a3]18 <82010012 <can_1_TxBuf_as.3+0xf42>>,%d15
 8002e748:	28 00       	st.b [%a15]0,%d0
-8002e74a:	d9 2f 12 00 	lea %a15,[%a2]18 <d0000012 <__LD_RAM_START+0x12>>
-8002e74e:	d9 22 14 00 	lea %a2,[%a2]20 <d0000014 <__LD_RAM_START+0x14>>
+8002e74a:	d9 2f 12 00 	lea %a15,[%a2]18 <d0000012 <__RAM0_START+0x12>>
+8002e74e:	d9 22 14 00 	lea %a2,[%a2]20 <d0000014 <__RAM0_START+0x14>>
 8002e752:	89 3f 14 08 	st.b [%a3]20 <82010014 <can_1_TxBuf_as.3+0xf44>>,%d15
 8002e756:	28 00       	st.b [%a15]0,%d0
 8002e758:	91 00 00 fd 	movh.a %a15,53248
@@ -21834,7 +21834,7 @@ Disassembly of section .text:
 8002e95e:	89 2f 24 08 	st.b [%a2]36 <82010024 <can_1_TxBuf_as.3+0xf54>>,%d15
 8002e962:	7b e0 ea fd 	movh %d15,57006
 8002e966:	28 00       	st.b [%a15]0,%d0
-8002e968:	99 3f 60 a3 	ld.a %a15,[%a3]13984 <d0000000 <__LD_RAM_START>>
+8002e968:	99 3f 60 a3 	ld.a %a15,[%a3]13984 <d0000000 <__RAM0_START>>
 8002e96c:	1b ff ee fb 	addi %d15,%d15,-16657
 8002e970:	19 f0 08 10 	ld.w %d0,[%a15]72
 8002e974:	5f f0 37 fc 	jne %d0,%d15,8002e1e2 <moCSOP_stateMachineCfg_u8+0x292>
@@ -21864,7 +21864,7 @@ Disassembly of section .text:
 8002e9ca:	82 14       	mov %d4,1
 8002e9cc:	6d 00 6d cc 	call 800482a6 <cpld_setTESTBITS>
 8002e9d0:	91 00 20 f8 	movh.a %a15,33280
-8002e9d4:	d9 ff 00 00 	lea %a15,[%a15]0 <82000000 <__EXT_RAM_START>>
+8002e9d4:	d9 ff 00 00 	lea %a15,[%a15]0 <82000000 <EXTRAM_START>>
 8002e9d8:	4c f0       	ld.w %d15,[%a15]0
 8002e9da:	df 0f 68 fd 	jne %d15,0,8002e4aa <moCSOP_stateMachineCfg_u8+0x55a>
 8002e9de:	da 1a       	mov %d15,26
@@ -21969,7 +21969,7 @@ Disassembly of section .text:
 8002eb30:	82 14       	mov %d4,1
 8002eb32:	6d 00 84 cb 	call 8004823a <dio_set_EN_1V5_TEST>
 8002eb36:	1d ff e1 fa 	j 8002e0f8 <moCSOP_stateMachineCfg_u8+0x1a8>
-8002eb3a:	09 cf 52 08 	ld.bu %d15,[%a12]18 <d0000012 <__LD_RAM_START+0x12>>
+8002eb3a:	09 cf 52 08 	ld.bu %d15,[%a12]18 <d0000012 <__RAM0_START+0x12>>
 8002eb3e:	46 0f       	not %d15
 8002eb40:	09 f0 52 08 	ld.bu %d0,[%a15]18
 8002eb44:	16 ff       	and %d15,255
@@ -22058,7 +22058,7 @@ Disassembly of section .text:
 8002ec62:	91 10 20 28 	movh.a %a2,33281
 8002ec66:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ec6a:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ec6e:	89 ff 14 08 	st.b [%a15]20 <d0000014 <__LD_RAM_START+0x14>>,%d15
+8002ec6e:	89 ff 14 08 	st.b [%a15]20 <d0000014 <__RAM0_START+0x14>>,%d15
 8002ec72:	82 ef       	mov %d15,-2
 8002ec74:	91 00 00 fd 	movh.a %a15,53248
 8002ec78:	89 2f 14 08 	st.b [%a2]20 <82010014 <can_1_TxBuf_as.3+0xf44>>,%d15
@@ -22092,7 +22092,7 @@ Disassembly of section .text:
 8002ecca:	91 10 20 28 	movh.a %a2,33281
 8002ecce:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ecd2:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ecd6:	89 ff 12 08 	st.b [%a15]18 <d0000012 <__LD_RAM_START+0x12>>,%d15
+8002ecd6:	89 ff 12 08 	st.b [%a15]18 <d0000012 <__RAM0_START+0x12>>,%d15
 8002ecda:	82 ef       	mov %d15,-2
 8002ecdc:	91 00 00 fd 	movh.a %a15,53248
 8002ece0:	89 2f 12 08 	st.b [%a2]18 <82010012 <can_1_TxBuf_as.3+0xf42>>,%d15
@@ -22136,7 +22136,7 @@ Disassembly of section .text:
 8002ed4e:	91 10 20 28 	movh.a %a2,33281
 8002ed52:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ed56:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ed5a:	89 ff 10 08 	st.b [%a15]16 <d0000010 <__LD_RAM_START+0x10>>,%d15
+8002ed5a:	89 ff 10 08 	st.b [%a15]16 <d0000010 <__RAM0_START+0x10>>,%d15
 8002ed5e:	82 ef       	mov %d15,-2
 8002ed60:	91 00 00 fd 	movh.a %a15,53248
 8002ed64:	89 2f 10 08 	st.b [%a2]16 <82010010 <can_1_TxBuf_as.3+0xf40>>,%d15
@@ -22222,14 +22222,14 @@ Disassembly of section .text:
 8002ee72:	82 0f       	mov %d15,0
 8002ee74:	91 00 00 fd 	movh.a %a15,53248
 8002ee78:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
-8002ee7c:	09 f0 54 08 	ld.bu %d0,[%a15]20 <d0000014 <__LD_RAM_START+0x14>>
+8002ee7c:	09 f0 54 08 	ld.bu %d0,[%a15]20 <d0000014 <__RAM0_START+0x14>>
 8002ee80:	ab cf 88 80 	sel %d8,%d0,%d15,140
 8002ee84:	df 09 69 7b 	jeq %d9,0,8002e556 <moCSOP_stateMachineCfg_u8+0x606>
 8002ee88:	1d ff 29 fe 	j 8002eada <moCSOP_stateMachineCfg_u8+0xb8a>
 8002ee8c:	82 0f       	mov %d15,0
 8002ee8e:	91 00 00 fd 	movh.a %a15,53248
 8002ee92:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
-8002ee96:	09 f0 50 08 	ld.bu %d0,[%a15]16 <d0000010 <__LD_RAM_START+0x10>>
+8002ee96:	09 f0 50 08 	ld.bu %d0,[%a15]16 <d0000010 <__RAM0_START+0x10>>
 8002ee9a:	ab cf 88 90 	sel %d9,%d0,%d15,140
 8002ee9e:	1d ff 4f fb 	j 8002e53c <moCSOP_stateMachineCfg_u8+0x5ec>
 8002eea2:	82 34       	mov %d4,3
@@ -22270,7 +22270,7 @@ Disassembly of section .text:
 8002ef1a:	a5 f0 c4 c0 	st.w f0000f04 <P3+0x4>,%d0
 8002ef1e:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ef22:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ef26:	89 ff 15 08 	st.b [%a15]21 <d0000015 <__LD_RAM_START+0x15>>,%d15
+8002ef26:	89 ff 15 08 	st.b [%a15]21 <d0000015 <__RAM0_START+0x15>>,%d15
 8002ef2a:	82 ef       	mov %d15,-2
 8002ef2c:	89 2f 15 08 	st.b [%a2]21 <82010015 <can_1_TxBuf_as.3+0xf45>>,%d15
 8002ef30:	da 16       	mov %d15,22
@@ -22288,7 +22288,7 @@ Disassembly of section .text:
 8002ef56:	91 10 20 28 	movh.a %a2,33281
 8002ef5a:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ef5e:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ef62:	89 ff 13 08 	st.b [%a15]19 <d0000013 <__LD_RAM_START+0x13>>,%d15
+8002ef62:	89 ff 13 08 	st.b [%a15]19 <d0000013 <__RAM0_START+0x13>>,%d15
 8002ef66:	82 ef       	mov %d15,-2
 8002ef68:	91 00 00 fd 	movh.a %a15,53248
 8002ef6c:	89 2f 13 08 	st.b [%a2]19 <82010013 <can_1_TxBuf_as.3+0xf43>>,%d15
@@ -22305,7 +22305,7 @@ Disassembly of section .text:
 8002ef90:	a5 f0 c4 c0 	st.w f0000f04 <P3+0x4>,%d0
 8002ef94:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002ef98:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002ef9c:	89 ff 11 08 	st.b [%a15]17 <d0000011 <__LD_RAM_START+0x11>>,%d15
+8002ef9c:	89 ff 11 08 	st.b [%a15]17 <d0000011 <__RAM0_START+0x11>>,%d15
 8002efa0:	82 ef       	mov %d15,-2
 8002efa2:	89 2f 11 08 	st.b [%a2]17 <82010011 <can_1_TxBuf_as.3+0xf41>>,%d15
 8002efa6:	3c c5       	j 8002ef30 <moCSOP_stateMachineCfg_u8+0xfe0>
@@ -22350,7 +22350,7 @@ Disassembly of section .text:
 8002f01e:	34 c0       	st.b [%a12],%d0
 8002f020:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002f024:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002f028:	89 ff 15 08 	st.b [%a15]21 <d0000015 <__LD_RAM_START+0x15>>,%d15
+8002f028:	89 ff 15 08 	st.b [%a15]21 <d0000015 <__RAM0_START+0x15>>,%d15
 8002f02c:	82 ff       	mov %d15,-1
 8002f02e:	89 2f 15 08 	st.b [%a2]21 <82010015 <can_1_TxBuf_as.3+0xf45>>,%d15
 8002f032:	82 bf       	mov %d15,-5
@@ -22364,7 +22364,7 @@ Disassembly of section .text:
 8002f046:	34 c0       	st.b [%a12],%d0
 8002f048:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002f04c:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002f050:	89 ff 13 08 	st.b [%a15]19 <d0000013 <__LD_RAM_START+0x13>>,%d15
+8002f050:	89 ff 13 08 	st.b [%a15]19 <d0000013 <__RAM0_START+0x13>>,%d15
 8002f054:	82 ff       	mov %d15,-1
 8002f056:	89 2f 13 08 	st.b [%a2]19 <82010013 <can_1_TxBuf_as.3+0xf43>>,%d15
 8002f05a:	82 cf       	mov %d15,-4
@@ -22377,7 +22377,7 @@ Disassembly of section .text:
 8002f06c:	34 c0       	st.b [%a12],%d0
 8002f06e:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002f072:	d9 22 7c ee 	lea %a2,[%a2]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002f076:	89 ff 11 08 	st.b [%a15]17 <d0000011 <__LD_RAM_START+0x11>>,%d15
+8002f076:	89 ff 11 08 	st.b [%a15]17 <d0000011 <__RAM0_START+0x11>>,%d15
 8002f07a:	82 ff       	mov %d15,-1
 8002f07c:	89 2f 11 08 	st.b [%a2]17 <82010011 <can_1_TxBuf_as.3+0xf41>>,%d15
 8002f080:	82 df       	mov %d15,-3
@@ -22457,7 +22457,7 @@ Disassembly of section .text:
 8002f156:	00 00       	nop 
 8002f158:	91 00 00 fd 	movh.a %a15,53248
 8002f15c:	d9 ff c4 f2 	lea %a15,[%a15]12228 <d0002fc4 <moCSop_State_u16>>
-8002f160:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002f160:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8002f164:	ee 07       	jnz %d15,8002f172 <moCSOP_doVPTest+0x24>
 8002f166:	91 00 00 fd 	movh.a %a15,53248
 8002f16a:	d9 ff 16 05 	lea %a15,[%a15]20502 <d0005016 <moCSop_return_u8>>
@@ -22482,7 +22482,7 @@ Disassembly of section .text:
 8002f19e:	82 52       	mov %d2,5
 8002f1a0:	91 00 00 fd 	movh.a %a15,53248
 8002f1a4:	d9 ff c4 f2 	lea %a15,[%a15]12228 <d0002fc4 <moCSop_State_u16>>
-8002f1a8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002f1a8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8002f1ac:	ee 09       	jnz %d15,8002f1be <moCSOP_getCurrentState_u8+0x20>
 8002f1ae:	91 00 00 fd 	movh.a %a15,53248
 8002f1b2:	d9 ff 16 05 	lea %a15,[%a15]20502 <d0005016 <moCSop_return_u8>>
@@ -22505,7 +22505,7 @@ Disassembly of section .text:
 8002f1de:	7b 50 00 e8 	movh %d14,32773
 8002f1e2:	89 af 0f 18 	st.b [%sp]79,%d15
 8002f1e6:	82 ff       	mov %d15,-1
-8002f1e8:	d9 cf 02 00 	lea %a15,[%a12]2 <d0000002 <__LD_RAM_START+0x2>>
+8002f1e8:	d9 cf 02 00 	lea %a15,[%a12]2 <d0000002 <__RAM0_START+0x2>>
 8002f1ec:	d9 dd 7c ee 	lea %a13,[%a13]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
 8002f1f0:	d9 22 40 d3 	lea %a2,[%a2]14144 <80053740 <moCMem_byteCheck_cau8.2+0x4>>
 8002f1f4:	28 0b       	st.b [%a15]0,%d11
@@ -22525,7 +22525,7 @@ Disassembly of section .text:
 8002f21e:	5f f0 23 00 	jeq %d0,%d15,8002f264 <moCSOP_doStartupTest_u8+0xa4>
 8002f222:	df 02 35 80 	jne %d2,0,8002f28c <moCSOP_doStartupTest_u8+0xcc>
 8002f226:	82 ff       	mov %d15,-1
-8002f228:	89 c2 03 08 	st.b [%a12]3 <d0000003 <__LD_RAM_START+0x3>>,%d2
+8002f228:	89 c2 03 08 	st.b [%a12]3 <d0000003 <__RAM0_START+0x3>>,%d2
 8002f22c:	3b 00 08 b0 	mov %d11,128
 8002f230:	2c d3       	st.b [%a13]3,%d15
 8002f232:	0c c2       	ld.bu %d15,[%a12]2
@@ -22854,7 +22854,7 @@ Disassembly of section .text:
 8002f652:	bf 20 7c 02 	jlt %d0,2,8002fb4a <moCSOP_stateMachineMS+0x55c>
 8002f656:	df 20 14 03 	jeq %d0,2,8002fc7e <moCSOP_stateMachineMS+0x690>
 8002f65a:	df 30 aa 01 	jeq %d0,3,8002f9ae <moCSOP_stateMachineMS+0x3c0>
-8002f65e:	09 d4 c0 08 	ld.hu %d4,[%a13]0 <d0000000 <__LD_RAM_START>>
+8002f65e:	09 d4 c0 08 	ld.hu %d4,[%a13]0 <d0000000 <__RAM0_START>>
 8002f662:	6d ff 77 f4 	call 8002df50 <moCSOP_stateMachineCfg_u8>
 8002f666:	76 22       	jz %d2,8002f66a <moCSOP_stateMachineMS+0x7c>
 8002f668:	00 a0       	debug 
@@ -22903,7 +22903,7 @@ Disassembly of section .text:
 8002f6f6:	df 00 ba ff 	jne %d0,0,8002f66a <moCSOP_stateMachineMS+0x7c>
 8002f6fa:	91 00 00 fd 	movh.a %a15,53248
 8002f6fe:	d9 ff 4c 15 	lea %a15,[%a15]21580 <d000544c <ret015_u16.3>>
-8002f702:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8002f702:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8002f706:	91 00 00 fd 	movh.a %a15,53248
 8002f70a:	d9 ff 15 05 	lea %a15,[%a15]20501 <d0005015 <wda_status015_u8.4>>
 8002f70e:	df 0f 4c 81 	jne %d15,0,8002f9a6 <moCSOP_stateMachineMS+0x3b8>
@@ -22941,7 +22941,7 @@ Disassembly of section .text:
 8002f774:	91 10 20 f8 	movh.a %a15,33281
 8002f778:	d9 22 c8 f2 	lea %a2,[%a2]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002f77c:	d9 ff 7c ee 	lea %a15,[%a15]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002f780:	89 2f 16 08 	st.b [%a2]22 <d0000016 <__LD_RAM_START+0x16>>,%d15
+8002f780:	89 2f 16 08 	st.b [%a2]22 <d0000016 <__RAM0_START+0x16>>,%d15
 8002f784:	89 f0 16 08 	st.b [%a15]22 <82010016 <can_1_TxBuf_as.3+0xf46>>,%d0
 8002f788:	89 2f 18 08 	st.b [%a2]24 <d0000018 <ZBSS_END>>,%d15
 8002f78c:	da 14       	mov %d15,20
@@ -23031,8 +23031,8 @@ Disassembly of section .text:
 8002f896:	91 10 20 38 	movh.a %a3,33281
 8002f89a:	d9 22 c8 f2 	lea %a2,[%a2]12232 <d0002fc8 <moCSop_TestStates_s>>
 8002f89e:	d9 33 7c ee 	lea %a3,[%a3]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
-8002f8a2:	d9 2f 16 00 	lea %a15,[%a2]22 <d0000016 <__LD_RAM_START+0x16>>
-8002f8a6:	89 20 17 08 	st.b [%a2]23 <d0000017 <__LD_RAM_START+0x17>>,%d0
+8002f8a2:	d9 2f 16 00 	lea %a15,[%a2]22 <d0000016 <__RAM0_START+0x16>>
+8002f8a6:	89 20 17 08 	st.b [%a2]23 <d0000017 <__RAM0_START+0x17>>,%d0
 8002f8aa:	d9 22 18 00 	lea %a2,[%a2]24 <d0000018 <ZBSS_END>>
 8002f8ae:	28 00       	st.b [%a15]0,%d0
 8002f8b0:	91 50 00 f8 	movh.a %a15,32773
@@ -23198,7 +23198,7 @@ Disassembly of section .text:
 8002faa6:	82 e0       	mov %d0,-2
 8002faa8:	91 50 00 28 	movh.a %a2,32773
 8002faac:	d9 ff c8 f2 	lea %a15,[%a15]12232 <d0002fc8 <moCSop_TestStates_s>>
-8002fab0:	89 ff 17 08 	st.b [%a15]23 <d0000017 <__LD_RAM_START+0x17>>,%d15
+8002fab0:	89 ff 17 08 	st.b [%a15]23 <d0000017 <__RAM0_START+0x17>>,%d15
 8002fab4:	da 60       	mov %d15,96
 8002fab6:	91 10 20 f8 	movh.a %a15,33281
 8002faba:	d9 ff 7c ee 	lea %a15,[%a15]-6212 <8200e7bc <moCSop_TestStatesCpl_s>>
@@ -23672,19 +23672,19 @@ Disassembly of section .text:
 8003004e:	d9 22 54 85 	lea %a2,[%a2]22036 <d0005614 <mo_tiNextAddTdoh_u64>>
 80030052:	d9 33 5c 85 	lea %a3,[%a3]22044 <d000561c <mo_tiNextClassTdoh_u64>>
 80030056:	28 04       	st.b [%a15]0,%d4
-80030058:	09 20 40 09 	ld.d %e0,[%a2]0 <d0000000 <__LD_RAM_START>>
+80030058:	09 20 40 09 	ld.d %e0,[%a2]0 <d0000000 <__RAM0_START>>
 8003005c:	0b 20 40 00 	addx %d0,%d0,%d2
 80030060:	0b 31 50 10 	addc %d1,%d1,%d3
 80030064:	91 00 00 fd 	movh.a %a15,53248
 80030068:	7b d0 1d 24 	movh %d2,16861
 8003006c:	1b 02 60 27 	addi %d2,%d2,30208
 80030070:	82 13       	mov %d3,1
-80030072:	89 20 40 09 	st.d [%a2]0 <d0000000 <__LD_RAM_START>>,%e0
-80030076:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__LD_RAM_START>>
+80030072:	89 20 40 09 	st.d [%a2]0 <d0000000 <__RAM0_START>>,%e0
+80030076:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__RAM0_START>>
 8003007a:	d9 ff 17 05 	lea %a15,[%a15]20503 <d0005017 <mo_enableTdohInIsr_l>>
 8003007e:	0b 20 40 00 	addx %d0,%d0,%d2
 80030082:	0b 31 50 10 	addc %d1,%d1,%d3
-80030086:	89 30 40 09 	st.d [%a3]0 <d0000000 <__LD_RAM_START>>,%e0
+80030086:	89 30 40 09 	st.d [%a3]0 <d0000000 <__RAM0_START>>,%e0
 8003008a:	28 04       	st.b [%a15]0,%d4
 8003008c:	00 90       	ret 
 
@@ -23755,20 +23755,20 @@ Disassembly of section .text:
 80030156:	00 00       	nop 
 80030158:	d9 d2 04 00 	lea %a2,[%a13]4 <82010004 <can_1_TxBuf_as.3+0xf34>>
 8003015c:	01 28 01 26 	addsc.a %a2,%a2,%d8,1
-80030160:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+80030160:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 80030164:	01 f8 01 f6 	addsc.a %a15,%a15,%d8,1
 80030168:	8f 09 60 f1 	nor %d15,%d9,0
 8003016c:	ac 20       	st.h [%a2]0,%d15
 8003016e:	d9 d2 02 00 	lea %a2,[%a13]2 <82010002 <can_1_TxBuf_as.3+0xf32>>
 80030172:	a8 09       	st.h [%a15]0,%d9
-80030174:	d9 cf 02 00 	lea %a15,[%a12]2 <d0000002 <__LD_RAM_START+0x2>>
+80030174:	d9 cf 02 00 	lea %a15,[%a12]2 <d0000002 <__RAM0_START+0x2>>
 80030178:	94 20       	ld.h %d0,[%a2]
 8003017a:	8f 00 60 f1 	nor %d15,%d0,0
 8003017e:	88 02       	ld.h %d2,[%a15]0
 80030180:	37 02 70 10 	extr.u %d1,%d2,0,16
 80030184:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80030188:	5f f1 06 80 	jne %d1,%d15,80030194 <mo_setError+0x106>
-8003018c:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__LD_RAM_START>>
+8003018c:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__RAM0_START>>
 80030190:	7f 1f 0f 80 	jge.u %d15,%d1,800301ae <mo_setError+0x120>
 80030194:	6d ff 87 e8 	call 8002d2a2 <moCError_memContentChkHdl>
 80030198:	8c c0       	ld.h %d15,[%a12]0
@@ -24216,7 +24216,7 @@ Disassembly of section .text:
 800306de:	0d 00 00 03 	enable 
 800306e2:	91 00 00 dd 	movh.a %a13,53248
 800306e6:	d9 dd 54 85 	lea %a13,[%a13]22036 <d0005614 <mo_tiNextAddTdoh_u64>>
-800306ea:	09 d0 40 09 	ld.d %e0,[%a13]0 <d0000000 <__LD_RAM_START>>
+800306ea:	09 d0 40 09 	ld.d %e0,[%a13]0 <d0000000 <__RAM0_START>>
 800306ee:	3a 19       	eq %d15,%d9,%d1
 800306f0:	0b 80 50 f2 	and.ge.u %d15,%d0,%d8
 800306f4:	0b 19 a0 f2 	or.lt.u %d15,%d9,%d1
@@ -24242,17 +24242,17 @@ Disassembly of section .text:
 80030738:	1b 02 48 27 	addi %d2,%d2,29824
 8003073c:	82 03       	mov %d3,0
 8003073e:	91 00 00 fd 	movh.a %a15,53248
-80030742:	09 d0 40 09 	ld.d %e0,[%a13]0 <d0000000 <__LD_RAM_START>>
+80030742:	09 d0 40 09 	ld.d %e0,[%a13]0 <d0000000 <__RAM0_START>>
 80030746:	0b 20 40 00 	addx %d0,%d0,%d2
 8003074a:	0b 31 50 10 	addc %d1,%d1,%d3
 8003074e:	d9 ff 18 05 	lea %a15,[%a15]20504 <d0005018 <mo_tdohNumAdd_u8>>
-80030752:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__LD_RAM_START>>,%e0
+80030752:	89 d0 40 09 	st.d [%a13]0 <d0000000 <__RAM0_START>>,%e0
 80030756:	0c f0       	ld.bu %d15,[%a15]0
 80030758:	c2 1f       	add %d15,1
 8003075a:	28 0f       	st.b [%a15]0,%d15
 8003075c:	91 00 00 3d 	movh.a %a3,53248
 80030760:	d9 33 5c 85 	lea %a3,[%a3]22044 <d000561c <mo_tiNextClassTdoh_u64>>
-80030764:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__LD_RAM_START>>
+80030764:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__RAM0_START>>
 80030768:	3a 19       	eq %d15,%d9,%d1
 8003076a:	0b 80 50 f2 	and.ge.u %d15,%d0,%d8
 8003076e:	0b 19 a0 f2 	or.lt.u %d15,%d9,%d1
@@ -24318,10 +24318,10 @@ Disassembly of section .text:
 8003082c:	1b 02 60 27 	addi %d2,%d2,30208
 80030830:	82 13       	mov %d3,1
 80030832:	34 50       	st.b [%a5],%d0
-80030834:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__LD_RAM_START>>
+80030834:	09 30 40 09 	ld.d %e0,[%a3]0 <d0000000 <__RAM0_START>>
 80030838:	0b 20 40 00 	addx %d0,%d0,%d2
 8003083c:	0b 31 50 10 	addc %d1,%d1,%d3
-80030840:	89 30 40 09 	st.d [%a3]0 <d0000000 <__LD_RAM_START>>,%e0
+80030840:	89 30 40 09 	st.d [%a3]0 <d0000000 <__RAM0_START>>,%e0
 80030844:	00 90       	ret 
 80030846:	5a 10       	sub %d15,%d0,%d1
 80030848:	37 0f 70 00 	extr.u %d0,%d15,0,16
@@ -24362,7 +24362,7 @@ Disassembly of section .text:
 800308b8:	91 00 00 3d 	movh.a %a3,53248
 800308bc:	d9 33 64 85 	lea %a3,[%a3]22052 <d0005624 <mo_tdohCounter_au>>
 800308c0:	01 31 02 f6 	addsc.a %a15,%a3,%d1,2
-800308c4:	d9 c2 04 00 	lea %a2,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+800308c4:	d9 c2 04 00 	lea %a2,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 800308c8:	01 21 02 26 	addsc.a %a2,%a2,%d1,2
 800308cc:	4c f0       	ld.w %d15,[%a15]0
 800308ce:	6c 20       	st.w [%a2]0,%d15
@@ -24404,7 +24404,7 @@ Disassembly of section .text:
 8003092a:	3b 00 af f5 	mov %d15,23280
 8003092e:	91 00 00 fd 	movh.a %a15,53248
 80030932:	d9 ff e0 e2 	lea %a15,[%a15]12192 <d0002fa0 <DATA_CORE_END>>
-80030936:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80030936:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 8003093a:	5f f0 17 00 	jeq %d0,%d15,80030968 <mo_checkEepPageApi+0x3e>
 8003093e:	3b f0 e0 40 	mov %d4,3599
 80030942:	82 05       	mov %d5,0
@@ -24508,7 +24508,7 @@ Disassembly of section .text:
 80030a70 <__MOFTEMPHW_1_SETVOLT_ERR_LABEL>:
 80030a70:	91 00 00 fd 	movh.a %a15,53248
 80030a74:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80030a78:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__LD_RAM_START>>
+80030a78:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__RAM0_START>>
 80030a7c:	3c dc       	j 80030a34 <mo_checkTempHw1_Proc+0x2c>
 80030a7e:	c2 ff       	add %d15,-1
 80030a80:	a8 0f       	st.h [%a15]0,%d15
@@ -24596,7 +24596,7 @@ Disassembly of section .text:
 80030b7e <__MOFTEMPHW_2_SETVOLT_ERR_LABEL>:
 80030b7e:	91 00 00 fd 	movh.a %a15,53248
 80030b82:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80030b86:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__LD_RAM_START>>
+80030b86:	09 f1 c0 08 	ld.hu %d1,[%a15]0 <d0000000 <__RAM0_START>>
 80030b8a:	3c dc       	j 80030b42 <mo_checkTempHw2_Proc+0x2c>
 80030b8c:	c2 ff       	add %d15,-1
 80030b8e:	a8 0f       	st.h [%a15]0,%d15
@@ -24766,7 +24766,7 @@ Disassembly of section .text:
 80030d92 <__MOV12V_OVERVOLTAGE_ERR_LABEL>:
 80030d92:	91 00 00 fd 	movh.a %a15,53248
 80030d96:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80030d9a:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80030d9a:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80030d9e:	4b 04 61 41 	utof %d4,%d4
 80030da2:	6d 00 d8 fd 	call 80050952 <__f_ftoui>
 80030da6:	7b b0 f9 43 	movh %d4,16283
@@ -24788,7 +24788,7 @@ Disassembly of section .text:
 80030dd6:	3c b4       	j 80030d3e <mo_checkV12V_Proc+0x4c>
 80030dd8:	91 00 00 cd 	movh.a %a12,53248
 80030ddc:	d9 cc 5c 25 	lea %a12,[%a12]21660 <d000549c <mo_v12VmaxDigits_u16>>
-80030de0:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__LD_RAM_START>>
+80030de0:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__RAM0_START>>
 80030de4:	7f 2f 03 80 	jge.u %d15,%d2,80030dea <__MOV12V_OVERVOLTAGE_ERR_LABEL+0x58>
 80030de8:	b4 c2       	st.h [%a12],%d2
 80030dea:	91 00 00 fd 	movh.a %a15,53248
@@ -24826,7 +24826,7 @@ Disassembly of section .text:
 80030e48:	6d ff 23 f9 	call 8003008e <mo_setError>
 80030e4c:	1d ff ca e4 	j 8002d7e0 <moCPFC_check>
 80030e50:	6d ff 68 fd 	call 80030920 <mo_setEmcyPowerOff>
-80030e54:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__LD_RAM_START>>
+80030e54:	09 cf c0 08 	ld.hu %d15,[%a12]0 <d0000000 <__RAM0_START>>
 80030e58:	6d 00 7a 80 	call 80040f4c <Cpu_Watchdog_Proc>
 80030e5c:	8f 0f 60 61 	nor %d6,%d15,0
 80030e60:	3b 90 01 40 	mov %d4,25
@@ -24875,7 +24875,7 @@ Disassembly of section .text:
 80030ef6:	6f 0f d6 7f 	jz.t %d15,0,80030ea2 <mo_checkV3V3ext_Proc+0x2c>
 80030efa:	91 00 00 fd 	movh.a %a15,53248
 80030efe:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80030f02:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80030f02:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80030f06:	4b 04 61 41 	utof %d4,%d4
 80030f0a:	6d 00 24 fd 	call 80050952 <__f_ftoui>
 80030f0e:	7b f0 ec 43 	movh %d4,16079
@@ -25168,7 +25168,7 @@ Disassembly of section .text:
 8003126e:	5f f0 24 00 	jeq %d0,%d15,800312b6 <mo_checkVREF_Proc+0x70>
 80031272:	91 00 00 fd 	movh.a %a15,53248
 80031276:	d9 ff 6a 25 	lea %a15,[%a15]21674 <d00054aa <mo_vREFmaxDigits_u16>>
-8003127a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003127a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8003127e:	3f 2f 1a 80 	jlt.u %d15,%d2,800312b2 <mo_checkVREF_Proc+0x6c>
 80031282:	4b 02 41 21 	itof %d2,%d2
 80031286:	7b 10 56 f4 	movh %d15,17761
@@ -25196,7 +25196,7 @@ Disassembly of section .text:
 800312ce <__MOVREF_OVERVOLTAGE_ERR_LABEL>:
 800312ce:	91 00 00 fd 	movh.a %a15,53248
 800312d2:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-800312d6:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+800312d6:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 800312da:	4b 04 61 41 	utof %d4,%d4
 800312de:	91 00 00 fd 	movh.a %a15,53248
 800312e2:	6d 00 38 fb 	call 80050952 <__f_ftoui>
@@ -25207,7 +25207,7 @@ Disassembly of section .text:
 800312f6:	4b 02 41 21 	itof %d2,%d2
 800312fa:	4b 42 51 40 	div.f %d4,%d2,%d4
 800312fe:	6d 00 2a fb 	call 80050952 <__f_ftoui>
-80031302:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031302:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80031306:	37 02 70 20 	extr.u %d2,%d2,0,16
 8003130a:	7f 2f bc ff 	jge.u %d15,%d2,80031282 <mo_checkVREF_Proc+0x3c>
 8003130e:	3c d2       	j 800312b2 <mo_checkVREF_Proc+0x6c>
@@ -25251,7 +25251,7 @@ Disassembly of section .text:
 8003137a:	6d ff 8a f6 	call 8003008e <mo_setError>
 8003137e:	1d ff 31 e2 	j 8002d7e0 <moCPFC_check>
 80031382:	6d ff cf fa 	call 80030920 <mo_setEmcyPowerOff>
-80031386:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031386:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8003138a:	6d 00 e1 7d 	call 80040f4c <Cpu_Watchdog_Proc>
 8003138e:	8f 0f 60 61 	nor %d6,%d15,0
 80031392:	3b 90 01 40 	mov %d4,25
@@ -25297,7 +25297,7 @@ Disassembly of section .text:
 80031408:	84 40       	ld.h %d0,[%a4+]
 8003140a:	a4 f0       	st.h [%a15+],%d0
 8003140c:	fc 3e       	loop %a3,80031408 <mo_checkVSS1_Proc+0x62>
-8003140e:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+8003140e:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 80031412:	5f f0 4a 00 	jeq %d0,%d15,800314a6 <mo_checkVSS1_Proc+0x100>
 80031416:	91 00 00 fd 	movh.a %a15,53248
 8003141a:	7b e0 ea fd 	movh %d15,57006
@@ -25428,7 +25428,7 @@ Disassembly of section .text:
 800315b2:	1b bf 1d f2 	addi %d15,%d15,8667
 800315b6:	91 00 00 fd 	movh.a %a15,53248
 800315ba:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-800315be:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+800315be:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 800315c2:	4b 04 61 41 	utof %d4,%d4
 800315c6:	4b f4 51 40 	div.f %d4,%d4,%d15
 800315ca:	6d 00 c4 f9 	call 80050952 <__f_ftoui>
@@ -25449,7 +25449,7 @@ Disassembly of section .text:
 800315fc:	1b bf 1d f2 	addi %d15,%d15,8667
 80031600:	91 00 00 fd 	movh.a %a15,53248
 80031604:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031608:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031608:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 8003160c:	4b 04 61 41 	utof %d4,%d4
 80031610:	4b f4 51 40 	div.f %d4,%d4,%d15
 80031614:	6d 00 9f f9 	call 80050952 <__f_ftoui>
@@ -25557,7 +25557,7 @@ Disassembly of section .text:
 80031754:	1b cf bc ff 	addi %d15,%d15,-1076
 80031758:	91 00 00 fd 	movh.a %a15,53248
 8003175c:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031760:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031760:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031764:	4b 04 61 41 	utof %d4,%d4
 80031768:	4b f4 51 40 	div.f %d4,%d4,%d15
 8003176c:	6d 00 f3 f8 	call 80050952 <__f_ftoui>
@@ -25600,7 +25600,7 @@ Disassembly of section .text:
 800317da:	84 40       	ld.h %d0,[%a4+]
 800317dc:	a4 f0       	st.h [%a15+],%d0
 800317de:	fc 3e       	loop %a3,800317da <mo_checkVSS2_Proc+0x62>
-800317e0:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+800317e0:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 800317e4:	5f f0 4a 00 	jeq %d0,%d15,80031878 <mo_checkVSS2_Proc+0x100>
 800317e8:	91 00 00 fd 	movh.a %a15,53248
 800317ec:	7b e0 ea fd 	movh %d15,57006
@@ -25731,7 +25731,7 @@ Disassembly of section .text:
 80031984:	1b bf 1d f2 	addi %d15,%d15,8667
 80031988:	91 00 00 fd 	movh.a %a15,53248
 8003198c:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031990:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031990:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031994:	4b 04 61 41 	utof %d4,%d4
 80031998:	4b f4 51 40 	div.f %d4,%d4,%d15
 8003199c:	6d 00 db f7 	call 80050952 <__f_ftoui>
@@ -25752,7 +25752,7 @@ Disassembly of section .text:
 800319ce:	1b bf 1d f2 	addi %d15,%d15,8667
 800319d2:	91 00 00 fd 	movh.a %a15,53248
 800319d6:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-800319da:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+800319da:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 800319de:	4b 04 61 41 	utof %d4,%d4
 800319e2:	4b f4 51 40 	div.f %d4,%d4,%d15
 800319e6:	6d 00 b6 f7 	call 80050952 <__f_ftoui>
@@ -25860,7 +25860,7 @@ Disassembly of section .text:
 80031b26:	1b cf bc ff 	addi %d15,%d15,-1076
 80031b2a:	91 00 00 fd 	movh.a %a15,53248
 80031b2e:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031b32:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031b32:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031b36:	4b 04 61 41 	utof %d4,%d4
 80031b3a:	4b f4 51 40 	div.f %d4,%d4,%d15
 80031b3e:	6d 00 0a f7 	call 80050952 <__f_ftoui>
@@ -25903,7 +25903,7 @@ Disassembly of section .text:
 80031bac:	84 40       	ld.h %d0,[%a4+]
 80031bae:	a4 f0       	st.h [%a15+],%d0
 80031bb0:	fc 3e       	loop %a3,80031bac <mo_checkVSS3_Proc+0x62>
-80031bb2:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__LD_RAM_START>>
+80031bb2:	09 20 c0 08 	ld.hu %d0,[%a2]0 <d0000000 <__RAM0_START>>
 80031bb6:	5f f0 4a 00 	jeq %d0,%d15,80031c4a <mo_checkVSS3_Proc+0x100>
 80031bba:	91 00 00 fd 	movh.a %a15,53248
 80031bbe:	7b e0 ea fd 	movh %d15,57006
@@ -26034,7 +26034,7 @@ Disassembly of section .text:
 80031d56:	1b bf 1d f2 	addi %d15,%d15,8667
 80031d5a:	91 00 00 fd 	movh.a %a15,53248
 80031d5e:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031d62:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031d62:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031d66:	4b 04 61 41 	utof %d4,%d4
 80031d6a:	4b f4 51 40 	div.f %d4,%d4,%d15
 80031d6e:	6d 00 f2 f5 	call 80050952 <__f_ftoui>
@@ -26055,7 +26055,7 @@ Disassembly of section .text:
 80031da0:	1b bf 1d f2 	addi %d15,%d15,8667
 80031da4:	91 00 00 fd 	movh.a %a15,53248
 80031da8:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031dac:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031dac:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031db0:	4b 04 61 41 	utof %d4,%d4
 80031db4:	4b f4 51 40 	div.f %d4,%d4,%d15
 80031db8:	6d 00 cd f5 	call 80050952 <__f_ftoui>
@@ -26163,7 +26163,7 @@ Disassembly of section .text:
 80031ef8:	1b cf bc ff 	addi %d15,%d15,-1076
 80031efc:	91 00 00 fd 	movh.a %a15,53248
 80031f00:	d9 ff 42 15 	lea %a15,[%a15]21570 <d0005442 <g_moCError_testVoltageMv_u16>>
-80031f04:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80031f04:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 80031f08:	4b 04 61 41 	utof %d4,%d4
 80031f0c:	4b f4 51 40 	div.f %d4,%d4,%d15
 80031f10:	6d 00 21 f5 	call 80050952 <__f_ftoui>
@@ -28536,17 +28536,17 @@ Disassembly of section .text:
 80033a9c:	3b 00 65 04 	mov %d0,18000
 80033aa0:	4c 60       	ld.w %d15,[%a6]0
 80033aa2:	8f 64 20 10 	sha %d1,%d4,6
-80033aa6:	d9 42 08 00 	lea %a2,[%a4]8 <d0000008 <__LD_RAM_START+0x8>>
+80033aa6:	d9 42 08 00 	lea %a2,[%a4]8 <d0000008 <__RAM0_START+0x8>>
 80033aaa:	d9 43 38 00 	lea %a3,[%a4]56 <d0000038 <ZBSS_END+0x20>>
 80033aae:	64 ff       	st.w [%a15+],%d15
 80033ab0:	da 50       	mov %d15,80
 80033ab2:	34 22       	st.b [%a2],%d2
-80033ab4:	59 40 10 00 	st.w [%a4]16 <d0000010 <__LD_RAM_START+0x10>>,%d0
+80033ab4:	59 40 10 00 	st.w [%a4]16 <d0000010 <__RAM0_START+0x10>>,%d0
 80033ab8:	3b 80 1f 01 	mov %d0,4600
 80033abc:	a8 1f       	st.h [%a15]2,%d15
 80033abe:	da 0a       	mov %d15,10
 80033ac0:	a8 02       	st.h [%a15]0,%d2
-80033ac2:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__LD_RAM_START+0x14>>
+80033ac2:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__RAM0_START+0x14>>
 80033ac6:	2c 21       	st.b [%a2]1,%d15
 80033ac8:	3b 00 fa f0 	mov %d15,4000
 80033acc:	d9 42 3c 00 	lea %a2,[%a4]60 <d000003c <ZBSS_END+0x24>>
@@ -28617,13 +28617,13 @@ Disassembly of section .text:
 80033b96:	28 22       	st.b [%a15]2,%d2
 80033b98:	1a 01       	add %d15,%d1,%d0
 80033b9a:	c2 10       	add %d0,1
-80033b9c:	d9 5f 14 00 	lea %a15,[%a5]20 <d0000014 <__LD_RAM_START+0x14>>
+80033b9c:	d9 5f 14 00 	lea %a15,[%a5]20 <d0000014 <__RAM0_START+0x14>>
 80033ba0:	50 ff       	addsc.a %a15,%a15,%d15,1
 80033ba2:	37 00 68 00 	extr.u %d0,%d0,0,8
 80033ba6:	a8 12       	st.h [%a15]2,%d2
 80033ba8:	bf c0 f8 ff 	jlt.u %d0,12,80033b98 <out_initPOL_EHR+0x122>
 80033bac:	8b 14 00 00 	add %d0,%d4,1
-80033bb0:	d9 4f 04 00 	lea %a15,[%a4]4 <d0000004 <__LD_RAM_START+0x4>>
+80033bb0:	d9 4f 04 00 	lea %a15,[%a4]4 <d0000004 <__RAM0_START+0x4>>
 80033bb4:	b0 46       	add.a %a6,4
 80033bb6:	d9 44 00 20 	lea %a4,[%a4]128 <d0000080 <__CSA_BEGIN+0x40>>
 80033bba:	37 00 50 40 	extr %d4,%d0,0,16
@@ -28649,17 +28649,17 @@ Disassembly of section .text:
 80033bf0:	3b 00 65 04 	mov %d0,18000
 80033bf4:	4c 60       	ld.w %d15,[%a6]0
 80033bf6:	8f 64 20 10 	sha %d1,%d4,6
-80033bfa:	d9 42 08 00 	lea %a2,[%a4]8 <d0000008 <__LD_RAM_START+0x8>>
+80033bfa:	d9 42 08 00 	lea %a2,[%a4]8 <d0000008 <__RAM0_START+0x8>>
 80033bfe:	d9 43 38 00 	lea %a3,[%a4]56 <d0000038 <ZBSS_END+0x20>>
 80033c02:	64 ff       	st.w [%a15+],%d15
 80033c04:	da 50       	mov %d15,80
 80033c06:	34 22       	st.b [%a2],%d2
-80033c08:	59 40 10 00 	st.w [%a4]16 <d0000010 <__LD_RAM_START+0x10>>,%d0
+80033c08:	59 40 10 00 	st.w [%a4]16 <d0000010 <__RAM0_START+0x10>>,%d0
 80033c0c:	3b 40 82 01 	mov %d0,6180
 80033c10:	a8 1f       	st.h [%a15]2,%d15
 80033c12:	da 0a       	mov %d15,10
 80033c14:	a8 02       	st.h [%a15]0,%d2
-80033c16:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__LD_RAM_START+0x14>>
+80033c16:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__RAM0_START+0x14>>
 80033c1a:	2c 21       	st.b [%a2]1,%d15
 80033c1c:	3b 00 fa f0 	mov %d15,4000
 80033c20:	d9 42 3c 00 	lea %a2,[%a4]60 <d000003c <ZBSS_END+0x24>>
@@ -28730,13 +28730,13 @@ Disassembly of section .text:
 80033cea:	28 22       	st.b [%a15]2,%d2
 80033cec:	1a 01       	add %d15,%d1,%d0
 80033cee:	c2 10       	add %d0,1
-80033cf0:	d9 5f 14 00 	lea %a15,[%a5]20 <d0000014 <__LD_RAM_START+0x14>>
+80033cf0:	d9 5f 14 00 	lea %a15,[%a5]20 <d0000014 <__RAM0_START+0x14>>
 80033cf4:	50 ff       	addsc.a %a15,%a15,%d15,1
 80033cf6:	37 00 68 00 	extr.u %d0,%d0,0,8
 80033cfa:	a8 12       	st.h [%a15]2,%d2
 80033cfc:	bf c0 f8 ff 	jlt.u %d0,12,80033cec <out_initPOL+0x122>
 80033d00:	8b 14 00 00 	add %d0,%d4,1
-80033d04:	d9 4f 04 00 	lea %a15,[%a4]4 <d0000004 <__LD_RAM_START+0x4>>
+80033d04:	d9 4f 04 00 	lea %a15,[%a4]4 <d0000004 <__RAM0_START+0x4>>
 80033d08:	b0 46       	add.a %a6,4
 80033d0a:	d9 44 00 20 	lea %a4,[%a4]128 <d0000080 <__CSA_BEGIN+0x40>>
 80033d0e:	37 00 50 40 	extr %d4,%d0,0,16
@@ -28763,18 +28763,18 @@ Disassembly of section .text:
 80033d36:	d9 ff b8 83 	lea %a15,[%a15]14904 <80053a38 <chnl_aoc_cau32>>
 80033d3a:	40 35       	mov.aa %a5,%a3
 80033d3c:	48 00       	ld.w %d0,[%a15]0
-80033d3e:	d9 3f 08 00 	lea %a15,[%a3]8 <d0000008 <__LD_RAM_START+0x8>>
-80033d42:	d9 32 0c 00 	lea %a2,[%a3]12 <d000000c <__LD_RAM_START+0xc>>
+80033d3e:	d9 3f 08 00 	lea %a15,[%a3]8 <d0000008 <__RAM0_START+0x8>>
+80033d42:	d9 32 0c 00 	lea %a2,[%a3]12 <d000000c <__RAM0_START+0xc>>
 80033d46:	64 50       	st.w [%a5+],%d0
 80033d48:	3b 40 06 00 	mov %d0,100
 80033d4c:	a8 10       	st.h [%a15]2,%d0
 80033d4e:	3b f0 00 00 	mov %d0,15
-80033d52:	d9 34 14 00 	lea %a4,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
+80033d52:	d9 34 14 00 	lea %a4,[%a3]20 <d0000014 <__RAM0_START+0x14>>
 80033d56:	ac 51       	st.h [%a5]2,%d15
 80033d58:	3b 00 fa f0 	mov %d15,4000
 80033d5c:	a8 0f       	st.h [%a15]0,%d15
 80033d5e:	da 1e       	mov %d15,30
-80033d60:	d9 3f 10 00 	lea %a15,[%a3]16 <d0000010 <__LD_RAM_START+0x10>>
+80033d60:	d9 3f 10 00 	lea %a15,[%a3]16 <d0000010 <__RAM0_START+0x10>>
 80033d64:	ac 20       	st.h [%a2]0,%d15
 80033d66:	3b e0 4b f0 	mov %d15,1214
 80033d6a:	89 20 82 08 	st.h [%a2]2,%d0
@@ -28798,8 +28798,8 @@ Disassembly of section .text:
 80033da2:	82 1f       	mov %d15,1
 80033da4:	89 21 82 08 	st.h [%a2]2,%d1
 80033da8:	a8 01       	st.h [%a15]0,%d1
-80033daa:	89 32 02 08 	st.b [%a3]2 <d0000002 <__LD_RAM_START+0x2>>,%d2
-80033dae:	89 32 03 08 	st.b [%a3]3 <d0000003 <__LD_RAM_START+0x3>>,%d2
+80033daa:	89 32 02 08 	st.b [%a3]2 <d0000002 <__RAM0_START+0x2>>,%d2
+80033dae:	89 32 03 08 	st.b [%a3]3 <d0000003 <__RAM0_START+0x3>>,%d2
 80033db2:	ac 50       	st.h [%a5]0,%d15
 80033db4:	00 90       	ret 
 
@@ -28895,7 +28895,7 @@ Disassembly of section .text:
 80033ec8:	89 4f 84 18 	st.h [%a4]68,%d15
 80033ecc:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80033ed0:	d9 ff 08 53 	lea %a15,[%a15]12616 <d0003148 <out_numDecDiagDebounce_u16>>
-80033ed4:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80033ed4:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 80033ed8:	3f 0f e0 ff 	jlt.u %d15,%d0,80033e98 <out_filterPO+0x3c>
 80033edc:	9a f2       	add %d15,%d2,-1
 80033ede:	89 41 84 18 	st.h [%a4]68,%d1
@@ -28950,7 +28950,7 @@ Disassembly of section .text:
 80033f82:	89 4f a8 18 	st.h [%a4]104,%d15
 80033f86:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80033f8a:	d9 ff 08 53 	lea %a15,[%a15]12616 <d0003148 <out_numDecDiagDebounce_u16>>
-80033f8e:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+80033f8e:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 80033f92:	3f 0f e2 ff 	jlt.u %d15,%d0,80033f56 <out_filterPOD+0x5c>
 80033f96:	9a f2       	add %d15,%d2,-1
 80033f98:	89 41 a8 18 	st.h [%a4]104,%d1
@@ -30642,7 +30642,7 @@ Disassembly of section .text:
 80035444:	00 00       	nop 
 80035446:	89 2f 1a 18 	st.b [%a2]90,%d15
 8003544a:	df 05 14 80 	jne %d5,0,80035472 <out_setPOH_cl+0x84>
-8003544e:	89 35 82 08 	st.h [%a3]2 <d0000002 <__LD_RAM_START+0x2>>,%d5
+8003544e:	89 35 82 08 	st.h [%a3]2 <d0000002 <__RAM0_START+0x2>>,%d5
 80035452:	6f 84 04 00 	jz.t %d4,8,8003545a <out_setPOH_cl+0x6c>
 80035456:	0d 00 00 03 	enable 
 8003545a:	00 90       	ret 
@@ -30705,7 +30705,7 @@ Disassembly of section .text:
 8003550e:	00 00       	nop 
 80035510:	89 2f 1a 18 	st.b [%a2]90,%d15
 80035514:	df 05 14 80 	jne %d5,0,8003553c <out_setPOH_VND_cl+0x84>
-80035518:	89 35 82 08 	st.h [%a3]2 <d0000002 <__LD_RAM_START+0x2>>,%d5
+80035518:	89 35 82 08 	st.h [%a3]2 <d0000002 <__RAM0_START+0x2>>,%d5
 8003551c:	6f 84 04 00 	jz.t %d4,8,80035524 <out_setPOH_VND_cl+0x6c>
 80035520:	0d 00 00 03 	enable 
 80035524:	00 90       	ret 
@@ -30768,7 +30768,7 @@ Disassembly of section .text:
 800355d6:	00 00       	nop 
 800355d8:	89 2f 3e 18 	st.b [%a2]126,%d15
 800355dc:	df 05 14 80 	jne %d5,0,80035604 <out_setPOL_cl+0x82>
-800355e0:	89 35 82 08 	st.h [%a3]2 <d0000002 <__LD_RAM_START+0x2>>,%d5
+800355e0:	89 35 82 08 	st.h [%a3]2 <d0000002 <__RAM0_START+0x2>>,%d5
 800355e4:	6f 84 04 00 	jz.t %d4,8,800355ec <out_setPOL_cl+0x6a>
 800355e8:	0d 00 00 03 	enable 
 800355ec:	00 90       	ret 
@@ -30837,7 +30837,7 @@ Disassembly of section .text:
 800356b6:	00 00       	nop 
 800356b8:	89 2f 3e 18 	st.b [%a2]126,%d15
 800356bc:	df 05 14 80 	jne %d5,0,800356e4 <out_setPOL_EHR_cl+0x9a>
-800356c0:	89 35 82 08 	st.h [%a3]2 <d0000002 <__LD_RAM_START+0x2>>,%d5
+800356c0:	89 35 82 08 	st.h [%a3]2 <d0000002 <__RAM0_START+0x2>>,%d5
 800356c4:	6f 84 04 00 	jz.t %d4,8,800356cc <out_setPOL_EHR_cl+0x82>
 800356c8:	0d 00 00 03 	enable 
 800356cc:	00 90       	ret 
@@ -33571,7 +33571,7 @@ Disassembly of section .text:
 80037804:	82 03       	mov %d3,0
 80037806:	d9 4d 34 00 	lea %a13,[%a4]52 <d0000034 <ZBSS_END+0x1c>>
 8003780a:	82 04       	mov %d4,0
-8003780c:	d9 45 08 00 	lea %a5,[%a4]8 <d0000008 <__LD_RAM_START+0x8>>
+8003780c:	d9 45 08 00 	lea %a5,[%a4]8 <d0000008 <__RAM0_START+0x8>>
 80037810:	3b 80 3e 50 	mov %d5,1000
 80037814:	d9 43 0c 10 	lea %a3,[%a4]76 <d000004c <__CSA_BEGIN+0xc>>
 80037818:	d9 42 08 10 	lea %a2,[%a4]72 <d0000048 <__CSA_BEGIN+0x8>>
@@ -33657,7 +33657,7 @@ Disassembly of section .text:
 8003791c:	91 00 00 dd 	movh.a %a13,53248
 80037920:	d9 ff a8 63 	lea %a15,[%a15]14760 <800539a8 <pwm_out_poh_vnd_capf>>
 80037924:	80 c0       	mov.d %d0,%a12
-80037926:	d9 ce 08 00 	lea %a14,[%a12]8 <d0000008 <__LD_RAM_START+0x8>>
+80037926:	d9 ce 08 00 	lea %a14,[%a12]8 <d0000008 <__RAM0_START+0x8>>
 8003792a:	8b 80 02 b0 	add %d11,%d0,40
 8003792e:	f8 02       	st.a [%sp]8,%a15
 80037930:	8b c0 02 90 	add %d9,%d0,44
@@ -33795,9 +33795,9 @@ Disassembly of section .text:
 80037ac0:	2d 0f 00 00 	calli %a15
 80037ac4:	82 00       	mov %d0,0
 80037ac6:	6c dc       	st.w [%a13]48,%d15
-80037ac8:	89 c0 02 08 	st.b [%a12]2 <d0000002 <__LD_RAM_START+0x2>>,%d0
+80037ac8:	89 c0 02 08 	st.b [%a12]2 <d0000002 <__RAM0_START+0x2>>,%d0
 80037acc:	34 e0       	st.b [%a14],%d0
-80037ace:	99 a2 04 00 	ld.a %a2,[%sp]4 <d0000002 <__LD_RAM_START+0x2>>
+80037ace:	99 a2 04 00 	ld.a %a2,[%sp]4 <d0000002 <__RAM0_START+0x2>>
 80037ad2:	8b cc 05 c0 	add %d12,%d12,92
 80037ad6:	d8 02       	ld.a %a15,[%sp]8
 80037ad8:	8b cd 05 d0 	add %d13,%d13,92
@@ -34066,8 +34066,8 @@ Disassembly of section .text:
 80037e26:	8b c0 06 c0 	add %d12,%d0,108
 80037e2a:	d9 42 38 10 	lea %a2,[%a4]120 <d0000078 <__CSA_BEGIN+0x38>>
 80037e2e:	f8 03       	st.a [%sp]12,%a15
-80037e30:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__LD_RAM_START+0x14>>
-80037e34:	d9 4e 08 00 	lea %a14,[%a4]8 <d0000008 <__LD_RAM_START+0x8>>
+80037e30:	d9 4f 14 00 	lea %a15,[%a4]20 <d0000014 <__RAM0_START+0x14>>
+80037e34:	d9 4e 08 00 	lea %a14,[%a4]8 <d0000008 <__RAM0_START+0x8>>
 80037e38:	f4 a2       	st.a [%sp],%a2
 80037e3a:	f8 01       	st.a [%sp]4,%a15
 80037e3c:	40 4c       	mov.aa %a12,%a4
@@ -34083,7 +34083,7 @@ Disassembly of section .text:
 80037e56:	82 01       	mov %d1,0
 80037e58:	a8 01       	st.h [%a15]0,%d1
 80037e5a:	8c c3       	ld.h %d15,[%a12]6
-80037e5c:	d9 cd 04 00 	lea %a13,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+80037e5c:	d9 cd 04 00 	lea %a13,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 80037e60:	60 b2       	mov.a %a2,%d11
 80037e62:	89 af a2 08 	st.h [%sp]34,%d15
 80037e66:	09 20 c0 08 	ld.hu %d0,[%a2]0
@@ -34154,7 +34154,7 @@ Disassembly of section .text:
 80037f18:	16 ff       	and %d15,255
 80037f1a:	3f 0f 0b 80 	jlt.u %d15,%d0,80037f30 <out_clcPOL+0x1c0>
 80037f1e:	82 2f       	mov %d15,2
-80037f20:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+80037f20:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 80037f24:	2c d0       	st.b [%a13]0,%d15
 80037f26:	2c d2       	st.b [%a13]2,%d15
 80037f28:	8c f0       	ld.h %d15,[%a15]0
@@ -34216,8 +34216,8 @@ Disassembly of section .text:
 80037fda:	09 cf 7e 18 	ld.bu %d15,[%a12]126 <d000007e <__CSA_BEGIN+0x3e>>
 80037fde:	6e 1d       	jz %d15,80038018 <out_clcPOL+0x2a8>
 80037fe0:	da 08       	mov %d15,8
-80037fe2:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
-80037fe6:	09 f0 c2 08 	ld.hu %d0,[%a15]2 <d0000004 <__LD_RAM_START+0x4>>
+80037fe2:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
+80037fe6:	09 f0 c2 08 	ld.hu %d0,[%a15]2 <d0000004 <__RAM0_START+0x4>>
 80037fea:	5f f0 c6 80 	jne %d0,%d15,80038176 <out_clcPOL+0x406>
 80037fee:	09 ff c0 08 	ld.hu %d15,[%a15]0
 80037ff2:	6f af c2 80 	jnz.t %d15,10,80038176 <out_clcPOL+0x406>
@@ -34465,7 +34465,7 @@ Disassembly of section .text:
 800382e2:	0c 20       	ld.bu %d15,[%a2]0
 800382e4:	13 00 24 ff 	madd %d15,%d15,%d0,64
 800382e8:	d9 ff cc 33 	lea %a15,[%a15]15564 <d0003ccc <out_poh_led_as>>
-800382ec:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__LD_RAM_START+0x14>>
+800382ec:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__RAM0_START+0x14>>
 800382f0:	50 22       	addsc.a %a2,%a2,%d15,1
 800382f2:	09 20 82 08 	ld.h %d0,[%a2]2
 800382f6:	bf 00 14 00 	jlt %d0,0,8003831e <out_clcPOL+0x5ae>
@@ -34506,7 +34506,7 @@ Disassembly of section .text:
 80038360:	89 a0 a4 08 	st.h [%sp]36 <d00000e8 <__CSA_BEGIN+0xa8>>,%d0
 80038364:	89 a0 1e 08 	st.b [%sp]30 <d00000e8 <__CSA_BEGIN+0xa8>>,%d0
 80038368:	ac 30       	st.h [%a3]0,%d15
-8003836a:	d9 fe 08 00 	lea %a14,[%a15]8 <d0000008 <__LD_RAM_START+0x8>>
+8003836a:	d9 fe 08 00 	lea %a14,[%a15]8 <d0000008 <__RAM0_START+0x8>>
 8003836e:	80 39       	mov.d %d9,%a3
 80038370:	09 20 aa 38 	ld.h %d0,[%a2]234 <d00000ea <__CSA_BEGIN+0xaa>>
 80038374:	91 50 00 28 	movh.a %a2,32773
@@ -34528,8 +34528,8 @@ Disassembly of section .text:
 800383ae:	89 a2 8c 09 	st.a [%sp]12,%a2
 800383b2:	d9 f2 18 10 	lea %a2,[%a15]88 <d0000058 <__CSA_BEGIN+0x18>>
 800383b6:	89 a2 88 09 	st.a [%sp]8 <d0000058 <__CSA_BEGIN+0x18>>,%a2
-800383ba:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__LD_RAM_START+0x14>>
-800383be:	89 a2 84 09 	st.a [%sp]4 <d0000014 <__LD_RAM_START+0x14>>,%a2
+800383ba:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__RAM0_START+0x14>>
+800383be:	89 a2 84 09 	st.a [%sp]4 <d0000014 <__RAM0_START+0x14>>,%a2
 800383c2:	d9 f2 38 10 	lea %a2,[%a15]120 <d0000078 <__CSA_BEGIN+0x38>>
 800383c6:	f4 a2       	st.a [%sp],%a2
 800383c8:	60 9f       	mov.a %a15,%d9
@@ -34543,7 +34543,7 @@ Disassembly of section .text:
 800383de:	82 01       	mov %d1,0
 800383e0:	a8 01       	st.h [%a15]0,%d1
 800383e2:	8c c3       	ld.h %d15,[%a12]6
-800383e4:	d9 cd 04 00 	lea %a13,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+800383e4:	d9 cd 04 00 	lea %a13,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 800383e8:	60 b2       	mov.a %a2,%d11
 800383ea:	89 af a2 08 	st.h [%sp]34,%d15
 800383ee:	09 20 c0 08 	ld.hu %d0,[%a2]0
@@ -34614,7 +34614,7 @@ Disassembly of section .text:
 800384a0:	16 ff       	and %d15,255
 800384a2:	3f 0f 0b 80 	jlt.u %d15,%d0,800384b8 <out_clcPOL_EHR+0x180>
 800384a6:	82 2f       	mov %d15,2
-800384a8:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+800384a8:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 800384ac:	2c d0       	st.b [%a13]0,%d15
 800384ae:	2c d2       	st.b [%a13]2,%d15
 800384b0:	8c f0       	ld.h %d15,[%a15]0
@@ -34676,8 +34676,8 @@ Disassembly of section .text:
 80038562:	09 cf 7e 18 	ld.bu %d15,[%a12]126 <d000007e <__CSA_BEGIN+0x3e>>
 80038566:	6e 1c       	jz %d15,8003859e <out_clcPOL_EHR+0x266>
 80038568:	da 08       	mov %d15,8
-8003856a:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
-8003856e:	09 f0 c2 08 	ld.hu %d0,[%a15]2 <d0000004 <__LD_RAM_START+0x4>>
+8003856a:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
+8003856e:	09 f0 c2 08 	ld.hu %d0,[%a15]2 <d0000004 <__RAM0_START+0x4>>
 80038572:	5f f0 06 80 	jne %d0,%d15,8003857e <out_clcPOL_EHR+0x246>
 80038576:	09 ff c0 08 	ld.hu %d15,[%a15]0
 8003857a:	6f af d9 00 	jz.t %d15,10,8003872c <out_clcPOL_EHR+0x3f4>
@@ -34921,7 +34921,7 @@ Disassembly of section .text:
 8003885c:	0c 20       	ld.bu %d15,[%a2]0
 8003885e:	13 00 24 ff 	madd %d15,%d15,%d0,64
 80038862:	d9 ff 0c 34 	lea %a15,[%a15]16588 <d00040cc <out_pol_ehr_as>>
-80038866:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__LD_RAM_START+0x14>>
+80038866:	d9 f2 14 00 	lea %a2,[%a15]20 <d0000014 <__RAM0_START+0x14>>
 8003886a:	50 22       	addsc.a %a2,%a2,%d15,1
 8003886c:	09 20 82 08 	ld.h %d0,[%a2]2
 80038870:	bf 00 14 00 	jlt %d0,0,80038898 <out_clcPOL_EHR+0x560>
@@ -35106,7 +35106,7 @@ Disassembly of section .text:
 80038a94:	d9 dd bc 53 	lea %a13,[%a13]14716 <8005397c <pwm_out_aoc_capf>>
 80038a98:	89 20 9e 08 	st.h [%a2]30 <d000001e <ZBSS_END+0x6>>,%d0
 80038a9c:	d9 ff 0c 74 	lea %a15,[%a15]16844 <d00041cc <out_aoc_as>>
-80038aa0:	d9 fc 10 00 	lea %a12,[%a15]16 <d0000010 <__LD_RAM_START+0x10>>
+80038aa0:	d9 fc 10 00 	lea %a12,[%a15]16 <d0000010 <__RAM0_START+0x10>>
 80038aa4:	7b 70 02 00 	movh %d0,39
 80038aa8:	19 cf f0 ff 	ld.w %d15,[%a12]-16
 80038aac:	37 0f 68 f8 	extr.u %d15,%d15,16,8
@@ -35266,7 +35266,7 @@ Disassembly of section .text:
 80038c9a:	d9 cc 38 74 	lea %a12,[%a12]16888 <d00041f8 <out_aov_as>>
 80038c9e:	d9 dd ac 53 	lea %a13,[%a13]14700 <8005396c <pwm_out_pvg_capf>>
 80038ca2:	89 20 8a 18 	st.h [%a2]74 <d000004a <__CSA_BEGIN+0xa>>,%d0
-80038ca6:	d9 ce 10 00 	lea %a14,[%a12]16 <d0000010 <__LD_RAM_START+0x10>>
+80038ca6:	d9 ce 10 00 	lea %a14,[%a12]16 <d0000010 <__RAM0_START+0x10>>
 80038caa:	8c f4       	ld.h %d15,[%a15]8
 80038cac:	89 2f b6 18 	st.h [%a2]118 <d0000076 <__CSA_BEGIN+0x36>>,%d15
 80038cb0:	09 f0 a4 08 	ld.h %d0,[%a15]36 <d0000024 <ZBSS_END+0xc>>
@@ -36775,7 +36775,7 @@ Disassembly of section .text:
 80039da4:	91 00 00 cd 	movh.a %a12,53248
 80039da8:	d9 dd 2c a4 	lea %a13,[%a13]17068 <d00042ac <safout_safety_as>>
 80039dac:	d9 cc 2c a4 	lea %a12,[%a12]17068 <d00042ac <safout_safety_as>>
-80039db0:	09 cf c2 08 	ld.hu %d15,[%a12]2 <d0000002 <__LD_RAM_START+0x2>>
+80039db0:	09 cf c2 08 	ld.hu %d15,[%a12]2 <d0000002 <__RAM0_START+0x2>>
 80039db4:	ae 1a       	jnz.t %d15,1,80039dc8 <safout_procDiag+0x30>
 80039db6:	9a 1a       	add %d15,%d10,1
 80039db8:	d9 cc 08 10 	lea %a12,[%a12]72 <d0000048 <__CSA_BEGIN+0x8>>
@@ -37368,7 +37368,7 @@ Disassembly of section .text:
 8003a576:	09 cf 73 08 	ld.bu %d15,[%a12]51
 8003a57a:	6e 0e       	jz %d15,8003a596 <safout_resetError+0xb4>
 8003a57c:	d9 cf 00 10 	lea %a15,[%a12]64
-8003a580:	09 ff 02 08 	ld.b %d15,[%a15]2 <d0000002 <__LD_RAM_START+0x2>>
+8003a580:	09 ff 02 08 	ld.b %d15,[%a15]2 <d0000002 <__RAM0_START+0x2>>
 8003a584:	0e f9       	jltz %d15,8003a596 <safout_resetError+0xb4>
 8003a586:	da 42       	mov %d15,66
 8003a588:	89 cf 84 18 	st.h [%a12]68,%d15
@@ -38010,10 +38010,10 @@ Disassembly of section .text:
 8003ad44:	60 a2       	mov.a %a2,%d10
 8003ad46:	d9 ff 2c a4 	lea %a15,[%a15]17068 <d00042ac <safout_safety_as>>
 8003ad4a:	d9 2c 34 00 	lea %a12,[%a2]52 <d00042ac <safout_safety_as>>
-8003ad4e:	09 f1 c2 08 	ld.hu %d1,[%a15]2 <d0000002 <__LD_RAM_START+0x2>>
+8003ad4e:	09 f1 c2 08 	ld.hu %d1,[%a15]2 <d0000002 <__RAM0_START+0x2>>
 8003ad52:	6f 11 0c 00 	jz.t %d1,1,8003ad6a <safout_procServe+0xb2>
 8003ad56:	3b 00 20 00 	mov %d0,512
-8003ad5a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003ad5a:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8003ad5e:	37 0f 68 f4 	extr.u %d15,%d15,8,8
 8003ad62:	8f 8f 20 f0 	sha %d15,%d15,8
 8003ad66:	5f 0f 27 00 	jeq %d15,%d0,8003adb4 <safout_procServe+0xfc>
@@ -38193,8 +38193,8 @@ Disassembly of section .text:
 8003afaa:	28 1f       	st.b [%a15]1,%d15
 8003afac:	9a 18       	add %d15,%d8,1
 8003afae:	28 09       	st.b [%a15]0,%d9
-8003afb0:	d9 cc 08 10 	lea %a12,[%a12]72 <d0000000 <__LD_RAM_START>>
-8003afb4:	d9 ee 08 10 	lea %a14,[%a14]72 <d0000000 <__LD_RAM_START>>
+8003afb0:	d9 cc 08 10 	lea %a12,[%a12]72 <d0000000 <__RAM0_START>>
+8003afb4:	d9 ee 08 10 	lea %a14,[%a14]72 <d0000000 <__RAM0_START>>
 8003afb8:	37 0f 50 80 	extr %d8,%d15,0,16
 8003afbc:	d9 ff 08 10 	lea %a15,[%a15]72 <d0000048 <__CSA_BEGIN+0x8>>
 8003afc0:	da 0a       	mov %d15,10
@@ -38646,10 +38646,10 @@ Disassembly of section .text:
 8003b566:	91 00 00 2d 	movh.a %a2,53248
 8003b56a:	1b ff ee fb 	addi %d15,%d15,-16657
 8003b56e:	d9 22 b8 51 	lea %a2,[%a2]6520 <d0001978 <BSS_PROTRAM_END>>
-8003b572:	19 20 0c 00 	ld.w %d0,[%a2]12 <d000000c <__LD_RAM_START+0xc>>
+8003b572:	19 20 0c 00 	ld.w %d0,[%a2]12 <d000000c <__RAM0_START+0xc>>
 8003b576:	5f f0 0a 80 	jne %d0,%d15,8003b58a <__SDT_DO_11_ERR_LABEL+0x7c>
 8003b57a:	7b f0 af fc 	movh %d15,51967
-8003b57e:	19 20 10 00 	ld.w %d0,[%a2]16 <d0000010 <__LD_RAM_START+0x10>>
+8003b57e:	19 20 10 00 	ld.w %d0,[%a2]16 <d0000010 <__RAM0_START+0x10>>
 8003b582:	1b ef ff fa 	addi %d15,%d15,-20482
 8003b586:	5f f0 09 00 	jeq %d0,%d15,8003b598 <__SDT_DO_11_ERR_LABEL+0x8a>
 8003b58a:	82 05       	mov %d5,0
@@ -39446,7 +39446,7 @@ Disassembly of section .text:
 8003beea:	0d 00 00 03 	enable 
 8003beee:	91 00 00 fd 	movh.a %a15,53248
 8003bef2:	d9 ff b0 55 	lea %a15,[%a15]22896 <d0005970 <sys_sysTimerStartTicks_u64>>
-8003bef6:	09 f2 40 09 	ld.d %e2,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003bef6:	09 f2 40 09 	ld.d %e2,[%a15]0 <d0000000 <__RAM0_START>>
 8003befa:	3a 31       	eq %d15,%d1,%d3
 8003befc:	0b 20 c0 40 	subx %d4,%d0,%d2
 8003bf00:	0b 31 d0 50 	subc %d5,%d1,%d3
@@ -39811,7 +39811,7 @@ Disassembly of section .text:
 8003c34a:	91 00 00 2d 	movh.a %a2,53248
 8003c34e:	82 03       	mov %d3,0
 8003c350:	d9 22 48 35 	lea %a2,[%a2]21704 <d00054c8 <sys_numberActiveErrors_u16>>
-8003c354:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__LD_RAM_START>>
+8003c354:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__RAM0_START>>
 8003c358:	7f f2 1e 80 	jge.u %d2,%d15,8003c394 <sys_testError+0x68>
 8003c35c:	7b 00 00 fd 	movh %d15,53248
 8003c360:	91 00 00 3d 	movh.a %a3,53248
@@ -39828,7 +39828,7 @@ Disassembly of section .text:
 8003c384:	9a 13       	add %d15,%d3,1
 8003c386:	37 0f 70 30 	extr.u %d3,%d15,0,16
 8003c38a:	f6 25       	jnz %d2,8003c394 <sys_testError+0x68>
-8003c38c:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__LD_RAM_START>>
+8003c38c:	09 2f c0 08 	ld.hu %d15,[%a2]0 <d0000000 <__RAM0_START>>
 8003c390:	3f f3 ef ff 	jlt.u %d3,%d15,8003c36e <sys_testError+0x42>
 8003c394:	4d c0 e2 ff 	mfcr %d15,$icr
 8003c398:	8f ff cf f1 	andn %d15,%d15,255
@@ -40180,7 +40180,7 @@ Disassembly of section .text:
 8003c7c2:	02 79       	mov %d9,%d7
 8003c7c4:	d9 44 48 35 	lea %a4,[%a4]21704 <d00054c8 <sys_numberActiveErrors_u16>>
 8003c7c8:	82 02       	mov %d2,0
-8003c7ca:	09 4f c0 08 	ld.hu %d15,[%a4]0 <d0000000 <__LD_RAM_START>>
+8003c7ca:	09 4f c0 08 	ld.hu %d15,[%a4]0 <d0000000 <__RAM0_START>>
 8003c7ce:	7f f3 2e 80 	jge.u %d3,%d15,8003c82a <sys_setErrorExtTimeApi+0x74>
 8003c7d2:	7b 00 00 fd 	movh %d15,53248
 8003c7d6:	91 00 00 3d 	movh.a %a3,53248
@@ -40205,7 +40205,7 @@ Disassembly of section .text:
 8003c818:	9a 12       	add %d15,%d2,1
 8003c81a:	37 0f 70 20 	extr.u %d2,%d15,0,16
 8003c81e:	df 03 2b 80 	jne %d3,0,8003c874 <sys_setErrorExtTimeApi+0xbe>
-8003c822:	09 4f c0 08 	ld.hu %d15,[%a4]0 <d0000000 <__LD_RAM_START>>
+8003c822:	09 4f c0 08 	ld.hu %d15,[%a4]0 <d0000000 <__RAM0_START>>
 8003c826:	3f f2 ee ff 	jlt.u %d2,%d15,8003c802 <sys_setErrorExtTimeApi+0x4c>
 8003c82a:	da 80       	mov %d15,128
 8003c82c:	94 42       	ld.h %d2,[%a4]
@@ -40575,7 +40575,7 @@ Disassembly of section .text:
 8003cc3e:	34 e9       	st.b [%a14],%d9
 8003cc40:	d9 2f 3c 00 	lea %a15,[%a2]60
 8003cc44:	6d ff 3f fc 	call 8003c4c2 <sys_getSyncTime_u64>
-8003cc48:	89 f2 40 09 	st.d [%a15]0 <d0000000 <__LD_RAM_START>>,%e2
+8003cc48:	89 f2 40 09 	st.d [%a15]0 <d0000000 <__RAM0_START>>,%e2
 8003cc4c:	4d c0 e2 0f 	mfcr %d0,$icr
 8003cc50:	0d 00 40 03 	disable 
 8003cc54:	00 00       	nop 
@@ -41051,7 +41051,7 @@ Disassembly of section .text:
 8003d224:	d9 dd a0 1e 	lea %a13,[%a13]-6048 <8200e860 <sys_lockVpStatusCpl_u16>>
 8003d228:	df 05 29 00 	jeq %d5,0,8003d27a <sys_setVP+0x66>
 8003d22c:	bb a0 55 fa 	mov.u %d15,42330
-8003d230:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__LD_RAM_START>>
+8003d230:	09 c0 c0 08 	ld.hu %d0,[%a12]0 <d0000000 <__RAM0_START>>
 8003d234:	5f f0 1d 00 	jeq %d0,%d15,8003d26e <sys_setVP+0x5a>
 8003d238:	82 48       	mov %d8,4
 8003d23a:	4d c0 e2 2f 	mfcr %d2,$icr
@@ -41102,7 +41102,7 @@ Disassembly of section .text:
 8003d2d4:	df 19 cb ff 	jne %d9,1,8003d26a <sys_setVP+0x56>
 8003d2d8:	91 00 00 fd 	movh.a %a15,53248
 8003d2dc:	d9 ff 2e 13 	lea %a15,[%a15]12398 <d000306e <sys_lockVpStatus_u16>>
-8003d2e0:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003d2e0:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8003d2e4:	ee c3       	jnz %d15,8003d26a <sys_setVP+0x56>
 8003d2e6:	7b 40 04 f0 	movh %d15,68
 8003d2ea:	1b 5f 00 f4 	addi %d15,%d15,16389
@@ -41259,7 +41259,7 @@ Disassembly of section .text:
 8003d4ec:	82 08       	mov %d8,0
 8003d4ee:	91 00 00 fd 	movh.a %a15,53248
 8003d4f2:	d9 ff 48 35 	lea %a15,[%a15]21704 <d00054c8 <sys_numberActiveErrors_u16>>
-8003d4f6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003d4f6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 8003d4fa:	7f 4f 27 80 	jge.u %d15,%d4,8003d548 <sys_getActiveErrors+0x7e>
 8003d4fe:	0b 84 00 20 	add %d2,%d4,%d8
 8003d502:	82 0f       	mov %d15,0
@@ -41351,7 +41351,7 @@ Disassembly of section .text:
 8003d5fe:	1b 8f 02 e5 	addi %d14,%d15,20520
 8003d602:	0b 05 00 91 	eq %d9,%d5,%d0
 8003d606:	82 07       	mov %d7,0
-8003d608:	09 5f c0 08 	ld.hu %d15,[%a5]0 <d0000000 <__LD_RAM_START>>
+8003d608:	09 5f c0 08 	ld.hu %d15,[%a5]0 <d0000000 <__RAM0_START>>
 8003d60c:	7f f2 1d 80 	jge.u %d2,%d15,8003d646 <sys_delActiveError+0x84>
 8003d610:	bb f0 ff 3f 	mov.u %d3,65535
 8003d614:	91 00 00 2d 	movh.a %a2,53248
@@ -41367,7 +41367,7 @@ Disassembly of section .text:
 8003d634:	9a 12       	add %d15,%d2,1
 8003d636:	37 0f 70 20 	extr.u %d2,%d15,0,16
 8003d63a:	df 07 21 80 	jne %d7,0,8003d67c <sys_delActiveError+0xba>
-8003d63e:	09 5f c0 08 	ld.hu %d15,[%a5]0 <d0000000 <__LD_RAM_START>>
+8003d63e:	09 5f c0 08 	ld.hu %d15,[%a5]0 <d0000000 <__RAM0_START>>
 8003d642:	3f f2 ee ff 	jlt.u %d2,%d15,8003d61e <sys_delActiveError+0x5c>
 8003d646:	8b 07 20 f2 	ne %d15,%d7,0
 8003d64a:	26 9f       	and %d15,%d9
@@ -41503,7 +41503,7 @@ Disassembly of section .text:
 8003d7ce:	00 00       	nop 
 8003d7d0:	91 00 00 fd 	movh.a %a15,53248
 8003d7d4:	d9 ff 48 35 	lea %a15,[%a15]21704 <d00054c8 <sys_numberActiveErrors_u16>>
-8003d7d8:	09 f2 c0 08 	ld.hu %d2,[%a15]0 <d0000000 <__LD_RAM_START>>
+8003d7d8:	09 f2 c0 08 	ld.hu %d2,[%a15]0 <d0000000 <__RAM0_START>>
 8003d7dc:	2e 83       	jz.t %d15,8,8003d7e2 <sys_getNumActiveErrors+0x1c>
 8003d7de:	0d 00 00 03 	enable 
 8003d7e2:	00 90       	ret 
@@ -42086,19 +42086,19 @@ Disassembly of section .text:
 8003deb2:	00 00       	nop 
 8003deb4:	48 00       	ld.w %d0,[%a15]0
 8003deb6:	8c fc       	ld.h %d15,[%a15]24
-8003deb8:	59 40 08 00 	st.w [%a4]8 <d0000000 <__LD_RAM_START>>,%d0
+8003deb8:	59 40 08 00 	st.w [%a4]8 <d0000000 <__RAM0_START>>,%d0
 8003debc:	ac 42       	st.h [%a4]4,%d15
 8003debe:	4c f1       	ld.w %d15,[%a15]4
 8003dec0:	6c 43       	st.w [%a4]12,%d15
 8003dec2:	48 20       	ld.w %d0,[%a15]8
-8003dec4:	59 40 10 00 	st.w [%a4]16 <d0000000 <__LD_RAM_START>>,%d0
+8003dec4:	59 40 10 00 	st.w [%a4]16 <d0000000 <__RAM0_START>>,%d0
 8003dec8:	48 40       	ld.w %d0,[%a15]16
 8003deca:	4c f3       	ld.w %d15,[%a15]12
-8003decc:	59 40 18 00 	st.w [%a4]24 <d0000000 <__LD_RAM_START>>,%d0
+8003decc:	59 40 18 00 	st.w [%a4]24 <d0000000 <__RAM0_START>>,%d0
 8003ded0:	6c 45       	st.w [%a4]20,%d15
-8003ded2:	09 ff 5f 08 	ld.bu %d15,[%a15]31 <d0000000 <__LD_RAM_START>>
-8003ded6:	d9 af 06 00 	lea %a15,[%sp]6 <d0000000 <__LD_RAM_START>>
-8003deda:	89 4f 1c 08 	st.b [%a4]28 <d0000000 <__LD_RAM_START>>,%d15
+8003ded2:	09 ff 5f 08 	ld.bu %d15,[%a15]31 <d0000000 <__RAM0_START>>
+8003ded6:	d9 af 06 00 	lea %a15,[%sp]6 <d0000000 <__RAM0_START>>
+8003deda:	89 4f 1c 08 	st.b [%a4]28 <d0000000 <__RAM0_START>>,%d15
 8003dede:	40 f4       	mov.aa %a4,%a15
 8003dee0:	6d ff fb fd 	call 8003dad6 <sys_decodeResetInfo>
 8003dee4:	09 a0 86 08 	ld.h %d0,[%sp]6
@@ -42485,7 +42485,7 @@ Disassembly of section .text:
 8003e2ce:	91 00 00 2d 	movh.a %a2,53248
 8003e2d2:	d9 ff b0 55 	lea %a15,[%a15]22896 <d0005970 <sys_sysTimerStartTicks_u64>>
 8003e2d6:	d9 22 7c 54 	lea %a2,[%a2]17788 <d000457c <sys_numberApplTasks_u8>>
-8003e2da:	89 f2 40 09 	st.d [%a15]0 <d0000000 <__LD_RAM_START>>,%e2
+8003e2da:	89 f2 40 09 	st.d [%a15]0 <d0000000 <__RAM0_START>>,%e2
 8003e2de:	91 00 00 fd 	movh.a %a15,53248
 8003e2e2:	2c 20       	st.b [%a2]0,%d15
 8003e2e4:	91 00 00 2d 	movh.a %a2,53248
@@ -43339,7 +43339,7 @@ Disassembly of section .text:
 8003ec5e:	91 00 00 fd 	movh.a %a15,53248
 8003ec62:	d9 33 14 11 	lea %a3,[%a3]4180 <d0001054 <sys_ApplTasks_as>>
 8003ec66:	80 3f       	mov.d %d15,%a3
-8003ec68:	d9 34 04 00 	lea %a4,[%a3]4 <d0000004 <__LD_RAM_START+0x4>>
+8003ec68:	d9 34 04 00 	lea %a4,[%a3]4 <d0000004 <__RAM0_START+0x4>>
 8003ec6c:	13 42 27 ff 	madd %d15,%d15,%d2,116
 8003ec70:	60 f2       	mov.a %a2,%d15
 8003ec72:	54 20       	ld.w %d0,[%a2]
@@ -43349,14 +43349,14 @@ Disassembly of section .text:
 8003ec80:	89 3f 2e 18 	st.b [%a3]110 <d000006e <__CSA_BEGIN+0x2e>>,%d15
 8003ec84:	d9 22 0c 00 	lea %a2,[%a2]12 <d000006e <__CSA_BEGIN+0x2e>>
 8003ec88:	4c f0       	ld.w %d15,[%a15]0
-8003ec8a:	d9 33 0c 00 	lea %a3,[%a3]12 <d000000c <__LD_RAM_START+0xc>>
+8003ec8a:	d9 33 0c 00 	lea %a3,[%a3]12 <d000000c <__RAM0_START+0xc>>
 8003ec8e:	6c 40       	st.w [%a4]0,%d15
 8003ec90:	4c 20       	ld.w %d15,[%a2]0
 8003ec92:	48 10       	ld.w %d0,[%a15]4
 8003ec94:	6c 30       	st.w [%a3]0,%d15
-8003ec96:	59 40 04 00 	st.w [%a4]4 <d0000000 <__LD_RAM_START>>,%d0
-8003ec9a:	19 20 04 00 	ld.w %d0,[%a2]4 <d0000000 <__LD_RAM_START>>
-8003ec9e:	59 30 04 00 	st.w [%a3]4 <d0000004 <__LD_RAM_START+0x4>>,%d0
+8003ec96:	59 40 04 00 	st.w [%a4]4 <d0000000 <__RAM0_START>>,%d0
+8003ec9a:	19 20 04 00 	ld.w %d0,[%a2]4 <d0000000 <__RAM0_START>>
+8003ec9e:	59 30 04 00 	st.w [%a3]4 <d0000004 <__RAM0_START+0x4>>,%d0
 8003eca2:	34 58       	st.b [%a5],%d8
 8003eca4:	00 90       	ret 
 
@@ -43645,7 +43645,7 @@ Disassembly of section .text:
 8003efd6:	91 00 00 fd 	movh.a %a15,53248
 8003efda:	d9 ff 40 95 	lea %a15,[%a15]22080 <d0005640 <wdeRequest_s.0>>
 8003efde:	0c f8       	ld.bu %d15,[%a15]8
-8003efe0:	d9 af 00 10 	lea %a15,[%sp]64 <d0000008 <__LD_RAM_START+0x8>>
+8003efe0:	d9 af 00 10 	lea %a15,[%sp]64 <d0000008 <__RAM0_START+0x8>>
 8003efe4:	d9 f2 c0 ff 	lea %a2,[%a15]-64 <cfffffc0 <__SP_RAM_END+0xfff7fc0>>
 8003efe8:	90 22       	addsc.a %a2,%a2,%d15,2
 8003efea:	54 24       	ld.w %d4,[%a2]
@@ -46317,7 +46317,7 @@ Disassembly of section .text:
 80041082:	76 27       	jz %d2,80041090 <Cy320_Rx_Proc+0x1c>
 80041084:	91 00 00 fd 	movh.a %a15,53248
 80041088:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-8004108c:	89 ff 10 08 	st.b [%a15]16 <d0000010 <__LD_RAM_START+0x10>>,%d15
+8004108c:	89 ff 10 08 	st.b [%a15]16 <d0000010 <__RAM0_START+0x10>>,%d15
 80041090:	6d 00 d6 04 	call 80041a3c <Cy320_UpdatePowerGetBuffer>
 80041094:	1d 00 e8 04 	j 80041a64 <Cy320_UpdateStopCounterBuffer>
 
@@ -46340,7 +46340,7 @@ Disassembly of section .text:
 800410d0:	59 ff d0 b5 	st.w [%a15]24272 <d0005ed0 <stFaultCOM_ui>>,%d15
 800410d4:	91 00 00 cd 	movh.a %a12,53248
 800410d8:	d9 cc 50 b2 	lea %a12,[%a12]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-800410dc:	d9 cf 12 00 	lea %a15,[%a12]18 <d0000012 <__LD_RAM_START+0x12>>
+800410dc:	d9 cf 12 00 	lea %a15,[%a12]18 <d0000012 <__RAM0_START+0x12>>
 800410e0:	0c f0       	ld.bu %d15,[%a15]0
 800410e2:	6f 0f 18 00 	jz.t %d15,0,80041112 <Cy320_Tx_Proc+0x7a>
 800410e6:	7b c0 18 02 	movh %d0,8588
@@ -46358,7 +46358,7 @@ Disassembly of section .text:
 8004110a:	0c f0       	ld.bu %d15,[%a15]0
 8004110c:	8f 1f c0 f1 	andn %d15,%d15,1
 80041110:	28 0f       	st.b [%a15]0,%d15
-80041112:	d9 cf 12 00 	lea %a15,[%a12]18 <d0000012 <__LD_RAM_START+0x12>>
+80041112:	d9 cf 12 00 	lea %a15,[%a12]18 <d0000012 <__RAM0_START+0x12>>
 80041116:	0c f0       	ld.bu %d15,[%a15]0
 80041118:	6f 1f 13 00 	jz.t %d15,1,8004113e <Cy320_Tx_Proc+0xa6>
 8004111c:	91 50 00 48 	movh.a %a4,32773
@@ -46373,7 +46373,7 @@ Disassembly of section .text:
 80041138:	8f 2f c0 f1 	andn %d15,%d15,2
 8004113c:	28 0f       	st.b [%a15]0,%d15
 8004113e:	82 07       	mov %d7,0
-80041140:	d9 cf 08 00 	lea %a15,[%a12]8 <d0000008 <__LD_RAM_START+0x8>>
+80041140:	d9 cf 08 00 	lea %a15,[%a12]8 <d0000008 <__RAM0_START+0x8>>
 80041144:	82 06       	mov %d6,0
 80041146:	8c f0       	ld.h %d15,[%a15]0
 80041148:	5a f8       	sub %d15,%d8,%d15
@@ -46435,7 +46435,7 @@ Disassembly of section .text:
 800411fc:	bf 30 eb ff 	jlt.u %d0,3,800411d2 <Cy320_Diag_Sequence+0x6a>
 80041200:	df 02 97 80 	jne %d2,0,8004132e <Cy320_Diag_Sequence+0x1c6>
 80041204:	82 05       	mov %d5,0
-80041206:	d9 df 0a 00 	lea %a15,[%a13]10 <d000000a <__LD_RAM_START+0xa>>
+80041206:	d9 df 0a 00 	lea %a15,[%a13]10 <d000000a <__RAM0_START+0xa>>
 8004120a:	8c f0       	ld.h %d15,[%a15]0
 8004120c:	5a fa       	sub %d15,%d10,%d15
 8004120e:	a8 0a       	st.h [%a15]0,%d10
@@ -46556,7 +46556,7 @@ Disassembly of section .text:
 8004135e:	91 00 00 fd 	movh.a %a15,53248
 80041362:	82 06       	mov %d6,0
 80041364:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-80041368:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__LD_RAM_START+0x8>>
+80041368:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__RAM0_START+0x8>>
 8004136c:	8c f0       	ld.h %d15,[%a15]0
 8004136e:	5a fa       	sub %d15,%d10,%d15
 80041370:	a8 0a       	st.h [%a15]0,%d10
@@ -46609,7 +46609,7 @@ Disassembly of section .text:
 80041404:	02 85       	mov %d5,%d8
 80041406:	82 06       	mov %d6,0
 80041408:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-8004140c:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__LD_RAM_START+0x8>>
+8004140c:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__RAM0_START+0x8>>
 80041410:	8c f0       	ld.h %d15,[%a15]0
 80041412:	5a f1       	sub %d15,%d1,%d15
 80041414:	a8 01       	st.h [%a15]0,%d1
@@ -46661,7 +46661,7 @@ Disassembly of section .text:
 800414a8:	02 85       	mov %d5,%d8
 800414aa:	82 06       	mov %d6,0
 800414ac:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-800414b0:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__LD_RAM_START+0x8>>
+800414b0:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__RAM0_START+0x8>>
 800414b4:	8c f0       	ld.h %d15,[%a15]0
 800414b6:	5a f1       	sub %d15,%d1,%d15
 800414b8:	a8 01       	st.h [%a15]0,%d1
@@ -46717,7 +46717,7 @@ Disassembly of section .text:
 80041558:	02 85       	mov %d5,%d8
 8004155a:	82 06       	mov %d6,0
 8004155c:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-80041560:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__LD_RAM_START+0x8>>
+80041560:	d9 ff 08 00 	lea %a15,[%a15]8 <d0000008 <__RAM0_START+0x8>>
 80041564:	8c f0       	ld.h %d15,[%a15]0
 80041566:	5a f1       	sub %d15,%d1,%d15
 80041568:	a8 01       	st.h [%a15]0,%d1
@@ -47130,7 +47130,7 @@ Disassembly of section .text:
 80041a24:	1d 00 3c 08 	j 80042a9c <Spi_ActvTx>
 80041a28:	91 00 00 fd 	movh.a %a15,53248
 80041a2c:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-80041a30:	d9 ff 12 00 	lea %a15,[%a15]18 <d0000012 <__LD_RAM_START+0x12>>
+80041a30:	d9 ff 12 00 	lea %a15,[%a15]18 <d0000012 <__RAM0_START+0x12>>
 80041a34:	0c f0       	ld.bu %d15,[%a15]0
 80041a36:	96 01       	or %d15,1
 80041a38:	28 0f       	st.b [%a15]0,%d15
@@ -47219,7 +47219,7 @@ Disassembly of section .text:
 80041b32 <Cy320_GetStcVal>:
 80041b32:	91 00 00 fd 	movh.a %a15,53248
 80041b36:	d9 ff ce 45 	lea %a15,[%a15]23822 <d0005d0e <Cy320_LastStopCounterVal_u16>>
-80041b3a:	09 f2 c0 08 	ld.hu %d2,[%a15]0 <d0000000 <__LD_RAM_START>>
+80041b3a:	09 f2 c0 08 	ld.hu %d2,[%a15]0 <d0000000 <__RAM0_START>>
 80041b3e:	00 90       	ret 
 
 80041b40 <Cy320_SetStcVal>:
@@ -47241,7 +47241,7 @@ Disassembly of section .text:
 80041b70:	1d 00 96 07 	j 80042a9c <Spi_ActvTx>
 80041b74:	91 00 00 fd 	movh.a %a15,53248
 80041b78:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
-80041b7c:	d9 ff 12 00 	lea %a15,[%a15]18 <d0000012 <__LD_RAM_START+0x12>>
+80041b7c:	d9 ff 12 00 	lea %a15,[%a15]18 <d0000012 <__RAM0_START+0x12>>
 80041b80:	0c f0       	ld.bu %d15,[%a15]0
 80041b82:	96 02       	or %d15,2
 80041b84:	28 0f       	st.b [%a15]0,%d15
@@ -47288,7 +47288,7 @@ Disassembly of section .text:
 80041be4:	28 0f       	st.b [%a15]0,%d15
 80041be6:	a8 44       	st.h [%a15]8,%d4
 80041be8:	a8 60       	st.h [%a15]12,%d0
-80041bea:	d9 f2 0e 00 	lea %a2,[%a15]14 <d000000e <__LD_RAM_START+0xe>>
+80041bea:	d9 f2 0e 00 	lea %a2,[%a15]14 <d000000e <__RAM0_START+0xe>>
 80041bee:	df 06 31 80 	jne %d6,0,80041c50 <EepOa_RWAccess+0x88>
 80041bf2:	8f f4 01 f1 	and %d15,%d4,31
 80041bf6:	3b 00 02 00 	mov %d0,32
@@ -47298,7 +47298,7 @@ Disassembly of section .text:
 80041c04:	3f 0f 03 80 	jlt.u %d15,%d0,80041c0a <EepOa_RWAccess+0x42>
 80041c08:	b4 26       	st.h [%a2],%d6
 80041c0a:	09 2f c0 08 	ld.hu %d15,[%a2]0
-80041c0e:	d9 f3 10 00 	lea %a3,[%a15]16 <d0000010 <__LD_RAM_START+0x10>>
+80041c0e:	d9 f3 10 00 	lea %a3,[%a15]16 <d0000010 <__RAM0_START+0x10>>
 80041c12:	7f f5 05 80 	jge.u %d5,%d15,80041c1c <EepOa_RWAccess+0x54>
 80041c16:	b4 25       	st.h [%a2],%d5
 80041c18:	b4 36       	st.h [%a3],%d6
@@ -47306,7 +47306,7 @@ Disassembly of section .text:
 80041c1c:	1a 54       	add %d15,%d4,%d5
 80041c1e:	16 1f       	and %d15,31
 80041c20:	ac 30       	st.h [%a3]0,%d15
-80041c22:	09 ff ce 08 	ld.hu %d15,[%a15]14 <d000000e <__LD_RAM_START+0xe>>
+80041c22:	09 ff ce 08 	ld.hu %d15,[%a15]14 <d000000e <__RAM0_START+0xe>>
 80041c26:	0b f5 80 00 	sub %d0,%d5,%d15
 80041c2a:	91 00 00 2d 	movh.a %a2,53248
 80041c2e:	88 81       	ld.h %d1,[%a15]16
@@ -47326,7 +47326,7 @@ Disassembly of section .text:
 80041c4e:	3c 07       	j 80041c5c <EepOa_RWAccess+0x94>
 80041c50:	da 21       	mov %d15,33
 80041c52:	a8 55       	st.h [%a15]10,%d5
-80041c54:	89 ff 10 00 	st.b [%a15+]16 <d0000010 <__LD_RAM_START+0x10>>,%d15
+80041c54:	89 ff 10 00 	st.b [%a15+]16 <d0000010 <__RAM0_START+0x10>>,%d15
 80041c58:	b4 20       	st.h [%a2],%d0
 80041c5a:	a8 00       	st.h [%a15]0,%d0
 80041c5c:	82 02       	mov %d2,0
@@ -47340,7 +47340,7 @@ Disassembly of section .text:
 80041c6c:	5e 1b       	jne %d15,1,80041c82 <EepOa_EepromReady+0x22>
 80041c6e:	91 00 00 fd 	movh.a %a15,53248
 80041c72:	d9 ff d4 c5 	lea %a15,[%a15]24340 <d0005f14 <EepOa_CurrRWOrder_s>>
-80041c76:	09 ff ce 08 	ld.hu %d15,[%a15]14 <d000000e <__LD_RAM_START+0xe>>
+80041c76:	09 ff ce 08 	ld.hu %d15,[%a15]14 <d000000e <__RAM0_START+0xe>>
 80041c7a:	37 0f 68 24 	extr.u %d2,%d15,8,8
 80041c7e:	8f 82 20 20 	sha %d2,%d2,8
 80041c82:	00 90       	ret 
@@ -47362,7 +47362,7 @@ Disassembly of section .text:
 80041ca6:	d9 cc dc 82 	lea %a12,[%a12]11804 <d0002e1c <EepOa_Order_s>>
 80041caa:	0c c0       	ld.bu %d15,[%a12]0
 80041cac:	8b ff 1e 00 	add %d0,%d15,-17
-80041cb0:	09 c2 cc 08 	ld.hu %d2,[%a12]12 <d000000c <__LD_RAM_START+0xc>>
+80041cb0:	09 c2 cc 08 	ld.hu %d2,[%a12]12 <d000000c <__RAM0_START+0xc>>
 80041cb4:	da 22       	mov %d15,34
 80041cb6:	7f f0 8c 81 	jge.u %d0,%d15,80041fce <EepOa_Main_Proc+0x32c>
 80041cba:	91 50 00 f8 	movh.a %a15,32773
@@ -47383,7 +47383,7 @@ Disassembly of section .text:
 80041cec:	91 00 00 fd 	movh.a %a15,53248
 80041cf0:	d9 ff dc 72 	lea %a15,[%a15]11740 <d0002ddc <EepOa_RdStatusReg_cs>>
 80041cf4:	c8 2f       	ld.a %a15,[%a15]8
-80041cf6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000002 <__LD_RAM_START+0x2>>
+80041cf6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000002 <__RAM0_START+0x2>>
 80041cfa:	16 8c       	and %d15,140
 80041cfc:	6e 27       	jz %d15,80041d4a <EepOa_Main_Proc+0xa8>
 80041cfe:	91 00 00 4d 	movh.a %a4,53248
@@ -47435,7 +47435,7 @@ Disassembly of section .text:
 80041d88:	42 0f       	add %d15,%d0
 80041d8a:	ac 20       	st.h [%a2]0,%d15
 80041d8c:	82 1f       	mov %d15,1
-80041d8e:	89 ff 0c 00 	st.b [%a15+]12 <d000000c <__LD_RAM_START+0xc>>,%d15
+80041d8e:	89 ff 0c 00 	st.b [%a15+]12 <d000000c <__RAM0_START+0xc>>,%d15
 80041d92:	82 1f       	mov %d15,1
 80041d94:	a8 0f       	st.h [%a15]0,%d15
 80041d96:	da 22       	mov %d15,34
@@ -47459,7 +47459,7 @@ Disassembly of section .text:
 80041dce:	91 00 00 fd 	movh.a %a15,53248
 80041dd2:	d9 22 dc 82 	lea %a2,[%a2]11804 <d0002e1c <EepOa_Order_s>>
 80041dd6:	d9 ff d4 c5 	lea %a15,[%a15]24340 <d0005f14 <EepOa_CurrRWOrder_s>>
-80041dda:	09 20 8e 08 	ld.h %d0,[%a2]14 <d000000e <__LD_RAM_START+0xe>>
+80041dda:	09 20 8e 08 	ld.h %d0,[%a2]14 <d000000e <__RAM0_START+0xe>>
 80041dde:	37 00 70 10 	extr.u %d1,%d0,0,16
 80041de2:	df 01 37 00 	jeq %d1,0,80041e50 <EepOa_Main_Proc+0x1ae>
 80041de6:	4c 21       	ld.w %d15,[%a2]4
@@ -47476,14 +47476,14 @@ Disassembly of section .text:
 80041e02:	a8 5f       	st.h [%a15]10,%d15
 80041e04:	3c 0c       	j 80041e1c <EepOa_Main_Proc+0x17a>
 80041e06:	8f 10 00 f1 	and %d15,%d0,1
-80041e0a:	d9 ff 0a 00 	lea %a15,[%a15]10 <d000000a <__LD_RAM_START+0xa>>
+80041e0a:	d9 ff 0a 00 	lea %a15,[%a15]10 <d000000a <__RAM0_START+0xa>>
 80041e0e:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80041e12:	ee 04       	jnz %d15,80041e1a <EepOa_Main_Proc+0x178>
 80041e14:	9a f0       	add %d15,%d0,-1
 80041e16:	a8 0f       	st.h [%a15]0,%d15
 80041e18:	3c 02       	j 80041e1c <EepOa_Main_Proc+0x17a>
 80041e1a:	a8 00       	st.h [%a15]0,%d0
-80041e1c:	d9 2f 0e 00 	lea %a15,[%a2]14 <d000000e <__LD_RAM_START+0xe>>
+80041e1c:	d9 2f 0e 00 	lea %a15,[%a2]14 <d000000e <__RAM0_START+0xe>>
 80041e20:	8c 35       	ld.h %d15,[%a3]10
 80041e22:	88 00       	ld.h %d0,[%a15]0
 80041e24:	7f 0f 04 80 	jge.u %d15,%d0,80041e2c <EepOa_Main_Proc+0x18a>
@@ -47491,15 +47491,15 @@ Disassembly of section .text:
 80041e2a:	3c 02       	j 80041e2e <EepOa_Main_Proc+0x18c>
 80041e2c:	82 0f       	mov %d15,0
 80041e2e:	a8 0f       	st.h [%a15]0,%d15
-80041e30:	d9 2f 0c 00 	lea %a15,[%a2]12 <d000000c <__LD_RAM_START+0xc>>
-80041e34:	09 30 8a 08 	ld.h %d0,[%a3]10 <d000000a <__LD_RAM_START+0xa>>
+80041e30:	d9 2f 0c 00 	lea %a15,[%a2]12 <d000000c <__RAM0_START+0xc>>
+80041e34:	09 30 8a 08 	ld.h %d0,[%a3]10 <d000000a <__RAM0_START+0xa>>
 80041e38:	8c f0       	ld.h %d15,[%a15]0
 80041e3a:	42 0f       	add %d15,%d0
 80041e3c:	a8 0f       	st.h [%a15]0,%d15
 80041e3e:	da 13       	mov %d15,19
 80041e40:	2c 20       	st.b [%a2]0,%d15
 80041e42:	82 1f       	mov %d15,1
-80041e44:	89 3f 0c 00 	st.b [%a3+]12 <d000000c <__LD_RAM_START+0xc>>,%d15
+80041e44:	89 3f 0c 00 	st.b [%a3+]12 <d000000c <__RAM0_START+0xc>>,%d15
 80041e48:	82 0f       	mov %d15,0
 80041e4a:	ac 30       	st.h [%a3]0,%d15
 80041e4c:	1d 00 a1 00 	j 80041f8e <EepOa_Main_Proc+0x2ec>
@@ -47533,18 +47533,18 @@ Disassembly of section .text:
 80041ea4:	8c c4       	ld.h %d15,[%a12]8
 80041ea6:	12 2f       	add %d15,%d15,%d2
 80041ea8:	d9 22 d4 c5 	lea %a2,[%a2]24340 <d0005f14 <EepOa_CurrRWOrder_s>>
-80041eac:	d9 2f 0a 00 	lea %a15,[%a2]10 <d000000a <__LD_RAM_START+0xa>>
+80041eac:	d9 2f 0a 00 	lea %a15,[%a2]10 <d000000a <__RAM0_START+0xa>>
 80041eb0:	ac 24       	st.h [%a2]8,%d15
 80041eb2:	4c c1       	ld.w %d15,[%a12]4
 80041eb4:	42 2f       	add %d15,%d2
 80041eb6:	6c 21       	st.w [%a2]4,%d15
-80041eb8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80041eb8:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80041ebc:	7e 04       	jne %d15,%d0,80041ec4 <EepOa_Main_Proc+0x222>
 80041ebe:	da 0f       	mov %d15,15
 80041ec0:	a8 0f       	st.h [%a15]0,%d15
 80041ec2:	3c 02       	j 80041ec6 <EepOa_Main_Proc+0x224>
 80041ec4:	a8 00       	st.h [%a15]0,%d0
-80041ec6:	d9 cf 0a 00 	lea %a15,[%a12]10 <d0000000 <__LD_RAM_START>>
+80041ec6:	d9 cf 0a 00 	lea %a15,[%a12]10 <d0000000 <__RAM0_START>>
 80041eca:	8c 25       	ld.h %d15,[%a2]10
 80041ecc:	88 00       	ld.h %d0,[%a15]0
 80041ece:	3f f0 04 80 	jlt.u %d0,%d15,80041ed6 <EepOa_Main_Proc+0x234>
@@ -47552,14 +47552,14 @@ Disassembly of section .text:
 80041ed4:	3c 02       	j 80041ed8 <EepOa_Main_Proc+0x236>
 80041ed6:	82 0f       	mov %d15,0
 80041ed8:	a8 0f       	st.h [%a15]0,%d15
-80041eda:	d9 cf 0c 00 	lea %a15,[%a12]12 <d0000000 <__LD_RAM_START>>
-80041ede:	09 20 8a 08 	ld.h %d0,[%a2]10 <d000000a <__LD_RAM_START+0xa>>
+80041eda:	d9 cf 0c 00 	lea %a15,[%a12]12 <d0000000 <__RAM0_START>>
+80041ede:	09 20 8a 08 	ld.h %d0,[%a2]10 <d000000a <__RAM0_START+0xa>>
 80041ee2:	8c f0       	ld.h %d15,[%a15]0
 80041ee4:	42 0f       	add %d15,%d0
 80041ee6:	a8 0f       	st.h [%a15]0,%d15
 80041ee8:	da 15       	mov %d15,21
 80041eea:	3c 4c       	j 80041f82 <EepOa_Main_Proc+0x2e0>
-80041eec:	09 ff d0 08 	ld.hu %d15,[%a15]16 <d0000010 <__LD_RAM_START+0x10>>
+80041eec:	09 ff d0 08 	ld.hu %d15,[%a15]16 <d0000010 <__RAM0_START+0x10>>
 80041ef0:	6e 04       	jz %d15,80041ef8 <EepOa_Main_Proc+0x256>
 80041ef2:	da 16       	mov %d15,22
 80041ef4:	28 0f       	st.b [%a15]0,%d15
@@ -47593,7 +47593,7 @@ Disassembly of section .text:
 80041f44:	ac 25       	st.h [%a2]10,%d15
 80041f46:	3c 0c       	j 80041f5e <EepOa_Main_Proc+0x2bc>
 80041f48:	8f 10 00 f1 	and %d15,%d0,1
-80041f4c:	d9 2f 0a 00 	lea %a15,[%a2]10 <d000000a <__LD_RAM_START+0xa>>
+80041f4c:	d9 2f 0a 00 	lea %a15,[%a2]10 <d000000a <__RAM0_START+0xa>>
 80041f50:	37 0f 70 f0 	extr.u %d15,%d15,0,16
 80041f54:	ee 04       	jnz %d15,80041f5c <EepOa_Main_Proc+0x2ba>
 80041f56:	9a f0       	add %d15,%d0,-1
@@ -47609,14 +47609,14 @@ Disassembly of section .text:
 80041f6e:	82 0f       	mov %d15,0
 80041f70:	a8 0f       	st.h [%a15]0,%d15
 80041f72:	d9 cf 0c 00 	lea %a15,[%a12]12
-80041f76:	09 20 8a 08 	ld.h %d0,[%a2]10 <d000000a <__LD_RAM_START+0xa>>
+80041f76:	09 20 8a 08 	ld.h %d0,[%a2]10 <d000000a <__RAM0_START+0xa>>
 80041f7a:	8c f0       	ld.h %d15,[%a15]0
 80041f7c:	42 0f       	add %d15,%d0
 80041f7e:	a8 0f       	st.h [%a15]0,%d15
 80041f80:	da 17       	mov %d15,23
 80041f82:	2c c0       	st.b [%a12]0,%d15
 80041f84:	82 1f       	mov %d15,1
-80041f86:	89 2f 0c 00 	st.b [%a2+]12 <d000000c <__LD_RAM_START+0xc>>,%d15
+80041f86:	89 2f 0c 00 	st.b [%a2+]12 <d000000c <__RAM0_START+0xc>>,%d15
 80041f8a:	82 0f       	mov %d15,0
 80041f8c:	ac 20       	st.h [%a2]0,%d15
 80041f8e:	91 00 00 4d 	movh.a %a4,53248
@@ -48518,7 +48518,7 @@ Disassembly of section .text:
 800429ba:	89 2f 1d 08 	st.b [%a2]29 <80050000 <copysign+0x8>>,%d15
 800429be:	99 3f 78 26 	ld.a %a15,[%a3]25784 <d00064b8 <BSS_CORE_END>>
 800429c2:	0c 42       	ld.bu %d15,[%a4]2
-800429c4:	89 ff 1e 08 	st.b [%a15]30 <d0000002 <__LD_RAM_START+0x2>>,%d15
+800429c4:	89 ff 1e 08 	st.b [%a15]30 <d0000002 <__RAM0_START+0x2>>,%d15
 800429c8:	99 3f 78 26 	ld.a %a15,[%a3]25784 <d00064b8 <BSS_CORE_END>>
 800429cc:	89 f4 1f 08 	st.b [%a15]31 <d00064b8 <BSS_CORE_END>>,%d4
 800429d0:	99 3f 78 26 	ld.a %a15,[%a3]25784 <d00064b8 <BSS_CORE_END>>
@@ -48837,13 +48837,13 @@ Disassembly of section .text:
 80042d8e:	0d 00 40 03 	disable 
 80042d92:	00 00       	nop 
 80042d94:	82 0f       	mov %d15,0
-80042d96:	d9 2f 04 00 	lea %a15,[%a2]4 <d0000004 <__LD_RAM_START+0x4>>
+80042d96:	d9 2f 04 00 	lea %a15,[%a2]4 <d0000004 <__RAM0_START+0x4>>
 80042d9a:	48 04       	ld.w %d4,[%a15]0
 80042d9c:	68 0f       	st.w [%a15]0,%d15
 80042d9e:	6f 80 04 00 	jz.t %d0,8,80042da6 <Spi_Mon_Proc+0x52>
 80042da2:	0d 00 00 03 	enable 
 80042da6:	3b 00 71 52 	mov %d5,10000
-80042daa:	d9 2f 10 00 	lea %a15,[%a2]16 <d0000010 <__LD_RAM_START+0x10>>
+80042daa:	d9 2f 10 00 	lea %a15,[%a2]16 <d0000010 <__RAM0_START+0x10>>
 80042dae:	6d 00 38 77 	call 80051c1e <SrvB_MulDiv16_s32>
 80042db2:	8c f1       	ld.h %d15,[%a15]2
 80042db4:	37 02 50 00 	extr %d0,%d2,0,16
@@ -48891,7 +48891,7 @@ Disassembly of section .text:
 80042e16 <adc_get_aiv10V_7_u16>:
 80042e16:	91 00 00 fd 	movh.a %a15,53248
 80042e1a:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-80042e1e:	09 f2 d4 08 	ld.hu %d2,[%a15]20 <d0000014 <__LD_RAM_START+0x14>>
+80042e1e:	09 f2 d4 08 	ld.hu %d2,[%a15]20 <d0000014 <__RAM0_START+0x14>>
 80042e22:	00 90       	ret 
 
 80042e24 <adc_get_aiv10V_cnh_1_u16>:
@@ -48903,7 +48903,7 @@ Disassembly of section .text:
 80042e32 <adc_get_aiv10V_cnh_2_u16>:
 80042e32:	91 00 00 fd 	movh.a %a15,53248
 80042e36:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-80042e3a:	09 f2 ce 08 	ld.hu %d2,[%a15]14 <d000000e <__LD_RAM_START+0xe>>
+80042e3a:	09 f2 ce 08 	ld.hu %d2,[%a15]14 <d000000e <__RAM0_START+0xe>>
 80042e3e:	00 90       	ret 
 
 80042e40 <adc_get_aiv10V_cnh_3_u16>:
@@ -48933,7 +48933,7 @@ Disassembly of section .text:
 80042e78 <adc_get_aiv10V_cnh_7_u16>:
 80042e78:	91 00 00 fd 	movh.a %a15,53248
 80042e7c:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-80042e80:	09 f2 d6 08 	ld.hu %d2,[%a15]22 <d0000016 <__LD_RAM_START+0x16>>
+80042e80:	09 f2 d6 08 	ld.hu %d2,[%a15]22 <d0000016 <__RAM0_START+0x16>>
 80042e84:	00 90       	ret 
 
 80042e86 <adc_get_aiv10V_cnh_8_u16>:
@@ -48963,7 +48963,7 @@ Disassembly of section .text:
 80042ebe <adc_get_aiv10V_pupd_cnh_4_u16>:
 80042ebe:	91 00 00 fd 	movh.a %a15,53248
 80042ec2:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-80042ec6:	09 f2 c6 08 	ld.hu %d2,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+80042ec6:	09 f2 c6 08 	ld.hu %d2,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 80042eca:	00 90       	ret 
 
 80042ecc <adc_get_aiv10V_pupd_cnh_5_u16>:
@@ -49053,7 +49053,7 @@ Disassembly of section .text:
 80042f90 <adc_get_aiv10V_pupd_cnh_19_u16>:
 80042f90:	91 00 00 fd 	movh.a %a15,53248
 80042f94:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-80042f98:	09 f2 d2 08 	ld.hu %d2,[%a15]18 <d0000012 <__LD_RAM_START+0x12>>
+80042f98:	09 f2 d2 08 	ld.hu %d2,[%a15]18 <d0000012 <__RAM0_START+0x12>>
 80042f9c:	00 90       	ret 
 
 80042f9e <adc_get_aiv10V_pupd_cnh_20_u16>:
@@ -50665,7 +50665,7 @@ Disassembly of section .text:
 800442ce:	7b 00 10 30 	movh %d3,256
 800442d2:	40 3f       	mov.aa %a15,%a3
 800442d4:	44 4f       	ld.w %d15,[%a4+]
-800442d6:	d9 32 08 00 	lea %a2,[%a3]8 <d0000008 <__LD_RAM_START+0x8>>
+800442d6:	d9 32 08 00 	lea %a2,[%a3]8 <d0000008 <__RAM0_START+0x8>>
 800442da:	64 ff       	st.w [%a15+],%d15
 800442dc:	37 0f 64 fc 	extr.u %d15,%d15,24,4
 800442e0:	8f 8f 21 f0 	sha %d15,%d15,24
@@ -50674,13 +50674,13 @@ Disassembly of section .text:
 800442ea:	a8 01       	st.h [%a15]0,%d1
 800442ec:	a8 11       	st.h [%a15]2,%d1
 800442ee:	89 21 03 08 	st.b [%a2]3,%d1
-800442f2:	d9 3f 0c 00 	lea %a15,[%a3]12 <d000000c <__LD_RAM_START+0xc>>
-800442f6:	d9 32 10 00 	lea %a2,[%a3]16 <d0000010 <__LD_RAM_START+0x10>>
+800442f2:	d9 3f 0c 00 	lea %a15,[%a3]12 <d000000c <__RAM0_START+0xc>>
+800442f6:	d9 32 10 00 	lea %a2,[%a3]16 <d0000010 <__RAM0_START+0x10>>
 800442fa:	a8 01       	st.h [%a15]0,%d1
 800442fc:	a8 12       	st.h [%a15]2,%d2
 800442fe:	b4 26       	st.h [%a2],%d6
-80044300:	d9 3f 14 00 	lea %a15,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
-80044304:	89 25 82 08 	st.h [%a2]2 <d0000014 <__LD_RAM_START+0x14>>,%d5
+80044300:	d9 3f 14 00 	lea %a15,[%a3]20 <d0000014 <__RAM0_START+0x14>>
+80044304:	89 25 82 08 	st.h [%a2]2 <d0000014 <__RAM0_START+0x14>>,%d5
 80044308:	d9 32 18 00 	lea %a2,[%a3]24 <d0000018 <ZBSS_END>>
 8004430c:	28 01       	st.b [%a15]0,%d1
 8004430e:	28 11       	st.b [%a15]1,%d1
@@ -50690,7 +50690,7 @@ Disassembly of section .text:
 80044318:	5f 3f 12 00 	jeq %d15,%d3,8004433c <aiv_initAIV32V+0x92>
 8004431c:	3b e0 49 f8 	mov %d15,-31586
 80044320:	c2 10       	add %d0,1
-80044322:	d9 3f 04 00 	lea %a15,[%a3]4 <d0000004 <__LD_RAM_START+0x4>>
+80044322:	d9 3f 04 00 	lea %a15,[%a3]4 <d0000004 <__RAM0_START+0x4>>
 80044326:	ac 3e       	st.h [%a3]28,%d15
 80044328:	d9 33 20 00 	lea %a3,[%a3]32 <d0000020 <ZBSS_END+0x8>>
 8004432c:	37 00 50 00 	extr %d0,%d0,0,16
@@ -52062,7 +52062,7 @@ Disassembly of section .text:
 80045424:	91 00 00 fd 	movh.a %a15,53248
 80045428:	89 2f 86 38 	st.h [%a2]198 <d00000c6 <__CSA_BEGIN+0x86>>,%d15
 8004542c:	d9 ff a8 64 	lea %a15,[%a15]18856 <d00049a8 <in_aiv10V_as>>
-80045430:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+80045430:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 80045434:	53 a0 2c 00 	mul %d0,%d0,202
 80045438:	40 f4       	mov.aa %a4,%a15
 8004543a:	73 b0 68 00 	mul.u %e0,%d0,%d11
@@ -52117,7 +52117,7 @@ Disassembly of section .text:
 800454cc:	89 20 a6 38 	st.h [%a2]230 <d00000e6 <__CSA_BEGIN+0xa6>>,%d0
 800454d0:	d9 ff a8 24 	lea %a15,[%a15]18600 <d00048a8 <in_aiv10V_cnh_as>>
 800454d4:	bb 80 0f fc 	mov.u %d15,49400
-800454d8:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+800454d8:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 800454dc:	53 a0 2c 00 	mul %d0,%d0,202
 800454e0:	40 f4       	mov.aa %a4,%a15
 800454e2:	73 90 68 00 	mul.u %e0,%d0,%d9
@@ -52158,7 +52158,7 @@ Disassembly of section .text:
 80045552:	89 f0 a6 08 	st.h [%a15]38 <d0000026 <ZBSS_END+0xe>>,%d0
 80045556:	09 2f 90 18 	ld.h %d15,[%a2]80 <d0000050 <__CSA_BEGIN+0x10>>
 8004555a:	89 ff 86 18 	st.h [%a15]70 <d0000046 <__CSA_BEGIN+0x6>>,%d15
-8004555e:	09 20 86 08 	ld.h %d0,[%a2]6 <d0000006 <__LD_RAM_START+0x6>>
+8004555e:	09 20 86 08 	ld.h %d0,[%a2]6 <d0000006 <__RAM0_START+0x6>>
 80045562:	89 f0 a6 18 	st.h [%a15]102 <d0000066 <__CSA_BEGIN+0x26>>,%d0
 80045566:	09 2f 92 18 	ld.h %d15,[%a2]82 <d0000052 <__CSA_BEGIN+0x12>>
 8004556a:	89 ff 86 28 	st.h [%a15]134 <d0000086 <__CSA_BEGIN+0x46>>,%d15
@@ -52209,7 +52209,7 @@ Disassembly of section .text:
 8004560c:	91 00 00 fd 	movh.a %a15,53248
 80045610:	d9 ff 68 64 	lea %a15,[%a15]17832 <d00045a8 <in_aiv10V_pupd_as>>
 80045614:	bb 80 0f fc 	mov.u %d15,49400
-80045618:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+80045618:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 8004561c:	53 a0 2c 00 	mul %d0,%d0,202
 80045620:	40 f4       	mov.aa %a4,%a15
 80045622:	73 90 68 00 	mul.u %e0,%d0,%d9
@@ -52254,7 +52254,7 @@ Disassembly of section .text:
 800456a0:	8f 8f 21 f0 	sha %d15,%d15,24
 800456a4:	5f 0f 2a 00 	jeq %d15,%d0,800456f8 <in_procDiagAIV32V+0x92>
 800456a8:	bb 00 76 fc 	mov.u %d15,51040
-800456ac:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+800456ac:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 800456b0:	53 a0 2c 00 	mul %d0,%d0,202
 800456b4:	73 90 68 00 	mul.u %e0,%d0,%d9
 800456b8:	7b c0 1f 0e 	movh %d0,57852
@@ -52314,7 +52314,7 @@ Disassembly of section .text:
 80045766:	91 00 00 fd 	movh.a %a15,53248
 8004576a:	89 20 a6 18 	st.h [%a2]102 <d0000066 <__CSA_BEGIN+0x26>>,%d0
 8004576e:	d9 ff 88 b4 	lea %a15,[%a15]19144 <d0004ac8 <in_aiv_temp_ptc_as>>
-80045772:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+80045772:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 80045776:	53 a0 2c 00 	mul %d0,%d0,202
 8004577a:	40 f4       	mov.aa %a4,%a15
 8004577c:	73 b0 68 00 	mul.u %e0,%d0,%d11
@@ -52345,7 +52345,7 @@ Disassembly of section .text:
 800457ba <adc_get_aic_ai10v_1_u16>:
 800457ba:	91 00 00 fd 	movh.a %a15,53248
 800457be:	d9 ff 8e c5 	lea %a15,[%a15]23310 <d0005b0e <xAdcVal_au16>>
-800457c2:	09 f2 c2 08 	ld.hu %d2,[%a15]2 <d0000002 <__LD_RAM_START+0x2>>
+800457c2:	09 f2 c2 08 	ld.hu %d2,[%a15]2 <d0000002 <__RAM0_START+0x2>>
 800457c6:	00 90       	ret 
 
 800457c8 <adc_get_aic_ai10v_2_u16>:
@@ -52534,12 +52534,12 @@ Disassembly of section .text:
 800459cc:	64 3f       	st.w [%a3+],%d15
 800459ce:	d9 42 08 00 	lea %a2,[%a4]8
 800459d2:	28 06       	st.b [%a15]0,%d6
-800459d4:	89 36 82 08 	st.h [%a3]2 <d0000000 <__LD_RAM_START>>,%d6
+800459d4:	89 36 82 08 	st.h [%a3]2 <d0000000 <__RAM0_START>>,%d6
 800459d8:	b4 26       	st.h [%a2],%d6
-800459da:	89 26 82 08 	st.h [%a2]2 <d0000002 <__LD_RAM_START+0x2>>,%d6
+800459da:	89 26 82 08 	st.h [%a2]2 <d0000002 <__RAM0_START+0x2>>,%d6
 800459de:	28 16       	st.b [%a15]1,%d6
 800459e0:	a8 16       	st.h [%a15]2,%d6
-800459e2:	89 4b 90 08 	st.h [%a4]16 <d0000001 <__LD_RAM_START+0x1>>,%d11
+800459e2:	89 4b 90 08 	st.h [%a4]16 <d0000001 <__RAM0_START+0x1>>,%d11
 800459e6:	b4 3a       	st.h [%a3],%d10
 800459e8:	4d c0 e2 ff 	mfcr %d15,$icr
 800459ec:	0d 00 40 03 	disable 
@@ -52558,7 +52558,7 @@ Disassembly of section .text:
 80045a0e:	34 76       	st.b [%a7],%d6
 80045a10:	0b 82 40 20 	addx %d2,%d2,%d8
 80045a14:	0b 93 50 30 	addc %d3,%d3,%d9
-80045a18:	89 d2 40 09 	st.d [%a13]0 <d0000000 <__LD_RAM_START>>,%e2
+80045a18:	89 d2 40 09 	st.d [%a13]0 <d0000000 <__RAM0_START>>,%e2
 80045a1c:	82 00       	mov %d0,0
 80045a1e:	82 01       	mov %d1,0
 80045a20:	89 c0 40 09 	st.d [%a12]0,%e0
@@ -52734,7 +52734,7 @@ Disassembly of section .text:
 80045c2c:	d9 ee 98 d4 	lea %a14,[%a14]19288 <d0004b58 <in_aiv_aic_ai10V_as>>
 80045c30:	d9 dd d8 24 	lea %a13,[%a13]19608 <d0004c98 <in_aic_aic_ai10V_as>>
 80045c34:	88 18       	ld.h %d8,[%a15]2
-80045c36:	89 e8 86 08 	st.h [%a14]6 <d0000006 <__LD_RAM_START+0x6>>,%d8
+80045c36:	89 e8 86 08 	st.h [%a14]6 <d0000006 <__RAM0_START+0x6>>,%d8
 80045c3a:	09 f7 8a 38 	ld.h %d7,[%a15]202 <d00000ca <__CSA_BEGIN+0x8a>>
 80045c3e:	89 e7 a6 08 	st.h [%a14]38 <d0000026 <ZBSS_END+0xe>>,%d7
 80045c42:	09 f6 a0 28 	ld.h %d6,[%a15]160 <d00000a0 <__CSA_BEGIN+0x60>>
@@ -52753,7 +52753,7 @@ Disassembly of section .text:
 80045c74:	89 e0 86 48 	st.h [%a14]262 <d0000106 <__CSA_BEGIN+0xc6>>,%d0
 80045c78:	09 ff ba 08 	ld.h %d15,[%a15]58 <d000003a <ZBSS_END+0x22>>
 80045c7c:	89 ef a6 48 	st.h [%a14]294 <d0000126 <__CSA_BEGIN+0xe6>>,%d15
-80045c80:	89 d8 86 08 	st.h [%a13]6 <d0000006 <__LD_RAM_START+0x6>>,%d8
+80045c80:	89 d8 86 08 	st.h [%a13]6 <d0000006 <__RAM0_START+0x6>>,%d8
 80045c84:	82 08       	mov %d8,0
 80045c86:	89 d7 9a 08 	st.h [%a13]26 <d000001a <ZBSS_END+0x2>>,%d7
 80045c8a:	89 d6 ae 08 	st.h [%a13]46 <d000002e <ZBSS_END+0x16>>,%d6
@@ -52768,7 +52768,7 @@ Disassembly of section .text:
 80045cac:	13 08 22 ff 	madd %d15,%d15,%d8,32
 80045cb0:	60 fc       	mov.a %a12,%d15
 80045cb2:	d9 cf 04 00 	lea %a15,[%a12]4
-80045cb6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80045cb6:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80045cba:	6f 5f 59 00 	jz.t %d15,5,80045d6c <in_procDiagAIC_AI10V+0x164>
 80045cbe:	53 48 21 60 	mul %d6,%d8,20
 80045cc2:	01 d6 00 26 	addsc.a %a2,%a13,%d6,0
@@ -52867,7 +52867,7 @@ Disassembly of section .text:
 80045dd4:	0d 00 00 03 	enable 
 80045dd8:	91 00 00 cd 	movh.a %a12,53248
 80045ddc:	d9 cc e0 54 	lea %a12,[%a12]19808 <d0004d60 <check_aic_ai10V_s>>
-80045de0:	09 c0 40 09 	ld.d %e0,[%a12]0 <d0000000 <__LD_RAM_START>>
+80045de0:	09 c0 40 09 	ld.d %e0,[%a12]0 <d0000000 <__RAM0_START>>
 80045de4:	3a 19       	eq %d15,%d9,%d1
 80045de6:	0b 08 30 f2 	and.lt.u %d15,%d8,%d0
 80045dea:	0b 19 a0 f2 	or.lt.u %d15,%d9,%d1
@@ -52877,16 +52877,16 @@ Disassembly of section .text:
 80045df6:	3b 20 01 20 	mov %d2,18
 80045dfa:	3b a0 00 10 	mov %d1,10
 80045dfe:	d9 ff d8 24 	lea %a15,[%a15]19608 <d0004c98 <in_aic_aic_ai10V_as>>
-80045e02:	d9 ff 0d 00 	lea %a15,[%a15]13 <d000000d <__LD_RAM_START+0xd>>
-80045e06:	09 ff 54 00 	ld.bu %d15,[%a15+]20 <d0000014 <__LD_RAM_START+0x14>>
+80045e02:	d9 ff 0d 00 	lea %a15,[%a15]13 <d000000d <__RAM0_START+0xd>>
+80045e06:	09 ff 54 00 	ld.bu %d15,[%a15+]20 <d0000014 <__RAM0_START+0x14>>
 80045e0a:	5f 2f 1e 00 	jeq %d15,%d2,80045e46 <in_procCheckAIC_AI10V+0x96>
 80045e0e:	9a 10       	add %d15,%d0,1
 80045e10:	37 0f 50 00 	extr %d0,%d15,0,16
 80045e14:	3f 10 f9 7f 	jlt %d0,%d1,80045e06 <in_procCheckAIC_AI10V+0x56>
-80045e18:	d9 cf 10 00 	lea %a15,[%a12]16 <d0000010 <__LD_RAM_START+0x10>>
+80045e18:	d9 cf 10 00 	lea %a15,[%a12]16 <d0000010 <__RAM0_START+0x10>>
 80045e1c:	0c f0       	ld.bu %d15,[%a15]0
 80045e1e:	6e 09       	jz %d15,80045e30 <in_procCheckAIC_AI10V+0x80>
-80045e20:	09 c0 48 09 	ld.d %e0,[%a12]8 <d0000008 <__LD_RAM_START+0x8>>
+80045e20:	09 c0 48 09 	ld.d %e0,[%a12]8 <d0000008 <__RAM0_START+0x8>>
 80045e24:	3a 19       	eq %d15,%d9,%d1
 80045e26:	0b 08 30 f2 	and.lt.u %d15,%d8,%d0
 80045e2a:	0b 19 a0 f2 	or.lt.u %d15,%d9,%d1
@@ -53102,12 +53102,12 @@ Disassembly of section .text:
 8004607e:	19 30 14 40 	ld.w %d0,[%a3]276 <d0000114 <__CSA_BEGIN+0xd4>>
 80046082:	19 3f 34 40 	ld.w %d15,[%a3]308 <d0000134 <__CSA_BEGIN+0xf4>>
 80046086:	59 f0 f4 a4 	st.w [%a15]20148 <d0004eb4 <in_dsm_fi_dsm_ana_as>>,%d0
-8004608a:	59 20 04 00 	st.w [%a2]4 <d0000004 <__LD_RAM_START+0x4>>,%d0
+8004608a:	59 20 04 00 	st.w [%a2]4 <d0000004 <__RAM0_START+0x4>>,%d0
 8004608e:	19 30 34 20 	ld.w %d0,[%a3]180 <d00000b4 <__CSA_BEGIN+0x74>>
 80046092:	6c 22       	st.w [%a2]8,%d15
 80046094:	6c 23       	st.w [%a2]12,%d15
-80046096:	59 20 10 00 	st.w [%a2]16 <d0000010 <__LD_RAM_START+0x10>>,%d0
-8004609a:	59 20 14 00 	st.w [%a2]20 <d0000014 <__LD_RAM_START+0x14>>,%d0
+80046096:	59 20 10 00 	st.w [%a2]16 <d0000010 <__RAM0_START+0x10>>,%d0
+8004609a:	59 20 14 00 	st.w [%a2]20 <d0000014 <__RAM0_START+0x14>>,%d0
 8004609e:	00 90       	ret 
 
 800460a0 <fi_initFI_ACTIV_DSM>:
@@ -53122,7 +53122,7 @@ Disassembly of section .text:
 800460ac:	91 00 00 2d 	movh.a %a2,53248
 800460b0:	d9 33 fc 82 	lea %a3,[%a3]11836 <d0002e3c <Pwmin_ConfigData_a>>
 800460b4:	d9 ff cc b4 	lea %a15,[%a15]20172 <d0004ecc <in_fi_activ_dsm_as>>
-800460b8:	19 30 14 00 	ld.w %d0,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
+800460b8:	19 30 14 00 	ld.w %d0,[%a3]20 <d0000014 <__RAM0_START+0x14>>
 800460bc:	4c 3d       	ld.w %d15,[%a3]52
 800460be:	59 20 cc b4 	st.w [%a2]20172 <d0004ecc <in_fi_activ_dsm_as>>,%d0
 800460c2:	68 10       	st.w [%a15]4,%d0
@@ -53151,7 +53151,7 @@ Disassembly of section .text:
 800460f8:	19 30 14 30 	ld.w %d0,[%a3]212 <d00000d4 <__CSA_BEGIN+0x94>>
 800460fc:	19 3f 34 30 	ld.w %d15,[%a3]244 <d00000f4 <__CSA_BEGIN+0xb4>>
 80046100:	59 f0 f4 b4 	st.w [%a15]20212 <d0004ef4 <in_fi_dsm_ana_as>>,%d0
-80046104:	59 20 04 00 	st.w [%a2]4 <d0000004 <__LD_RAM_START+0x4>>,%d0
+80046104:	59 20 04 00 	st.w [%a2]4 <d0000004 <__RAM0_START+0x4>>,%d0
 80046108:	6c 22       	st.w [%a2]8,%d15
 8004610a:	6c 23       	st.w [%a2]12,%d15
 8004610c:	00 90       	ret 
@@ -53771,7 +53771,7 @@ Disassembly of section .text:
 80046740:	d9 33 f0 64 	lea %a3,[%a3]19888 <d0004db0 <in_aiv_fi_activ_as>>
 80046744:	40 3f       	mov.aa %a15,%a3
 80046746:	da 32       	mov %d15,50
-80046748:	d9 32 08 00 	lea %a2,[%a3]8 <d0000008 <__LD_RAM_START+0x8>>
+80046748:	d9 32 08 00 	lea %a2,[%a3]8 <d0000008 <__RAM0_START+0x8>>
 8004674c:	44 50       	ld.w %d0,[%a5+]
 8004674e:	b4 21       	st.h [%a2],%d1
 80046750:	64 f0       	st.w [%a15+],%d0
@@ -53779,18 +53779,18 @@ Disassembly of section .text:
 80046756:	8f 80 21 00 	sha %d0,%d0,24
 8004675a:	89 21 02 08 	st.b [%a2]2,%d1
 8004675e:	89 21 03 08 	st.b [%a2]3,%d1
-80046762:	d9 32 10 00 	lea %a2,[%a3]16 <d0000010 <__LD_RAM_START+0x10>>
+80046762:	d9 32 10 00 	lea %a2,[%a3]16 <d0000010 <__RAM0_START+0x10>>
 80046766:	a8 01       	st.h [%a15]0,%d1
 80046768:	a8 11       	st.h [%a15]2,%d1
 8004676a:	b4 24       	st.h [%a2],%d4
-8004676c:	d9 3f 0c 00 	lea %a15,[%a3]12 <d000000c <__LD_RAM_START+0xc>>
-80046770:	89 23 82 08 	st.h [%a2]2 <d000000c <__LD_RAM_START+0xc>>,%d3
+8004676c:	d9 3f 0c 00 	lea %a15,[%a3]12 <d000000c <__RAM0_START+0xc>>
+80046770:	89 23 82 08 	st.h [%a2]2 <d000000c <__RAM0_START+0xc>>,%d3
 80046774:	d9 32 18 00 	lea %a2,[%a3]24 <d0000018 <ZBSS_END>>
 80046778:	a8 01       	st.h [%a15]0,%d1
 8004677a:	a8 12       	st.h [%a15]2,%d2
 8004677c:	ac 21       	st.h [%a2]2,%d15
 8004677e:	7b 00 20 f0 	movh %d15,512
-80046782:	d9 3f 14 00 	lea %a15,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
+80046782:	d9 3f 14 00 	lea %a15,[%a3]20 <d0000014 <__RAM0_START+0x14>>
 80046786:	b4 22       	st.h [%a2],%d2
 80046788:	28 01       	st.b [%a15]0,%d1
 8004678a:	28 11       	st.b [%a15]1,%d1
@@ -53799,7 +53799,7 @@ Disassembly of section .text:
 80046792:	7b 00 10 f0 	movh %d15,256
 80046796:	5f f0 1c 00 	jeq %d0,%d15,800467ce <aiv_initFI_ACTIV+0xaa>
 8004679a:	3b e0 73 f1 	mov %d15,5950
-8004679e:	d9 3f 04 00 	lea %a15,[%a3]4 <d0000004 <__LD_RAM_START+0x4>>
+8004679e:	d9 3f 04 00 	lea %a15,[%a3]4 <d0000004 <__RAM0_START+0x4>>
 800467a2:	ac 3e       	st.h [%a3]28,%d15
 800467a4:	d9 33 20 00 	lea %a3,[%a3]32 <d0000020 <ZBSS_END+0x8>>
 800467a8:	8c f0       	ld.h %d15,[%a15]0
@@ -54941,7 +54941,7 @@ Disassembly of section .text:
 80047582:	28 60       	st.b [%a15]6,%d0
 80047584:	37 0f 61 02 	extr.u %d0,%d15,4,1
 80047588:	85 ff e4 80 	ld.w %d15,f0000e24 <P2+0x24>
-8004758c:	89 f0 12 08 	st.b [%a15]18 <d0000012 <__LD_RAM_START+0x12>>,%d0
+8004758c:	89 f0 12 08 	st.b [%a15]18 <d0000012 <__RAM0_START+0x12>>,%d0
 80047590:	37 0f 61 06 	extr.u %d0,%d15,12,1
 80047594:	85 ff e4 80 	ld.w %d15,f0000e24 <P2+0x24>
 80047598:	89 f0 1e 08 	st.b [%a15]30 <d000001e <ZBSS_END+0x6>>,%d0
@@ -54953,7 +54953,7 @@ Disassembly of section .text:
 800475ae:	89 f0 36 08 	st.b [%a15]54 <d0000036 <ZBSS_END+0x1e>>,%d0
 800475b2:	c2 1f       	add %d15,1
 800475b4:	40 f4       	mov.aa %a4,%a15
-800475b6:	d9 ff 0c 00 	lea %a15,[%a15]12 <d000000c <__LD_RAM_START+0xc>>
+800475b6:	d9 ff 0c 00 	lea %a15,[%a15]12 <d000000c <__RAM0_START+0xc>>
 800475ba:	6d 00 f1 06 	call 8004839c <in_stateFilterDigital>
 800475be:	37 0f 50 f0 	extr %d15,%d15,0,16
 800475c2:	bf 5f f8 7f 	jlt %d15,5,800475b2 <in_procDiagFI_DSM+0x44>
@@ -54984,7 +54984,7 @@ Disassembly of section .text:
 8004760a:	7b 00 10 f0 	movh %d15,256
 8004760e:	5f f1 70 00 	jeq %d1,%d15,800476ee <in_procDiagFI_ACTIV+0x124>
 80047612:	3b 00 8b 26 	mov %d2,26800
-80047616:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+80047616:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 8004761a:	53 a0 2c 00 	mul %d0,%d0,202
 8004761e:	73 90 68 00 	mul.u %e0,%d0,%d9
 80047622:	8f a1 1f f0 	sh %d15,%d1,-6
@@ -55101,7 +55101,7 @@ Disassembly of section .text:
 80047772:	91 00 00 fd 	movh.a %a15,53248
 80047776:	89 20 a6 08 	st.h [%a2]38 <d0000026 <ZBSS_END+0xe>>,%d0
 8004777a:	d9 ff d0 84 	lea %a15,[%a15]19984 <d0004e10 <in_aiv_fi_activ_dsm_as>>
-8004777e:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
+8004777e:	09 f0 c6 08 	ld.hu %d0,[%a15]6 <d0000006 <__RAM0_START+0x6>>
 80047782:	53 a0 2c 00 	mul %d0,%d0,202
 80047786:	40 f4       	mov.aa %a4,%a15
 80047788:	73 b0 68 00 	mul.u %e0,%d0,%d11
@@ -56250,8 +56250,8 @@ Disassembly of section .text:
 800483d2:	3b a0 00 80 	mov %d8,10
 800483d6:	6d ff 9b fe 	call 8004810c <dio_get_cpld_1_l>
 800483da:	d9 ff c4 c4 	lea %a15,[%a15]20228 <d0004f04 <in_cpld_as>>
-800483de:	d9 fc 06 00 	lea %a12,[%a15]6 <d0000006 <__LD_RAM_START+0x6>>
-800483e2:	d9 fd 12 00 	lea %a13,[%a15]18 <d0000012 <__LD_RAM_START+0x12>>
+800483de:	d9 fc 06 00 	lea %a12,[%a15]6 <d0000006 <__RAM0_START+0x6>>
+800483e2:	d9 fd 12 00 	lea %a13,[%a15]18 <d0000012 <__RAM0_START+0x12>>
 800483e6:	34 c2       	st.b [%a12],%d2
 800483e8:	d9 fc 1e 00 	lea %a12,[%a15]30 <d000001e <ZBSS_END+0x6>>
 800483ec:	6d ff 97 fe 	call 8004811a <dio_get_cpld_2_l>
@@ -56283,7 +56283,7 @@ Disassembly of section .text:
 80048442:	d9 ff c4 c4 	lea %a15,[%a15]20228 <d0004f04 <in_cpld_as>>
 80048446:	c2 1f       	add %d15,1
 80048448:	40 f4       	mov.aa %a4,%a15
-8004844a:	d9 ff 0c 00 	lea %a15,[%a15]12 <d000000c <__LD_RAM_START+0xc>>
+8004844a:	d9 ff 0c 00 	lea %a15,[%a15]12 <d000000c <__RAM0_START+0xc>>
 8004844e:	6d ff a7 ff 	call 8004839c <in_stateFilterDigital>
 80048452:	37 0f 50 f0 	extr %d15,%d15,0,16
 80048456:	3f 8f f8 7f 	jlt %d15,%d8,80048446 <in_procDiagCPLD+0x7a>
@@ -56780,8 +56780,8 @@ Disassembly of section .text:
 80048a88:	6e 0b       	jz %d15,80048a9e <moCPCP_proc+0x2e>
 80048a8a:	91 60 00 2f 	movh.a %a2,61446
 80048a8e:	60 f3       	mov.a %a3,%d15
-80048a90:	d9 22 00 00 	lea %a2,[%a2]0 <f0060000 <__PCP_PRAM_START>>
-80048a94:	d9 3f ff ff 	lea %a15,[%a3]-1 <f0060000 <__PCP_PRAM_START>>
+80048a90:	d9 22 00 00 	lea %a2,[%a2]0 <f0060000 <Pcp_Load>>
+80048a94:	d9 3f ff ff 	lea %a15,[%a3]-1 <f0060000 <Pcp_Load>>
 80048a98:	44 2f       	ld.w %d15,[%a2+]
 80048a9a:	42 f8       	add %d8,%d15
 80048a9c:	fc fe       	loop %a15,80048a98 <moCPCP_proc+0x28>
@@ -57005,7 +57005,7 @@ Disassembly of section .text:
 80048d5c:	ee 48       	jnz %d15,80048dec <sys_isrTimerTick_Low+0x13a>
 80048d5e:	91 00 00 fd 	movh.a %a15,53248
 80048d62:	d9 ff 46 35 	lea %a15,[%a15]21702 <d00054c6 <sys_afterRunPermit_u16>>
-80048d66:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80048d66:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80048d6a:	ee 59       	jnz %d15,80048e1c <sys_isrTimerTick_Low+0x16a>
 80048d6c:	91 00 00 2d 	movh.a %a2,53248
 80048d70:	91 10 7e cf 	movh.a %a12,63457
@@ -57054,7 +57054,7 @@ Disassembly of section .text:
 80048dfc:	d9 ff 46 35 	lea %a15,[%a15]21702 <d00054c6 <sys_afterRunPermit_u16>>
 80048e00:	d9 22 a4 51 	lea %a2,[%a2]6500 <d0001964 <sys_afterRunFlag_l>>
 80048e04:	d9 cc c8 cf 	lea %a12,[%a12]-248 <f7e0ff08 <CPS>>
-80048e08:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__LD_RAM_START>>
+80048e08:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000000 <__RAM0_START>>
 80048e0c:	df 2f b8 ff 	jne %d15,2,80048d7c <sys_isrTimerTick_Low+0xca>
 80048e10:	91 00 00 fd 	movh.a %a15,53248
 80048e14:	d9 ff 24 05 	lea %a15,[%a15]20516 <d0005024 <sys_kL15OffDetectedOnce_u8>>
@@ -57264,7 +57264,7 @@ Disassembly of section .text:
 80049080:	3b 80 25 f0 	mov %d15,600
 80049084:	91 00 00 fd 	movh.a %a15,53248
 80049088:	d9 ff 4a 35 	lea %a15,[%a15]21706 <d00054ca <timeoutCounter_u16.0>>
-8004908c:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__LD_RAM_START>>
+8004908c:	09 f0 c0 08 	ld.hu %d0,[%a15]0 <d0000000 <__RAM0_START>>
 80049090:	7f 0f 29 80 	jge.u %d15,%d0,800490e2 <sys_isrAfterRun+0x110>
 80049094:	82 20       	mov %d0,2
 80049096:	91 00 00 fd 	movh.a %a15,53248
@@ -57307,7 +57307,7 @@ Disassembly of section .text:
 8004910c:	00 00       	nop 
 8004910e:	91 00 00 fd 	movh.a %a15,53248
 80049112:	d9 ff 6a 25 	lea %a15,[%a15]21674 <d00054aa <mo_vREFmaxDigits_u16>>
-80049116:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__LD_RAM_START>>
+80049116:	09 f4 c0 08 	ld.hu %d4,[%a15]0 <d0000000 <__RAM0_START>>
 8004911a:	2e 83       	jz.t %d15,8,80049120 <sys_isrAfterRun+0x14e>
 8004911c:	0d 00 00 03 	enable 
 80049120:	82 05       	mov %d5,0
@@ -57681,7 +57681,7 @@ Disassembly of section .text:
 800495be:	d9 cc e2 65 	lea %a12,[%a12]23970 <d0005da2 <AdcI_stMonitoring_a>>
 800495c2:	19 df 30 10 	ld.w %d15,[%a13]112 <f0100070 <__PCP_PRAM_END+0x9c070>>
 800495c6:	ef 3f 0e 00 	jz.t %d15,19,800495e2 <AdcI_IsrEvent_0+0x30>
-800495ca:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+800495ca:	d9 cf 04 00 	lea %a15,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 800495ce:	6d ff 1a ae 	call 8003f202 <AdcMux_Callback0>
 800495d2:	8c f0       	ld.h %d15,[%a15]0
 800495d4:	c2 1f       	add %d15,1
@@ -57706,7 +57706,7 @@ Disassembly of section .text:
 80049604:	d9 cc e2 65 	lea %a12,[%a12]23970 <d0005da2 <AdcI_stMonitoring_a>>
 80049608:	19 df 30 10 	ld.w %d15,[%a13]112 <f0100070 <__PCP_PRAM_END+0x9c070>>
 8004960c:	ef 3f 0e 00 	jz.t %d15,19,80049628 <AdcI_IsrEvent_1+0x30>
-80049610:	d9 cf 10 00 	lea %a15,[%a12]16 <d0000010 <__LD_RAM_START+0x10>>
+80049610:	d9 cf 10 00 	lea %a15,[%a12]16 <d0000010 <__RAM0_START+0x10>>
 80049614:	6d ff 6a b1 	call 8003f8e8 <AdcMux_Callback1>
 80049618:	8c f0       	ld.h %d15,[%a15]0
 8004961a:	c2 1f       	add %d15,1
@@ -58030,31 +58030,31 @@ Disassembly of section .text:
 800499c4:	d9 ff b1 51 	lea %a15,[%a15]6513 <d0001971 <Cy320_Init_u8>>
 800499c8:	0c f0       	ld.bu %d15,[%a15]0
 800499ca:	df 1f 2a 80 	jne %d15,1,80049a1e <Cy320_Proc_Ini+0xb0>
-800499ce:	09 c0 82 08 	ld.h %d0,[%a12]2 <d0000002 <__LD_RAM_START+0x2>>
+800499ce:	09 c0 82 08 	ld.h %d0,[%a12]2 <d0000002 <__RAM0_START+0x2>>
 800499d2:	8f 00 cc 01 	andn %d0,%d0,192
-800499d6:	89 c0 82 08 	st.h [%a12]2 <d0000002 <__LD_RAM_START+0x2>>,%d0
+800499d6:	89 c0 82 08 	st.h [%a12]2 <d0000002 <__RAM0_START+0x2>>,%d0
 800499da:	91 00 00 fd 	movh.a %a15,53248
 800499de:	8c d0       	ld.h %d15,[%a13]0
 800499e0:	16 c0       	and %d15,192
 800499e2:	d9 ff 50 b2 	lea %a15,[%a15]9936 <d00026d0 <Cy320_VarChipInfo_s>>
 800499e6:	a6 f0       	or %d0,%d15
-800499e8:	89 c0 82 08 	st.h [%a12]2 <d0000002 <__LD_RAM_START+0x2>>,%d0
-800499ec:	09 c0 84 08 	ld.h %d0,[%a12]4 <d0000004 <__LD_RAM_START+0x4>>
+800499e8:	89 c0 82 08 	st.h [%a12]2 <d0000002 <__RAM0_START+0x2>>,%d0
+800499ec:	09 c0 84 08 	ld.h %d0,[%a12]4 <d0000004 <__RAM0_START+0x4>>
 800499f0:	8f 00 c4 01 	andn %d0,%d0,64
-800499f4:	89 c0 84 08 	st.h [%a12]4 <d0000004 <__LD_RAM_START+0x4>>,%d0
+800499f4:	89 c0 84 08 	st.h [%a12]4 <d0000004 <__RAM0_START+0x4>>,%d0
 800499f8:	8c d1       	ld.h %d15,[%a13]2
 800499fa:	16 40       	and %d15,64
 800499fc:	a6 f0       	or %d0,%d15
-800499fe:	89 c0 84 08 	st.h [%a12]4 <d0000004 <__LD_RAM_START+0x4>>,%d0
-80049a02:	09 ff 53 08 	ld.bu %d15,[%a15]19 <d0000013 <__LD_RAM_START+0x13>>
+800499fe:	89 c0 84 08 	st.h [%a12]4 <d0000004 <__RAM0_START+0x4>>,%d0
+80049a02:	09 ff 53 08 	ld.bu %d15,[%a15]19 <d0000013 <__RAM0_START+0x13>>
 80049a06:	5e 1c       	jne %d15,1,80049a1e <Cy320_Proc_Ini+0xb0>
-80049a08:	09 c0 86 08 	ld.h %d0,[%a12]6 <d0000006 <__LD_RAM_START+0x6>>
+80049a08:	09 c0 86 08 	ld.h %d0,[%a12]6 <d0000006 <__RAM0_START+0x6>>
 80049a0c:	8f 00 c1 01 	andn %d0,%d0,16
-80049a10:	89 c0 86 08 	st.h [%a12]6 <d0000006 <__LD_RAM_START+0x6>>,%d0
+80049a10:	89 c0 86 08 	st.h [%a12]6 <d0000006 <__RAM0_START+0x6>>,%d0
 80049a14:	8c d2       	ld.h %d15,[%a13]4
 80049a16:	16 10       	and %d15,16
 80049a18:	a6 f0       	or %d0,%d15
-80049a1a:	89 c0 86 08 	st.h [%a12]6 <d0000006 <__LD_RAM_START+0x6>>,%d0
+80049a1a:	89 c0 86 08 	st.h [%a12]6 <d0000006 <__RAM0_START+0x6>>,%d0
 80049a1e:	6d ff b5 c0 	call 80041b88 <Cy320_CopyBackPowerSetBuffer>
 80049a22:	91 50 00 48 	movh.a %a4,32773
 80049a26:	91 00 00 fd 	movh.a %a15,53248
@@ -58064,7 +58064,7 @@ Disassembly of section .text:
 80049a36:	82 10       	mov %d0,1
 80049a38:	28 00       	st.b [%a15]0,%d0
 80049a3a:	cc e2       	ld.a %a15,[%a14]8
-80049a3c:	09 ff c4 08 	ld.hu %d15,[%a15]4 <d0000004 <__LD_RAM_START+0x4>>
+80049a3c:	09 ff c4 08 	ld.hu %d15,[%a15]4 <d0000004 <__RAM0_START+0x4>>
 80049a40:	16 07       	and %d15,7
 80049a42:	ee 06       	jnz %d15,80049a4e <Cy320_Proc_Ini+0xe0>
 80049a44:	91 00 00 fd 	movh.a %a15,53248
@@ -58151,7 +58151,7 @@ Disassembly of section .text:
 80049b0a:	37 04 70 40 	extr.u %d4,%d4,0,16
 80049b0e:	d9 ff dc 62 	lea %a15,[%a15]11676 <d0002d9c <EepOa_ReadData_cs>>
 80049b12:	c8 22       	ld.a %a2,[%a15]8
-80049b14:	09 20 c2 08 	ld.hu %d0,[%a2]2 <d0000002 <__LD_RAM_START+0x2>>
+80049b14:	09 20 c2 08 	ld.hu %d0,[%a2]2 <d0000002 <__RAM0_START+0x2>>
 80049b18:	0b f0 00 21 	eq %d2,%d0,%d15
 80049b1c:	7f 43 1a 80 	jge.u %d3,%d4,80049b50 <EepOa_ComparePages+0x52>
 80049b20:	01 25 01 f6 	addsc.a %a15,%a2,%d5,1
@@ -58312,7 +58312,7 @@ Disassembly of section .text:
 80049cda:	91 00 00 fd 	movh.a %a15,53248
 80049cde:	d9 ff dc 72 	lea %a15,[%a15]11740 <d0002ddc <EepOa_RdStatusReg_cs>>
 80049ce2:	c8 2f       	ld.a %a15,[%a15]8
-80049ce4:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000002 <__LD_RAM_START+0x2>>
+80049ce4:	09 ff c0 08 	ld.hu %d15,[%a15]0 <d0000002 <__RAM0_START+0x2>>
 80049ce8:	ae 05       	jnz.t %d15,0,80049cf2 <EepOa_DataAccess+0xfe>
 80049cea:	40 c4       	mov.aa %a4,%a12
 80049cec:	6d ff 02 ff 	call 80049af0 <EepOa_CurrentOrderFinished>
@@ -59480,7 +59480,7 @@ Disassembly of section .text:
 8004abc8:	37 08 68 80 	extr.u %d8,%d8,0,8
 8004abcc:	6c c3       	st.w [%a12]12,%d15
 8004abce:	0c 60       	ld.bu %d15,[%a6]0
-8004abd0:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__LD_RAM_START>>,%d15
+8004abd0:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__RAM0_START>>,%d15
 8004abd4:	19 53 1c 36 	ld.w %d3,[%a5]24796 <d00060dc <tiTS_DFI01_u32>>
 8004abd8:	19 4f 20 36 	ld.w %d15,[%a4]24800 <d00060e0 <tiTS_DFI02_u32>>
 8004abdc:	19 30 3c 36 	ld.w %d0,[%a3]24828 <d00060fc <tiTS_DFI01_corr_u32>>
@@ -59599,7 +59599,7 @@ Disassembly of section .text:
 8004ad48:	37 08 68 80 	extr.u %d8,%d8,0,8
 8004ad4c:	6c c3       	st.w [%a12]12,%d15
 8004ad4e:	0c 60       	ld.bu %d15,[%a6]0
-8004ad50:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__LD_RAM_START>>,%d15
+8004ad50:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__RAM0_START>>,%d15
 8004ad54:	19 53 24 36 	ld.w %d3,[%a5]24804 <d00060e4 <tiTS_DFI03_u32>>
 8004ad58:	19 4f 28 36 	ld.w %d15,[%a4]24808 <d00060e8 <tiTS_DFI04_u32>>
 8004ad5c:	19 30 04 46 	ld.w %d0,[%a3]24836 <d0006104 <tiTS_DFI03_corr_u32>>
@@ -59718,7 +59718,7 @@ Disassembly of section .text:
 8004aec8:	37 08 68 80 	extr.u %d8,%d8,0,8
 8004aecc:	6c c3       	st.w [%a12]12,%d15
 8004aece:	0c 60       	ld.bu %d15,[%a6]0
-8004aed0:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__LD_RAM_START>>,%d15
+8004aed0:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__RAM0_START>>,%d15
 8004aed4:	19 54 2c 36 	ld.w %d4,[%a5]24812 <d00060ec <tiTS_DFI07_u32>>
 8004aed8:	19 4f 30 36 	ld.w %d15,[%a4]24816 <d00060f0 <tiTS_DFI08_u32>>
 8004aedc:	19 30 0c 46 	ld.w %d0,[%a3]24844 <d000610c <tiTS_DFI07_corr_u32>>
@@ -59838,7 +59838,7 @@ Disassembly of section .text:
 8004b04e:	37 08 68 80 	extr.u %d8,%d8,0,8
 8004b052:	6c c3       	st.w [%a12]12,%d15
 8004b054:	0c 60       	ld.bu %d15,[%a6]0
-8004b056:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__LD_RAM_START>>,%d15
+8004b056:	89 cf 10 08 	st.b [%a12]16 <d0000000 <__RAM0_START>>,%d15
 8004b05a:	19 53 34 36 	ld.w %d3,[%a5]24820 <d00060f4 <tiTS_DFI09_u32>>
 8004b05e:	19 4f 38 36 	ld.w %d15,[%a4]24824 <d00060f8 <tiTS_DFI10_u32>>
 8004b062:	19 30 14 46 	ld.w %d0,[%a3]24852 <d0006114 <tiTS_DFI09_corr_u32>>
@@ -60290,17 +60290,17 @@ Disassembly of section .text:
 8004b5e0:	bd 03 36 00 	jz.a %a3,8004b64c <Freq_DFI01_IsrProc+0xdc>
 8004b5e4:	91 00 00 4d 	movh.a %a4,53248
 8004b5e8:	d9 44 2c 06 	lea %a4,[%a4]24620 <d000602c <in_freqAcqBufInfo_as>>
-8004b5ec:	d9 45 08 00 	lea %a5,[%a4]8 <d0000008 <__LD_RAM_START+0x8>>
+8004b5ec:	d9 45 08 00 	lea %a5,[%a4]8 <d0000008 <__RAM0_START+0x8>>
 8004b5f0:	0c 50       	ld.bu %d15,[%a5]0
 8004b5f2:	6e 2d       	jz %d15,8004b64c <Freq_DFI01_IsrProc+0xdc>
-8004b5f4:	99 42 04 00 	ld.a %a2,[%a4]4 <d0000004 <__LD_RAM_START+0x4>>
-8004b5f8:	d9 3f f8 ff 	lea %a15,[%a3]-8 <d0000004 <__LD_RAM_START+0x4>>
+8004b5f4:	99 42 04 00 	ld.a %a2,[%a4]4 <d0000004 <__RAM0_START+0x4>>
+8004b5f8:	d9 3f f8 ff 	lea %a15,[%a3]-8 <d0000004 <__RAM0_START+0x4>>
 8004b5fc:	d0 ff       	addsc.a %a15,%a15,%d15,3
 8004b5fe:	80 ff       	mov.d %d15,%a15
 8004b600:	80 20       	mov.d %d0,%a2
 8004b602:	3f 0f 25 80 	jlt.u %d15,%d0,8004b64c <Freq_DFI01_IsrProc+0xdc>
-8004b606:	d9 4f 0c 00 	lea %a15,[%a4]12 <d000000c <__LD_RAM_START+0xc>>
-8004b60a:	89 24 40 09 	st.d [%a2]0 <d000000c <__LD_RAM_START+0xc>>,%e4
+8004b606:	d9 4f 0c 00 	lea %a15,[%a4]12 <d000000c <__RAM0_START+0xc>>
+8004b60a:	89 24 40 09 	st.d [%a2]0 <d000000c <__RAM0_START+0xc>>,%e4
 8004b60e:	8c f0       	ld.h %d15,[%a15]0
 8004b610:	c2 1f       	add %d15,1
 8004b612:	a8 0f       	st.h [%a15]0,%d15
@@ -60309,7 +60309,7 @@ Disassembly of section .text:
 8004b61a:	d0 ff       	addsc.a %a15,%a15,%d15,3
 8004b61c:	7d f2 07 80 	jne.a %a2,%a15,8004b62a <Freq_DFI01_IsrProc+0xba>
 8004b620:	82 1f       	mov %d15,1
-8004b622:	89 43 84 09 	st.a [%a4]4 <d0000004 <__LD_RAM_START+0x4>>,%a3
+8004b622:	89 43 84 09 	st.a [%a4]4 <d0000004 <__RAM0_START+0x4>>,%a3
 8004b626:	2c 49       	st.b [%a4]9,%d15
 8004b628:	00 90       	ret 
 8004b62a:	80 20       	mov.d %d0,%a2
@@ -60322,7 +60322,7 @@ Disassembly of section .text:
 8004b640:	68 1f       	st.w [%a15]4,%d15
 8004b642:	82 0f       	mov %d15,0
 8004b644:	a8 60       	st.h [%a15]12,%d0
-8004b646:	d9 ff 09 00 	lea %a15,[%a15]9 <d0000009 <__LD_RAM_START+0x9>>
+8004b646:	d9 ff 09 00 	lea %a15,[%a15]9 <d0000009 <__RAM0_START+0x9>>
 8004b64a:	28 0f       	st.b [%a15]0,%d15
 8004b64c:	00 90       	ret 
 
@@ -60358,13 +60358,13 @@ Disassembly of section .text:
 8004b6b4:	ab 04 80 0f 	sel %d0,%d15,%d4,0
 8004b6b8:	02 04       	mov %d4,%d0
 8004b6ba:	df 00 2b 00 	jeq %d0,0,8004b710 <Freq_DFI02_IsrProc+0xc2>
-8004b6be:	99 34 10 00 	ld.a %a4,[%a3]16 <d0000010 <__LD_RAM_START+0x10>>
+8004b6be:	99 34 10 00 	ld.a %a4,[%a3]16 <d0000010 <__RAM0_START+0x10>>
 8004b6c2:	bd 04 2f 00 	jz.a %a4,8004b720 <Freq_DFI02_IsrProc+0xd2>
 8004b6c6:	d9 35 18 00 	lea %a5,[%a3]24 <d0000018 <ZBSS_END>>
 8004b6ca:	0c 50       	ld.bu %d15,[%a5]0
 8004b6cc:	6e 2a       	jz %d15,8004b720 <Freq_DFI02_IsrProc+0xd2>
-8004b6ce:	99 32 14 00 	ld.a %a2,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
-8004b6d2:	d9 4f f8 ff 	lea %a15,[%a4]-8 <d0000014 <__LD_RAM_START+0x14>>
+8004b6ce:	99 32 14 00 	ld.a %a2,[%a3]20 <d0000014 <__RAM0_START+0x14>>
+8004b6d2:	d9 4f f8 ff 	lea %a15,[%a4]-8 <d0000014 <__RAM0_START+0x14>>
 8004b6d6:	d0 ff       	addsc.a %a15,%a15,%d15,3
 8004b6d8:	80 ff       	mov.d %d15,%a15
 8004b6da:	80 20       	mov.d %d0,%a2
@@ -60379,7 +60379,7 @@ Disassembly of section .text:
 8004b6f4:	d0 ff       	addsc.a %a15,%a15,%d15,3
 8004b6f6:	7d f2 08 80 	jne.a %a2,%a15,8004b706 <Freq_DFI02_IsrProc+0xb8>
 8004b6fa:	82 1f       	mov %d15,1
-8004b6fc:	89 34 94 09 	st.a [%a3]20 <d0000014 <__LD_RAM_START+0x14>>,%a4
+8004b6fc:	89 34 94 09 	st.a [%a3]20 <d0000014 <__RAM0_START+0x14>>,%a4
 8004b700:	89 3f 19 08 	st.b [%a3]25 <d0000019 <ZBSS_END+0x1>>,%d15
 8004b704:	00 90       	ret 
 8004b706:	80 20       	mov.d %d0,%a2
@@ -62119,7 +62119,7 @@ Disassembly of section .text:
 8004ccb0:	3c 33       	j 8004cd16 <Spi_Ssc0QueueHandle_Proc+0xa0>
 8004ccb2:	91 50 00 48 	movh.a %a4,32773
 8004ccb6:	cc 30       	ld.a %a15,[%a3]0
-8004ccb8:	d9 44 c8 94 	lea %a4,[%a4]20040 <d0000000 <__LD_RAM_START>>
+8004ccb8:	d9 44 c8 94 	lea %a4,[%a4]20040 <d0000000 <__RAM0_START>>
 8004ccbc:	bc f9       	jz.a %a15,8004ccce <Spi_Ssc0QueueHandle_Proc+0x58>
 8004ccbe:	4c f4       	ld.w %d15,[%a15]16
 8004ccc0:	ee 06       	jnz %d15,8004cccc <Spi_Ssc0QueueHandle_Proc+0x56>
@@ -62129,8 +62129,8 @@ Disassembly of section .text:
 8004ccc8:	c8 0f       	ld.a %a15,[%a15]0
 8004ccca:	28 00       	st.b [%a15]0,%d0
 8004cccc:	a0 0f       	mov.a %a15,0
-8004ccce:	09 30 54 08 	ld.bu %d0,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
-8004ccd2:	09 3f 55 08 	ld.bu %d15,[%a3]21 <d0000015 <__LD_RAM_START+0x15>>
+8004ccce:	09 30 54 08 	ld.bu %d0,[%a3]20 <d0000014 <__RAM0_START+0x14>>
+8004ccd2:	09 3f 55 08 	ld.bu %d15,[%a3]21 <d0000015 <__RAM0_START+0x15>>
 8004ccd6:	3e 0d       	jeq %d15,%d0,8004ccf0 <Spi_Ssc0QueueHandle_Proc+0x7a>
 8004ccd8:	0c 48       	ld.bu %d15,[%a4]8
 8004ccda:	26 0f       	and %d15,%d0
@@ -62141,10 +62141,10 @@ Disassembly of section .text:
 8004cce4:	4c f4       	ld.w %d15,[%a15]16
 8004cce6:	ee 12       	jnz %d15,8004cd0a <Spi_Ssc0QueueHandle_Proc+0x94>
 8004cce8:	9a 10       	add %d15,%d0,1
-8004ccea:	89 3f 14 08 	st.b [%a3]20 <d0000014 <__LD_RAM_START+0x14>>,%d15
+8004ccea:	89 3f 14 08 	st.b [%a3]20 <d0000014 <__RAM0_START+0x14>>,%d15
 8004ccee:	3c 13       	j 8004cd14 <Spi_Ssc0QueueHandle_Proc+0x9e>
-8004ccf0:	09 30 56 08 	ld.bu %d0,[%a3]22 <d0000016 <__LD_RAM_START+0x16>>
-8004ccf4:	09 3f 57 08 	ld.bu %d15,[%a3]23 <d0000017 <__LD_RAM_START+0x17>>
+8004ccf0:	09 30 56 08 	ld.bu %d0,[%a3]22 <d0000016 <__RAM0_START+0x16>>
+8004ccf4:	09 3f 57 08 	ld.bu %d15,[%a3]23 <d0000017 <__RAM0_START+0x17>>
 8004ccf8:	3e 0e       	jeq %d15,%d0,8004cd14 <Spi_Ssc0QueueHandle_Proc+0x9e>
 8004ccfa:	0c 49       	ld.bu %d15,[%a4]9
 8004ccfc:	26 0f       	and %d15,%d0
@@ -62157,7 +62157,7 @@ Disassembly of section .text:
 8004cd0a:	6c 20       	st.w [%a2]0,%d15
 8004cd0c:	3c 04       	j 8004cd14 <Spi_Ssc0QueueHandle_Proc+0x9e>
 8004cd0e:	9a 10       	add %d15,%d0,1
-8004cd10:	89 3f 16 08 	st.b [%a3]22 <d0000016 <__LD_RAM_START+0x16>>,%d15
+8004cd10:	89 3f 16 08 	st.b [%a3]22 <d0000016 <__RAM0_START+0x16>>,%d15
 8004cd14:	ec 30       	st.a [%a3]0,%a15
 8004cd16:	bd 0f 69 00 	jz.a %a15,8004cde8 <Spi_Ssc0QueueHandle_Proc+0x172>
 8004cd1a:	4c 5a       	ld.w %d15,[%a5]40
@@ -62175,37 +62175,37 @@ Disassembly of section .text:
 8004cd44:	3b e0 50 f0 	mov %d15,1294
 8004cd48:	a5 ff a0 f1 	st.w f0001be0 <GPTA0+0x3e0>,%d15
 8004cd4c:	1d 00 83 00 	j 8004ce52 <Spi_Ssc0QueueHandle_Proc+0x1dc>
-8004cd50:	99 32 08 00 	ld.a %a2,[%a3]8 <d0000008 <__LD_RAM_START+0x8>>
+8004cd50:	99 32 08 00 	ld.a %a2,[%a3]8 <d0000008 <__RAM0_START+0x8>>
 8004cd54:	bc 25       	jz.a %a2,8004cd5e <Spi_Ssc0QueueHandle_Proc+0xe8>
 8004cd56:	4c 33       	ld.w %d15,[%a3]12
-8004cd58:	59 30 08 00 	st.w [%a3]8 <d0000008 <__LD_RAM_START+0x8>>,%d0
+8004cd58:	59 30 08 00 	st.w [%a3]8 <d0000008 <__RAM0_START+0x8>>,%d0
 8004cd5c:	6c 20       	st.w [%a2]0,%d15
 8004cd5e:	91 50 00 2f 	movh.a %a2,61445
 8004cd62:	09 ff 5f 08 	ld.bu %d15,[%a15]31
 8004cd66:	8f 1f 00 01 	and %d0,%d15,1
 8004cd6a:	09 f3 5a 08 	ld.bu %d3,[%a15]26
 8004cd6e:	8f 2f 00 11 	and %d1,%d15,2
-8004cd72:	d9 22 00 00 	lea %a2,[%a2]0 <f0050000 <__PCP_DRAM_START>>
-8004cd76:	09 ff 5d 08 	ld.bu %d15,[%a15]29 <f0050000 <__PCP_DRAM_START>>
-8004cd7a:	09 f2 d8 08 	ld.hu %d2,[%a15]24 <f0050000 <__PCP_DRAM_START>>
-8004cd7e:	59 2f 90 a0 	st.w [%a2]2704 <f0050a90 <__PCP_DRAM_START+0xa90>>,%d15
-8004cd82:	59 20 14 a0 	st.w [%a2]660 <f0050294 <__PCP_DRAM_START+0x294>>,%d0
-8004cd86:	09 f0 d6 08 	ld.hu %d0,[%a15]22 <f0050294 <__PCP_DRAM_START+0x294>>
+8004cd72:	d9 22 00 00 	lea %a2,[%a2]0 <f0050000 <PRAM_START>>
+8004cd76:	09 ff 5d 08 	ld.bu %d15,[%a15]29 <f0050000 <PRAM_START>>
+8004cd7a:	09 f2 d8 08 	ld.hu %d2,[%a15]24 <f0050000 <PRAM_START>>
+8004cd7e:	59 2f 90 a0 	st.w [%a2]2704 <f0050a90 <PRAM_START+0xa90>>,%d15
+8004cd82:	59 20 14 a0 	st.w [%a2]660 <f0050294 <PRAM_START+0x294>>,%d0
+8004cd86:	09 f0 d6 08 	ld.hu %d0,[%a15]22 <f0050294 <PRAM_START+0x294>>
 8004cd8a:	4c f3       	ld.w %d15,[%a15]12
-8004cd8c:	59 2f 94 a0 	st.w [%a2]2708 <f0050a94 <__PCP_DRAM_START+0xa94>>,%d15
+8004cd8c:	59 2f 94 a0 	st.w [%a2]2708 <f0050a94 <PRAM_START+0xa94>>,%d15
 8004cd90:	4c f2       	ld.w %d15,[%a15]8
-8004cd92:	59 2f a0 a0 	st.w [%a2]2720 <f0050aa0 <__PCP_DRAM_START+0xaa0>>,%d15
+8004cd92:	59 2f a0 a0 	st.w [%a2]2720 <f0050aa0 <PRAM_START+0xaa0>>,%d15
 8004cd96:	4c 34       	ld.w %d15,[%a3]16
 8004cd98:	03 f0 0a ff 	madd %d15,%d15,%d0,%d15
 8004cd9c:	8f 2f 1f 00 	sh %d0,%d15,-14
 8004cda0:	bb f0 ff ff 	mov.u %d15,65535
 8004cda4:	52 0f       	sub %d15,%d15,%d0
-8004cda6:	59 2f b0 a0 	st.w [%a2]2736 <f0050ab0 <__PCP_DRAM_START+0xab0>>,%d15
+8004cda6:	59 2f b0 a0 	st.w [%a2]2736 <f0050ab0 <PRAM_START+0xab0>>,%d15
 8004cdaa:	3b 40 41 f5 	mov %d15,21524
 8004cdae:	a5 ff e8 d1 	st.w f0001f68 <GPTA0+0x768>,%d15
 8004cdb2:	df 21 0a 80 	jne %d1,2,8004cdc6 <Spi_Ssc0QueueHandle_Proc+0x150>
 8004cdb6:	8f 82 1f 00 	sh %d0,%d2,-8
-8004cdba:	59 22 80 b0 	st.w [%a2]2752 <f0050ac0 <__PCP_DRAM_START+0xac0>>,%d2
+8004cdba:	59 22 80 b0 	st.w [%a2]2752 <f0050ac0 <PRAM_START+0xac0>>,%d2
 8004cdbe:	8f f2 0f f1 	and %d15,%d2,255
 8004cdc2:	0f f0 c0 20 	xor %d2,%d0,%d15
 8004cdc6:	09 ff d4 08 	ld.hu %d15,[%a15]20
@@ -62233,15 +62233,15 @@ Disassembly of section .text:
 8004ce12:	a5 ff a0 f1 	st.w f0001be0 <GPTA0+0x3e0>,%d15
 8004ce16:	3c 1e       	j 8004ce52 <Spi_Ssc0QueueHandle_Proc+0x1dc>
 8004ce18:	4c 33       	ld.w %d15,[%a3]12
-8004ce1a:	59 30 08 00 	st.w [%a3]8 <d0000008 <__LD_RAM_START+0x8>>,%d0
+8004ce1a:	59 30 08 00 	st.w [%a3]8 <d0000008 <__RAM0_START+0x8>>,%d0
 8004ce1e:	68 0f       	st.w [%a15]0,%d15
 8004ce20:	82 0f       	mov %d15,0
 8004ce22:	89 3f 18 08 	st.b [%a3]24 <d0000018 <ZBSS_END>>,%d15
-8004ce26:	09 30 54 08 	ld.bu %d0,[%a3]20 <d0000014 <__LD_RAM_START+0x14>>
-8004ce2a:	09 3f 55 08 	ld.bu %d15,[%a3]21 <d0000015 <__LD_RAM_START+0x15>>
+8004ce26:	09 30 54 08 	ld.bu %d0,[%a3]20 <d0000014 <__RAM0_START+0x14>>
+8004ce2a:	09 3f 55 08 	ld.bu %d15,[%a3]21 <d0000015 <__RAM0_START+0x15>>
 8004ce2e:	5f f0 08 80 	jne %d0,%d15,8004ce3e <Spi_Ssc0QueueHandle_Proc+0x1c8>
-8004ce32:	09 30 56 08 	ld.bu %d0,[%a3]22 <d0000016 <__LD_RAM_START+0x16>>
-8004ce36:	09 3f 57 08 	ld.bu %d15,[%a3]23 <d0000017 <__LD_RAM_START+0x17>>
+8004ce32:	09 30 56 08 	ld.bu %d0,[%a3]22 <d0000016 <__RAM0_START+0x16>>
+8004ce36:	09 3f 57 08 	ld.bu %d15,[%a3]23 <d0000017 <__RAM0_START+0x17>>
 8004ce3a:	5f f0 0c 00 	jeq %d0,%d15,8004ce52 <Spi_Ssc0QueueHandle_Proc+0x1dc>
 8004ce3e:	91 00 01 ff 	movh.a %a15,61456
 8004ce42:	d9 ff 00 40 	lea %a15,[%a15]256 <f0100100 <SSC>>
@@ -62289,7 +62289,7 @@ Disassembly of section .text:
 8004ceac:	7b 00 00 f0 	movh %d15,0
 8004ceb0:	06 ff       	sh %d15,-1
 8004ceb2:	3b 00 a6 60 	mov %d6,2656
-8004ceb6:	d9 ff 00 00 	lea %a15,[%a15]0 <f0050000 <__PCP_DRAM_START>>
+8004ceb6:	d9 ff 00 00 	lea %a15,[%a15]0 <f0050000 <PRAM_START>>
 8004ceba:	3b 00 c6 30 	mov %d3,3168
 8004cebe:	a6 0f       	or %d15,%d0
 8004cec0:	3b 00 86 50 	mov %d5,2144
@@ -62299,54 +62299,54 @@ Disassembly of section .text:
 8004cecc:	3b 00 96 40 	mov %d4,2400
 8004ced0:	3b 00 b6 10 	mov %d1,2912
 8004ced4:	a6 6f       	or %d15,%d6
-8004ced6:	59 ff 00 10 	st.w [%a15]64 <f0050040 <__PCP_DRAM_START+0x40>>,%d15
+8004ced6:	59 ff 00 10 	st.w [%a15]64 <f0050040 <PRAM_START+0x40>>,%d15
 8004ceda:	7b 80 20 f0 	movh %d15,520
 8004cede:	8f ff 1f 00 	sh %d0,%d15,-1
 8004cee2:	3b 00 e6 20 	mov %d2,3680
 8004cee6:	3b 00 d6 70 	mov %d7,3424
 8004ceea:	0f 60 a0 f0 	or %d15,%d0,%d6
-8004ceee:	59 ff 20 10 	st.w [%a15]96 <f0050060 <__PCP_DRAM_START+0x60>>,%d15
+8004ceee:	59 ff 20 10 	st.w [%a15]96 <f0050060 <PRAM_START+0x60>>,%d15
 8004cef2:	0f 30 a0 f0 	or %d15,%d0,%d3
-8004cef6:	59 ff 00 20 	st.w [%a15]128 <f0050080 <__PCP_DRAM_START+0x80>>,%d15
+8004cef6:	59 ff 00 20 	st.w [%a15]128 <f0050080 <PRAM_START+0x80>>,%d15
 8004cefa:	0f 50 a0 f0 	or %d15,%d0,%d5
-8004cefe:	59 ff 20 20 	st.w [%a15]160 <f00500a0 <__PCP_DRAM_START+0xa0>>,%d15
+8004cefe:	59 ff 20 20 	st.w [%a15]160 <f00500a0 <PRAM_START+0xa0>>,%d15
 8004cf02:	0f 40 a0 f0 	or %d15,%d0,%d4
-8004cf06:	59 ff 00 30 	st.w [%a15]192 <f00500c0 <__PCP_DRAM_START+0xc0>>,%d15
+8004cf06:	59 ff 00 30 	st.w [%a15]192 <f00500c0 <PRAM_START+0xc0>>,%d15
 8004cf0a:	0f 10 a0 f0 	or %d15,%d0,%d1
-8004cf0e:	59 ff 20 30 	st.w [%a15]224 <f00500e0 <__PCP_DRAM_START+0xe0>>,%d15
+8004cf0e:	59 ff 20 30 	st.w [%a15]224 <f00500e0 <PRAM_START+0xe0>>,%d15
 8004cf12:	0f 20 a0 f0 	or %d15,%d0,%d2
-8004cf16:	59 ff 00 40 	st.w [%a15]256 <f0050100 <__PCP_DRAM_START+0x100>>,%d15
+8004cf16:	59 ff 00 40 	st.w [%a15]256 <f0050100 <PRAM_START+0x100>>,%d15
 8004cf1a:	a6 70       	or %d0,%d7
-8004cf1c:	59 f0 20 40 	st.w [%a15]288 <f0050120 <__PCP_DRAM_START+0x120>>,%d0
+8004cf1c:	59 f0 20 40 	st.w [%a15]288 <f0050120 <PRAM_START+0x120>>,%d0
 8004cf20:	7b a0 0b f0 	movh %d15,186
 8004cf24:	8f ff 1f 00 	sh %d0,%d15,-1
 8004cf28:	a6 03       	or %d3,%d0
-8004cf2a:	59 f3 00 50 	st.w [%a15]320 <f0050140 <__PCP_DRAM_START+0x140>>,%d3
+8004cf2a:	59 f3 00 50 	st.w [%a15]320 <f0050140 <PRAM_START+0x140>>,%d3
 8004cf2e:	0f 50 a0 f0 	or %d15,%d0,%d5
-8004cf32:	59 ff 20 50 	st.w [%a15]352 <f0050160 <__PCP_DRAM_START+0x160>>,%d15
+8004cf32:	59 ff 20 50 	st.w [%a15]352 <f0050160 <PRAM_START+0x160>>,%d15
 8004cf36:	0f 40 a0 f0 	or %d15,%d0,%d4
-8004cf3a:	59 ff 00 60 	st.w [%a15]384 <f0050180 <__PCP_DRAM_START+0x180>>,%d15
+8004cf3a:	59 ff 00 60 	st.w [%a15]384 <f0050180 <PRAM_START+0x180>>,%d15
 8004cf3e:	a6 01       	or %d1,%d0
-8004cf40:	59 f1 20 60 	st.w [%a15]416 <f00501a0 <__PCP_DRAM_START+0x1a0>>,%d1
+8004cf40:	59 f1 20 60 	st.w [%a15]416 <f00501a0 <PRAM_START+0x1a0>>,%d1
 8004cf44:	0f 60 a0 f0 	or %d15,%d0,%d6
-8004cf48:	59 ff 00 70 	st.w [%a15]448 <f00501c0 <__PCP_DRAM_START+0x1c0>>,%d15
+8004cf48:	59 ff 00 70 	st.w [%a15]448 <f00501c0 <PRAM_START+0x1c0>>,%d15
 8004cf4c:	3b 00 f6 f0 	mov %d15,3936
 8004cf50:	a6 02       	or %d2,%d0
-8004cf52:	59 f2 20 70 	st.w [%a15]480 <f00501e0 <__PCP_DRAM_START+0x1e0>>,%d2
+8004cf52:	59 f2 20 70 	st.w [%a15]480 <f00501e0 <PRAM_START+0x1e0>>,%d2
 8004cf56:	a6 0f       	or %d15,%d0
-8004cf58:	59 ff 00 80 	st.w [%a15]512 <f0050200 <__PCP_DRAM_START+0x200>>,%d15
+8004cf58:	59 ff 00 80 	st.w [%a15]512 <f0050200 <PRAM_START+0x200>>,%d15
 8004cf5c:	7b c0 17 f0 	movh %d15,380
 8004cf60:	06 ff       	sh %d15,-1
 8004cf62:	a6 70       	or %d0,%d7
-8004cf64:	59 f0 20 80 	st.w [%a15]544 <f0050220 <__PCP_DRAM_START+0x220>>,%d0
+8004cf64:	59 f0 20 80 	st.w [%a15]544 <f0050220 <PRAM_START+0x220>>,%d0
 8004cf68:	a6 f4       	or %d4,%d15
-8004cf6a:	59 f4 00 90 	st.w [%a15]576 <f0050240 <__PCP_DRAM_START+0x240>>,%d4
+8004cf6a:	59 f4 00 90 	st.w [%a15]576 <f0050240 <PRAM_START+0x240>>,%d4
 8004cf6e:	a6 5f       	or %d15,%d5
-8004cf70:	59 ff 20 90 	st.w [%a15]608 <f0050260 <__PCP_DRAM_START+0x260>>,%d15
+8004cf70:	59 ff 20 90 	st.w [%a15]608 <f0050260 <PRAM_START+0x260>>,%d15
 8004cf74:	7b e0 26 f0 	movh %d15,622
 8004cf78:	06 ff       	sh %d15,-1
 8004cf7a:	a6 6f       	or %d15,%d6
-8004cf7c:	59 ff 00 a0 	st.w [%a15]640 <f0050280 <__PCP_DRAM_START+0x280>>,%d15
+8004cf7c:	59 ff 00 a0 	st.w [%a15]640 <f0050280 <PRAM_START+0x280>>,%d15
 8004cf80:	00 90       	ret 
 
 8004cf82 <Port_CalWakeup_Proc_Ini>:
@@ -79850,7 +79850,7 @@ f0050046:	00 14       	exit  st=1, ec=0, int=0, ep=0, cc_uc
 f0050048:	00 00       	nop  
 f005004a:	00 00       	nop  
 f005004c:	24 5f       	.hword 0x5f24
-f005004e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f005004e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050052:	00 00       	nop  
 f0050054:	00 00       	nop  
 f0050056:	00 00       	nop  
@@ -80888,7 +80888,7 @@ f0050866:	10 f0       	jc.i  cc_uc, [r2]
 f0050868:	84 18       	bcopy  dst, src+, cnc=0, cnt0=1
 f005086a:	00 f0       	jc.i  cc_uc, [r0]
 f005086c:	20 60       	add  cc_uc, r0, r4
-f005086e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f005086e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050872:	00 00       	nop  
 f0050874:	00 00       	nop  
 f0050876:	00 00       	nop  
@@ -80897,7 +80897,7 @@ f005087a:	ff 00       	.hword 0x00ff
 f005087c:	70 08       	copy  dst, src, cnc=3, cnt0=5, size=8
 f005087e:	05 f0       	.hword 0xf005
 f0050880:	e4 2b       	.hword 0x2be4
-f0050882:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050882:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050886:	00 00       	nop  
 f0050888:	00 00       	nop  
 f005088a:	00 00       	nop  
@@ -80949,7 +80949,7 @@ f00508e6:	00 f0       	jc.i  cc_uc, [r0]
 f00508e8:	e8 18       	bcopy  dst, src+, cnc=3, cnt0=2
 f00508ea:	00 f0       	jc.i  cc_uc, [r0]
 f00508ec:	08 60       	add  cc_uc, r0, r1
-f00508ee:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f00508ee:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f00508f2:	00 00       	nop  
 f00508f4:	00 00       	nop  
 f00508f6:	00 00       	nop  
@@ -81011,7 +81011,7 @@ f0050966:	10 f0       	jc.i  cc_uc, [r2]
 f0050968:	94 20       	.hword 0x2094
 f005096a:	00 f0       	jc.i  cc_uc, [r0]
 f005096c:	1c 60       	add  cc_c/ult, r0, r3
-f005096e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f005096e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050972:	00 00       	nop  
 f0050974:	00 00       	nop  
 f0050976:	00 00       	nop  
@@ -81020,7 +81020,7 @@ f005097a:	ff 00       	.hword 0x00ff
 f005097c:	70 09       	copy  dst, src-, cnc=3, cnt0=5, size=8
 f005097e:	05 f0       	.hword 0xf005
 f0050980:	94 2b       	.hword 0x2b94
-f0050982:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050982:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050986:	00 00       	nop  
 f0050988:	00 00       	nop  
 f005098a:	00 00       	nop  
@@ -81072,7 +81072,7 @@ f00509e6:	00 f0       	jc.i  cc_uc, [r0]
 f00509e8:	e8 18       	bcopy  dst, src+, cnc=3, cnt0=2
 f00509ea:	00 f0       	jc.i  cc_uc, [r0]
 f00509ec:	04 60       	add  cc_c/ult, r0, r0
-f00509ee:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f00509ee:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f00509f2:	00 00       	nop  
 f00509f4:	00 00       	nop  
 f00509f6:	00 00       	nop  
@@ -81134,7 +81134,7 @@ f0050a66:	10 f0       	jc.i  cc_uc, [r2]
 f0050a68:	94 18       	.hword 0x1894
 f0050a6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050a6c:	18 60       	add  cc_uc, r0, r3
-f0050a6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050a6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050a72:	00 00       	nop  
 f0050a74:	00 00       	nop  
 f0050a76:	00 00       	nop  
@@ -81143,7 +81143,7 @@ f0050a7a:	ff 00       	.hword 0x00ff
 f0050a7c:	70 0a       	copy  dst+, src, cnc=3, cnt0=5, size=8
 f0050a7e:	05 f0       	.hword 0xf005
 f0050a80:	a4 2a       	.hword 0x2aa4
-f0050a82:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050a82:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050a86:	00 00       	nop  
 f0050a88:	00 00       	nop  
 f0050a8a:	00 00       	nop  
@@ -81194,7 +81194,7 @@ f0050ae2:	00 00       	nop
 f0050ae4:	00 00       	nop  
 f0050ae6:	00 00       	nop  
 f0050ae8:	24 5f       	.hword 0x5f24
-f0050aea:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050aea:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050aee:	00 00       	nop  
 f0050af0:	00 00       	nop  
 f0050af2:	00 00       	nop  
@@ -81258,7 +81258,7 @@ f0050b66:	00 f0       	jc.i  cc_uc, [r0]
 f0050b68:	a4 18       	bcopy  dst, src+, cnc=1, cnt0=1
 f0050b6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050b6c:	14 60       	add  cc_c/ult, r0, r2
-f0050b6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050b6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050b72:	00 00       	nop  
 f0050b74:	00 00       	nop  
 f0050b76:	00 00       	nop  
@@ -81267,7 +81267,7 @@ f0050b7a:	ff 00       	.hword 0x00ff
 f0050b7c:	70 0b       	copy  dst+, src-, cnc=3, cnt0=5, size=8
 f0050b7e:	05 f0       	.hword 0xf005
 f0050b80:	64 29       	.hword 0x2964
-f0050b82:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050b82:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050b86:	00 00       	nop  
 f0050b88:	00 00       	nop  
 f0050b8a:	00 00       	nop  
@@ -81383,7 +81383,7 @@ f0050c66:	00 f0       	jc.i  cc_uc, [r0]
 f0050c68:	84 20       	.hword 0x2084
 f0050c6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050c6c:	10 60       	add  cc_uc, r0, r2
-f0050c6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050c6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050c72:	00 00       	nop  
 f0050c74:	00 00       	nop  
 f0050c76:	00 00       	nop  
@@ -81392,7 +81392,7 @@ f0050c7a:	ff 00       	.hword 0x00ff
 f0050c7c:	70 0c       	copy  dst-, src, cnc=3, cnt0=5, size=8
 f0050c7e:	05 f0       	.hword 0xf005
 f0050c80:	3c 29       	.hword 0x293c
-f0050c82:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050c82:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050c86:	00 00       	nop  
 f0050c88:	00 00       	nop  
 f0050c8a:	00 00       	nop  
@@ -81508,7 +81508,7 @@ f0050d66:	00 f0       	jc.i  cc_uc, [r0]
 f0050d68:	b4 18       	.hword 0x18b4
 f0050d6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050d6c:	0c 60       	add  cc_c/ult, r0, r1
-f0050d6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050d6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050d72:	00 00       	nop  
 f0050d74:	00 00       	nop  
 f0050d76:	00 00       	nop  
@@ -81517,7 +81517,7 @@ f0050d7a:	ff 00       	.hword 0x00ff
 f0050d7c:	70 0d       	copy  dst-, src-, cnc=3, cnt0=5, size=8
 f0050d7e:	05 f0       	.hword 0xf005
 f0050d80:	14 29       	.hword 0x2914
-f0050d82:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050d82:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050d86:	00 00       	nop  
 f0050d88:	00 00       	nop  
 f0050d8a:	00 00       	nop  
@@ -81633,7 +81633,7 @@ f0050e66:	00 f0       	jc.i  cc_uc, [r0]
 f0050e68:	a4 20       	.hword 0x20a4
 f0050e6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050e6c:	00 60       	add  cc_uc, r0, r0
-f0050e6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050e6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050e72:	00 00       	nop  
 f0050e74:	00 00       	nop  
 f0050e76:	00 00       	nop  
@@ -81642,7 +81642,7 @@ f0050e7a:	ff 00       	.hword 0x00ff
 f0050e7c:	70 0e       	copy  dst *ILLEGAL*, src, cnc=3, cnt0=5, size=8
 f0050e7e:	05 f0       	.hword 0xf005
 f0050e80:	ec 28       	.hword 0x28ec
-f0050e82:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050e82:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050e86:	00 00       	nop  
 f0050e88:	00 00       	nop  
 f0050e8a:	00 00       	nop  
@@ -81758,7 +81758,7 @@ f0050f66:	00 f0       	jc.i  cc_uc, [r0]
 f0050f68:	b4 20       	.hword 0x20b4
 f0050f6a:	00 f0       	jc.i  cc_uc, [r0]
 f0050f6c:	fc 5f       	.hword 0x5ffc
-f0050f6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <__PCP_DRAM_START>
+f0050f6e:	40 e8 00 00 	jc.a  cc_z, f0050000 <PRAM_START>
 f0050f72:	00 00       	nop  
 f0050f74:	00 00       	nop  
 f0050f76:	00 00       	nop  
