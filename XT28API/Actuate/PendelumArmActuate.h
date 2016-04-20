@@ -67,6 +67,12 @@ void PAAConfigurePendelumArmOutputs(void);
  *  PAASetReferenceForWheelWithUnit() or PAASetReferenceArrayWithUnit()
  */
 void PAAActuatePendelumArms(void);
+
+
+/*!
+ * Set all PA outs to Zero
+ */
+void PAASetPAReferenceAndActuateToZero(void);
 /** @} */
 
 

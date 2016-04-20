@@ -87,8 +87,8 @@ void PAASetPassiveDampeningState(bool state) {
 	out(OUT_24_DOH, passiveState);
 }
 
-static int referenceSoleonidOutputCurrent_ma[SUM_WHEELS]; /* move this shit into function idiot */
-int PAAGetReferenceCurrentForWheel(int wheel) {
+static int referenceSoleonidOutputCurrent_ma[SUM_WHEELS];
+int PAAGetReferenceCurrentForWheel(int wheel) { /* remove? not used */
 	return referenceSoleonidOutputCurrent_ma[wheel];
 }
 
@@ -101,6 +101,14 @@ void PAASetReferenceArrayWithUnit(float referenceArray[static SUM_WHEELS], PAAOu
 				referenceArray[wheel]
 		);
 	}
+}
+
+void PAASetPAReferenceAndActuateToZero(void) {
+	int wheel = 0;
+	for (wheel = 0; wheel < 6; wheel++) {
+		PAASetReferenceForWheelWithUnit(wheel, CURRENT_MA, 0);
+	}
+	PAAActuatePendelumArms();
 }
 
 int PAASetReferenceForWheelWithUnit(int wheel, PAAOutUnit unit, float referenceInput) {

@@ -224,20 +224,49 @@ static void calculateOptimalForceForAllWheels(void) {
 	float lengthToMidOfForwarder_m = LENGTH_TO_MID_OFF_FORWARDER_m;
 	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
-	//temporary remove when logic is working
-	float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
-	//float massCenterLocationX_mLocal = massCenterLocationX_m;//0.48 * widthOfForwarder_m;
-	float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
-	//float massCenterLocationY_mLocal = massCenterLocationY_m;
-	//end of temporare to remove
+	/* Center of mass had coded */
+	// float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
+	// float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
+	/* end */
 
-	float kMidScalingConstant = (float)1 / 3;
+	/* Dynamic center of FORCE */
+	float massCenterLocationX_mLocal = massCenterLocationX_m;
+	float massCenterLocationY_mLocal = massCenterLocationY_m;
+	/* end */
+
+	/* Testing new mass center is ok for all values */
+	//static float temp = 0;
+	//temp = temp + 0.001;
+	//massCenterLocationY_mLocal = temp;
+	//float kMidScalingConstant = (float)1 / 3;
+	/* end test */
+
+	/* New kMid Scaling constant calculations */
+	const float maxValueAmplitude = 0.3388; /* got this value from finding the point where kM, kF and kB intercet */
+	const float offset = asin(1) - (float)lengthToMidOfForwarder_m / (lengthOfForwarder_m - lengthToMidOfForwarder_m) * M_PI / 2;
+
+	float omega = (float)massCenterLocationY_mLocal / lengthToMidOfForwarder_m * (float)M_PI / 2.0;
+	float kMidScalingConstant = sin(omega) * maxValueAmplitude;
+	if (massCenterLocationY_mLocal > lengthToMidOfForwarder_m) {
+		omega = massCenterLocationY_mLocal / (lengthOfForwarder_m - lengthToMidOfForwarder_m) * M_PI / 2 + offset;
+		kMidScalingConstant = sin(omega) * maxValueAmplitude;
+	}
+	/* end */
 
 	float kFront = (lengthOfForwarder_m - massCenterLocationY_mLocal - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
 	float kLeft  = 1 - massCenterLocationX_mLocal / widthOfForwarder_m;
 	float kMid   = kMidScalingConstant;
 	float kRear  = (massCenterLocationY_mLocal - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
 	float kRight = massCenterLocationX_mLocal / widthOfForwarder_m;
+
+	/* Test new scaling constants */
+	/*
+	g_debug1 = kMid * 100;
+	g_debug2 = kFront * 100;
+	g_debug3 = kRear * 100;
+	g_debug4 = massCenterLocationY_mLocal * 100;
+	*/
+	/* end test */
 
 	//Optimal force ref vector vertical
 	forceReferenceOptimalDistrubutionVertical_N[FL]  = kFront * kLeft  * sumOfVerticalForce;

@@ -18,28 +18,26 @@ void PAPRConfigurePressureSensorsVoltageInput(void) {
 	 */
 
 	/* pressure sensors 7-18 */
-	in_cfgVoltageInput(IN_7_AIV,  1000, 4000, 100, 200, 4800, 200); //Front right A
-	in_cfgVoltageInput(IN_8_AIV,  1000, 4000, 100, 200, 4800, 200); //Front right B
-	in_cfgVoltageInput(IN_9_AIV,  1000, 4000, 100, 200, 4800, 200); //Front left A
-	in_cfgVoltageInput(IN_10_AIV, 1000, 4000, 100, 200, 4800, 200); //Front left B
-	in_cfgVoltageInput(IN_11_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid right A
-	in_cfgVoltageInput(IN_12_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid right B
-	in_cfgVoltageInput(IN_13_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid left A
-	in_cfgVoltageInput(IN_14_AIV, 1000, 4000, 100, 200, 4800, 200); //Mid left B
-	in_cfgVoltageInput(IN_15_AIV, 1000, 4000, 100, 200, 4800, 200); //Rear right A
-	in_cfgVoltageInput(IN_16_AIV, 1000, 4000, 100, 200, 4800, 200); //Rear right B
-	in_cfgVoltageInput(IN_17_AIV, 1000, 4000, 100, 200, 4800, 200); //Rear left A
-	in_cfgVoltageInput(IN_18_AIV, 1000, 4000, 100, 200, 4800, 200); //Rear left B
+	uint16 uLowerStateThreshhold = 500;
+	uint16 uUpperStateThreshhold = 4500;
+	in_cfgVoltageInput(IN_7_AIV,  uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Front right A
+	in_cfgVoltageInput(IN_8_AIV,  uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Front right B
+	in_cfgVoltageInput(IN_9_AIV,  uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Front left A
+	in_cfgVoltageInput(IN_10_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Front left B
+	in_cfgVoltageInput(IN_11_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Mid right A
+	in_cfgVoltageInput(IN_12_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Mid right B
+	in_cfgVoltageInput(IN_13_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Mid left A
+	in_cfgVoltageInput(IN_14_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Mid left B
+	in_cfgVoltageInput(IN_15_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Rear right A
+	in_cfgVoltageInput(IN_16_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Rear right B
+	in_cfgVoltageInput(IN_17_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Rear left A
+	in_cfgVoltageInput(IN_18_AIV, uLowerStateThreshhold, uUpperStateThreshhold, 100, 200, 4800, 200); //Rear left B
 
 }
 
 static uint16 pressureData_mV[INDEX_SIZE_PRESSURESENS]  = {0};
 static uint16 pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
-int PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
-
-	if (checkPressureSensorsForErrors() > 0) {
-		//return PRESSURE_UPDATE_ERROR;
-	}
+bool PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 
 	float sampleTime = (float)sampleTimeUppdate_ms / 1000;
 	/* Read Pressure sensors and calculate Cylinder Forces */
@@ -62,21 +60,27 @@ int PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 		pressureData_Bar[x] = (float)pressureData_mV[x] * 6.25 - 3125;
 	}
 
+	// debugg
 	//g_debug1 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
 	//g_debug3 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
 
 	//Low pass filter pressure signals
 	lowPassFilterPressureSensor(sampleTime);
 
-	//deubb
+	//debugg
 	//g_debug2 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
 	//g_debug4 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
-	return PRESSURE_UPPDATED;
+
+	if (checkPressureSensorsForErrors() > 0) {
+		return TRUE;
+	}
+	return FALSE; /* No Error */
 }
 
 static int checkPressureSensorsForErrors(void) {
 
 	int error = 0;
+
 	error += in_getStatus(IN_FR_A);
 	error += in_getStatus(IN_FR_B);
 	error += in_getStatus(IN_FL_A);
@@ -89,6 +93,15 @@ static int checkPressureSensorsForErrors(void) {
 	error += in_getStatus(IN_BR_B);
 	error += in_getStatus(IN_BL_A);
 	error += in_getStatus(IN_BL_B);
+
+	/*
+	g_debug1 = in_getStatus(IN_FR_A);
+	g_debug2 = in_getStatus(IN_FR_B);
+	g_debug3 = in_getStatus(IN_FL_A);
+	g_debug4 = in_getStatus(IN_FL_B);
+	g_debug5 = error;
+	*/
+
 	return error;
 }
 

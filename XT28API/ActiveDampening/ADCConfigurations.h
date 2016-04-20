@@ -24,24 +24,6 @@
 #include "api_lib_basic.h"
 
 
-void ADCFGManualTestingPlayground(bool state);
-
-
-/*!
- * Enable setting the controller parameters though CAN with Canalyzer
- *
- * @param CANChannel	The CAN channel you send parameters from
- * @param databoxNr1	A unique valid data box number
- * @param databoxNr2	A unique valid data box number
- * @param databoxNr3	A unique valid data box number
- * @param databoxNr4	A unique valid data box number
- */
-void ADCFGConfigureParameterSettingsFromCAN(uint8 CANChannel, uint16 databoxNr1, uint16 databoxNr2, uint16 databoxNr3, uint16 databoxNr4);
-
-
-void ADCFGNivPIDSetup(bool state);
-
-
 void ADCFGNivPIDAndSkyhookSetup(bool state);
 
 /*!
@@ -61,7 +43,6 @@ void ADCFGNivPIDAndSkyhookSetup(bool state);
  * @param state Set to true to use this setup, false and its deactivated.
  */
 void ADCFGPesudoForcePIDSkyhookSlidingMode(bool state);
-
 
 /*!
  * A setup that does the following:
@@ -92,7 +73,16 @@ void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state);
  *
  * @param state Set to true to use this setup, false and its deactivated.
  */
-void ADCFGNivPIDAndForcePID(bool state);
+void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaRef);
+
+/*!
+ * Is this a smart way do handle setting constants?
+ * @param heightGain
+ * @param phiGain
+ * @param thetaGain
+ * @param forceGain
+ */
+void ADCFGNivPIDAndForcePIDCfg(float heightGain, float phiGain, float thetaGain, float forceGain);
 
 /*!
  * hello

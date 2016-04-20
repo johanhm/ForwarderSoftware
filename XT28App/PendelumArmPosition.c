@@ -18,7 +18,7 @@ void PAPOSConfigurePositionSensorsVoltageInput(void) {
 
 static uint16 posData_mm[SUM_WHEELS] = {0};
 static sint16 velData[SUM_WHEELS] = {0};
-int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
+bool PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	/* Check for errors first */
 	if (checkPosSensorsForErrors() > 0) {
 		//return POS_ERROR;
@@ -56,18 +56,6 @@ int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	posData_mV[BR] = in(IN_5_AIV);
 	posData_mV[BL] = in(IN_6_AIV);
 
-	/* debug */
-	/*
-	g_debug1 = posData_mV[FL];
-	g_debug2 = posData_mV[FR];
-	g_debug3 = posData_mV[ML];
-	g_debug4 = posData_mV[MR];
-	g_debug5 = posData_mV[BL];
-	g_debug6 = posData_mV[BR];
-	*/
-	/* end debug */
-
-
 	/* Scale to [mm] */
 	for (x = 0; x < SUM_WHEELS; x++) {
 		posData_mm[x] = (float)((float)(posData_mV[x] - minPos[x]) / (maxPos[x] - minPos[x])) * 485;
@@ -77,7 +65,6 @@ int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 	for (x = 0; x < SUM_WHEELS; x++) {
 		velData_last[x] = velData[x];
 	}
-
 
 	/* Calculate Vel(k) */
 	int velocityFilterCoficient = 5; /* Filter coefficient for velocity calculation lower value is more filtering */
@@ -89,7 +76,7 @@ int PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	uppdateForwarderAvrageHeightAndVelocity();
 
-	return POS_UPPDATED_WITH_NO_ERRORS;
+	return FALSE; /* No error */
 }
 static int checkPosSensorsForErrors(void) {
 
@@ -163,7 +150,7 @@ float PAPOSGetBeta(void) {
 	float betaBack = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
 	float betaAvg = (betaMiddle + betaBack) / 2;
 
-	return betaAvg;
+	return betaAvg * 180 / M_PI;
 }
 
 /* Needs to be debugged */

@@ -100,7 +100,7 @@ static void exipadJoystickCallback(void) {
 	can_getDatabox(exipadCANChannel, exipadJoystrickDBNr, joyStickYMessage, &joystickYNumBytes_u8);
 }
 
-float EXPGetJoystickScaledValue(void) {
+float EXPGetJoystickScaledValueUppDown(void) {
 
 	uint16 joystickInputRaw = ((joyStickYMessage[1] << 8) | joyStickYMessage[0]);		// Add the two 8bits byte0 and byte1 to a 16bit.
 	float joystickInput = (float)joystickInputRaw;

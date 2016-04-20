@@ -20,5 +20,6 @@
 /* Active Dampening */
 #include "ActiveDampening.h"
 #include "ADCConfigurations.h"
+#include "ADCConfigCAN.h"
 
 #endif /* XT28API_XT28_API_H_ */

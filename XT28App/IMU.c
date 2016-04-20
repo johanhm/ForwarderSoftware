@@ -102,20 +102,19 @@ static void IMUAcceleometerUppdateDataCANCallback(void) {
 	accelometerXRaw = (angleMessageData_au8[3] << 8 | angleMessageData_au8[2]);
 	accelometerZRaw = (angleMessageData_au8[5] << 8 | angleMessageData_au8[4]);
 
-	//uppdateFilterdAngelsWithComplementaryFilter();
 }
 
 static float phiAngleInDegree = 0;
 static float thetaAngleInDegree = 0;
-int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
+bool IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 
 	/* Check timeout error */
 	{
 		if (accelometerUppdateTime_ms > 40) {
-			return 1;
+			return TRUE; /* timeout */
 		}
 		else if (gyroUpdateTime_ms > 40) {
-			return 2;
+			return TRUE; /* timeout */
 		}
 		accelometerUppdateTime_ms += 10;
 		gyroUpdateTime_ms += 10;
@@ -150,12 +149,7 @@ int IMUUppdateFilterdAngelsWithComplementaryFilter(void) {
 
 	thetaAngleInDegree = filterdAngleTheta  / multConstantForFilter;
 
-	//DEBUGG
-	//g_debug1 = 1000 * phiAngleInDegree;
-	//g_debug2 = 1000 * accAnglePhi;
-	//g_debug3 = 1000 * gyroAnglePhi;
-	//END DEBUGG
-	return 0; /* no error */
+	return FALSE; /* no error */
 }
 
 float IMUGetPhi(void) {

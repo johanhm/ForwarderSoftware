@@ -84,7 +84,7 @@ bool EXPGetUserIsHoldingAButtonDown(void);
  *
  * \return Int values in range [-400 - 400]
  */
-float EXPGetJoystickScaledValue(void);
+float EXPGetJoystickScaledValueUppDown(void);
 /** @}*/
 
 

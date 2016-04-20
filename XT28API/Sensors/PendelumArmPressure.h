@@ -68,7 +68,7 @@ void PAPRConfigurePressureSensorsVoltageInput(void);
  * @param sampleTimeUppdate	The period this function is called in milliseconds.
  * @return error code. If 0 everything is fine
  */
-int PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate);
+bool PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate);
 /** @}*/
 
 /*! \name Get */

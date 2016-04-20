@@ -63,11 +63,13 @@ static float phiPID(float phiError) {
 	deriativeTermFilterd = deriativeTermFilterd * alpha + (1-alpha) * deriativeTermRaw;
 
 	/* Debugg remove qwhen done */
+	/*
 	float mult = 10.0;
 	g_debug1 = mult * deriativeTermRaw;
 	g_debug2 = mult * deriativeTermFilterd;
 	g_debug3 = mult * propTerm;
 	g_debug4 = mult * (propTerm + deriativeTermFilterd);
+	*/
 	/* emd debugg */
 
 	return propTerm;
@@ -168,7 +170,7 @@ static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	static deadbandStateEnum state[SUM_WHEELS] = {DEADBAND_STATE_ACTIVE};
 
 	/* Limit for state change, constant */
-	const float deadBandLimit = 0.10;
+	const float deadBandLimit = 0.04;
 
 	/* Check if the error have reached zero or changed sign */
 	int errorSign = 0;

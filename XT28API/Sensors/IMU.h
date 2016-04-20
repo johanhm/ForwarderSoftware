@@ -70,7 +70,7 @@ uint16 IMUInit(void);
  * @return Return if the sensor data was uppdated correctly or not
  *
  */
-int IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+bool IMUUppdateFilterdAngelsWithComplementaryFilter(void);
 /** @}*/
 
 

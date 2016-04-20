@@ -18,7 +18,7 @@ static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static void activeDampeningControl(int timeSinceActivated_ms);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static float getBootupAngle(float startingAngle, float endAngle, float maxTime, int currentTime_ms);
+static float getBootupReference(float startingReference, float endReference, float maxTime_ms, int currentTime_ms);
 
 /* Start of program */
 void sys_main(void) {
@@ -68,76 +68,89 @@ void sys_main(void) {
 			READ_SENSORS_OFFSET_MS,
 			0
 	);
-	/*
-	sys_registerTask( &sendSensorDataOnCAN_1ms,
+	/* sys_registerTask( &sendSensorDataOnCAN_1ms,
 			4,
 			1,
 			0,
 			0
-	);
-	 */
+	); */
 	sys_initTC(0, READ_SENSORS_TASK_TIME_MS);
+
+	/* Enable actuation of pendelum arms and set that the arms should respect limits */
+	PAASetPendelumArmActuateState(TRUE);
+	PAASetPendelumArmPosLimitState(TRUE);
 
 }
 
 static void readSensorsTask_10ms(void) {
-	/* System checkpoint and enable sensor voltage */
+	/* 1. System checkpoint and enable sensor voltage */
 	sys_triggerTC(0);
 	sys_setVP(VP_1, ON);
 	sys_setVP(VP_2, ON);
 
-	/* Enable actuation of pendelum arms and set that the arms should respect limits */
-	PAASetPendelumArmActuateState(TRUE);
-	PAASetPendelumArmPosLimitState(FALSE);
+	/* 2.1 Uppdate presure and recalculate force data */
+	bool imuError 	  = IMUUppdateFilterdAngelsWithComplementaryFilter();
+	bool posError  	  = PAPOSUppdatePosSensorsDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+	bool pressureError = PAPRUppdatePressureDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
 
-	/* Uppdate presure and recalculate force data */
-	int imuError 	  = IMUUppdateFilterdAngelsWithComplementaryFilter();
-	int posError  	  = PAPOSUppdatePosSensorsDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
-	int pressureError = PAPRUppdatePressureDataWithSampleTime( READ_SENSORS_TASK_TIME_MS );
+	/* debugg errors */
+	//g_debug1 = (imuError);
+	//g_debug2 = (posError);
+	//g_debug3 = (pressureError);
+	/* end */
 
+	/* 3. Handle errors */
 	bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE);
 	if (sensorError == TRUE) {
-		/*!
-		 * do some sort of logic with disabeling PAAD.
-		 * add comment for fun
-		 * new commentfor fun
-		 */
+		//ADCFGSetADActuateEnabled(FALSE);
+		/* find a better implementation of disable */
 	}
 
-	/* Get new valus for force calculations and update force data */
+	/* 2.2 Get new valus for force calculations and update force data */
 	int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
 	int posData_mm[SUM_WHEELS] = {0};
 	PAPRGetPressureDataArray_bar(pressureData_Bar);
 	PAPOSGetPosDataArray(posData_mm);
 	PAFUppdateForceOnWheelsDataUsing(pressureData_Bar, posData_mm);
 
-	/* Check the machine state and actuate accordingly */
+	/* 4. Check the machine state and actuate accordingly */
 	checkMachineStateAndActuate();
 
-	/* Send all the sensor data on CAN */
+	/* 5. Send all the sensor data on CAN */
 	sendSensorDataOnCAN();
+
+	/*test */
+	g_debug1 = PAPOSGetBeta() * 1000;
+	g_debug2 = IMUGetTheta() * 1000 + 1150;
+	g_debug3 = g_debug1 - g_debug2;
+
+
+	/* end test */
+
 }
 
 static void checkMachineStateAndActuate(void) {
 	/*! Fixme
 	 * Absolutli need to add a timeout for the excipad message, if timeout set reference to zero
 	 */
-	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
+
 	static exipadButton machineStateOld = NONE;
 	static int timeSinceChangedState_ms = 0;
+
+	/* Uppdate state and time */
+	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
+	timeSinceChangedState_ms = timeSinceChangedState_ms + (READ_SENSORS_TASK_TIME_MS); /* maby change this define to a parameter to the function to make the function independent */
 
 	bool newMachineStateHasBeenSet = machineState != machineStateOld;
 	if (newMachineStateHasBeenSet) {
 		timeSinceChangedState_ms = 0;
-		/*!
-		 * Set output for all wheels to zero.
-		 */
-		joystickControl(OFF, OFF, OFF, OFF, OFF, OFF); /* temporary set all to zero */
+		PAASetPAReferenceAndActuateToZero();
 	}
 
+	/* Switch on state */
 	switch (machineState) {
 	case NONE: /* All off */
-		joystickControl(OFF, OFF, OFF, OFF, OFF, OFF);
+		PAASetPAReferenceAndActuateToZero();
 		break;
 	case BUTTON_1: /* Front Left */
 		joystickControl(OFF, ON, OFF, OFF, OFF, OFF);
@@ -165,11 +178,14 @@ static void checkMachineStateAndActuate(void) {
 	case BUTTON_9: /* Back Right */
 		joystickControl(OFF, OFF, OFF, OFF, ON, OFF);
 		break;
-	case BUTTON_10: /* Nothing */
+	case BUTTON_10: /* AD calm settings */
+		ADCFGNivPIDAndForcePIDCfg(5, 100, 40, 0);
 		break;
-	case BUTTON_11: /* Nothing */
+	case BUTTON_11: /* Ad best settings so far */
+		ADCFGNivPIDAndForcePIDCfg(10, 300, 80, 100);
 		break;
-	case BUTTON_12: /* Nothing */
+	case BUTTON_12: /* AD uppdate latest CAN settings */
+		ADCSetControlParametersWithCAN();
 		break;
 	case BUTTON_13: /* Nothing */
 		break;
@@ -184,16 +200,12 @@ static void checkMachineStateAndActuate(void) {
 		joystickControl(UPP, UPP, OFF, OFF, DOWN, DOWN);
 		break;
 	case BUTTON_18: /* ADC Control */
-		timeSinceChangedState_ms = timeSinceChangedState_ms + (READ_SENSORS_TASK_TIME_MS);
-		activeDampeningControl(
-				timeSinceChangedState_ms
-		);
+		activeDampeningControl( timeSinceChangedState_ms );
 		break;
 	case BUTTON_19: /* All Upp */
 		buttonHoldControl(UPP, UPP, UPP, UPP, UPP, UPP);
 		break;
-	case BUTTON_20:
-		/* Nothing */
+	case BUTTON_20: /* Nothing */
 		break;
 	case BUTTON_21: /* Front Down */
 		buttonHoldControl(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN);
@@ -204,50 +216,52 @@ static void checkMachineStateAndActuate(void) {
 
 static void activeDampeningControl(int timeSinceActivated_ms) {
 
-	ADCFGNivPIDAndForcePID(TRUE);
+	const  float MaximumTime_ms = 5000;
 
-	//g_debug1 = timeSinceActivated_ms;
-	//g_debug2 = PAPOSGetBeta() * 1000;
-	//g_debug3 = getBootupAngle(-4.2f, 9.6f, 5, timeSinceActivated_ms) * 1000;
+	static float startValueHeight = 0;
+	static float startValuePhi = 0;
+	static float startValueTheta = 0;
 
+	static float endRefHeight = 250;
+	static float endRefPhi = 0;
+	static float endRefTheta = -1;
+	static float endRefThetaStatic = 0;
 
-/*
-	if (timeSinceActivated_ms < 5) {
-		//float thetaRef = 0.0; //get boot angle theta
-		//float phiRef = 0.0; //get boot angle phi
-		//ADFGSetReferencePhiAndTheta();
-		//ADCFGNivPIDAndForcePID(TRUE);
-	} else {
-		//ADCFGNivPIDAndForcePID(TRUE);
+	if (timeSinceActivated_ms == 0) {
+		startValueHeight 	= PAPOSGetAvrageHeightOfForwarder();
+		startValuePhi 		= IMUGetPhi();
+		startValueTheta 	= IMUGetTheta();
+
+		endRefHeight = 	ADCFGetCANHeightRef();
+		endRefPhi = 	ADCFGetCANPhiRef();
+		endRefThetaStatic = ADCGetCANThetaRef();
+		endRefTheta = 	IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic;
 	}
-*/
+	if (timeSinceActivated_ms < MaximumTime_ms) {
+		float startupHeightRef = getBootupReference(startValueHeight, endRefHeight, MaximumTime_ms, timeSinceActivated_ms);
+		float startupPhiRef = getBootupReference(startValuePhi, endRefPhi, MaximumTime_ms, timeSinceActivated_ms);
+		float startupThetaRef = getBootupReference(startValueTheta, endRefTheta, MaximumTime_ms, timeSinceActivated_ms);
 
-	//ADCFGNivPIDSetup(TRUE);
-	//ADCFGForceControllerTest(TRUE);
-
-	/* Temporary commeted */
-	//ADCFGNivPIDAndForcePID(TRUE);
-	/* end temp comment */
-
-	//ADCFGManualTestingPlayground(FALSE);
-	//ADCFGNivPIDAndSkyhookSetup(FALSE);
-	//ADCFGPesudoForcePIDSkyhookSlidingMode(FALSE);
-	//ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(FALSE);
+		ADCFGNivPIDAndForcePID(startupHeightRef, startupPhiRef, startupThetaRef);
+	} else {
+		endRefTheta = IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic;
+		ADCFGNivPIDAndForcePID(endRefHeight, endRefPhi, endRefTheta);
+	}
 }
 
-static float getBootupAngle(float startingAngle, float endAngle, float maxTime, int currentTime_ms) {
+static float getBootupReference(float startingReference, float endReference, float maxTime_ms, int currentTime_ms) {
 
+	maxTime_ms = maxTime_ms / 1000;
 	float timeInSec = (float)currentTime_ms / 1000;
 	/* S curve logistic function: https://en.wikipedia.org/wiki/Logistic_function */
-	float angleReference = startingAngle - ( (startingAngle - endAngle) / (1 + exp(-(9.5 / maxTime) * (timeInSec - (maxTime / 2))) ) );
-	return angleReference;
+	float calculatedStartupReference = startingReference - ( (startingReference - endReference) / (1 + exp(-(9.5 / maxTime_ms) * (timeInSec - (maxTime_ms / 2))) ) );
+	return calculatedStartupReference;
 
 }
-
 
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
 
-	int joystrickReferenceCurrent = EXPGetJoystickScaledValue();
+	int joystrickReferenceCurrent = EXPGetJoystickScaledValueUppDown();
 	PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, wheelFR * joystrickReferenceCurrent);
 	PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, wheelFL * joystrickReferenceCurrent);
 	PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, wheelMR * joystrickReferenceCurrent);
@@ -350,6 +364,7 @@ static void sendSensorDataOnCAN(void) {
 			CAN_ID_REFERENCE_CURRENT_MID,
 			CAN_ID_REFERENCE_CURRENT_BACK
 	);
+
 	CANSendDebuggMessage(CAN_1);
 }
 

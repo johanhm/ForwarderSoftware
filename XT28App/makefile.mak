@@ -70,6 +70,7 @@ OBJECTS          = $(OUTPUT_PATH)/App.o\
 									 $(OUTPUT_PATH)/ActiveDampeningSkyhook.o\
 									 $(OUTPUT_PATH)/ActiveDampeningSlidingMode.o\
 									 $(OUTPUT_PATH)/ADCConfigurations.o\
+									 $(OUTPUT_PATH)/ADCConfigCAN.o\
 									 
 ####################################################################################################
 # Path to libraries which should be included
