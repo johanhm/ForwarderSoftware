@@ -14,8 +14,13 @@ static void calculateOptimalForceForAllWheels(void);
 static int pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
 static int posData_mm[SUM_WHEELS] = {0};
 void PAFUppdateForceOnWheelsDataUsing(int pressureDataInput[INDEX_SIZE_PRESSURESENS], int posDataInput[SUM_WHEELS]) {
+	/*! fixme
+	 * Change the functions called in this function so they return and array to send to the next function
+	 * to lessend the use of global arrays. The way is exists now is duh to histrical reasons and for compadibility
+	 * with sending stuff on CAN
+	 */
 
-	// Uppdate local data
+	/* Update local data */
 	int i = 0;
 	for (i = 0; i < INDEX_SIZE_PRESSURESENS; i++) {
 		pressureData_Bar[i] = pressureDataInput[i];
@@ -25,10 +30,10 @@ void PAFUppdateForceOnWheelsDataUsing(int pressureDataInput[INDEX_SIZE_PRESSURES
 		posData_mm[wheel] = posDataInput[wheel];
 	}
 
-	//Calculate corresponding forces at cylinder chambers and total
+	/* Calculate corresponding forces at cylinder chambers and total */
 	calculateForceOnCylinderChambers();
 
-	//Calculate Load force Fa-Fb decaN  (N/10)
+	/* Calculate Load force Fa-Fb decaN  (N/10) */
 	calculateLoadForceOnCylinder();
 
 	calculateVerticalForceOnWheelAndTotalMass();
@@ -40,14 +45,13 @@ void PAFUppdateForceOnWheelsDataUsing(int pressureDataInput[INDEX_SIZE_PRESSURES
 
 static uint32 forceChamberData[INDEX_SIZE_PRESSURESENS] = {0};
 static void calculateForceOnCylinderChambers(void) {
-	uint8 x = 0;
-	for(x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
-		if(x % 2 == 0) {
+	int x = 0;
+	for (x = 0; x < INDEX_SIZE_PRESSURESENS; x++) {
+		if (x % 2 == 0) {
 			forceChamberData[x] = 100 * pressureData_Bar[x] * (float)CYLINDER_PUSH_AREA_SIDE_A1_m2;
-		}//100*KPa*m^2= deca N (N/10)
-		else {
+		} else {
 			forceChamberData[x] = 100 * pressureData_Bar[x] * (float)CYLINDER_PUSH_AREA_SIDE_B2_m2;
-		}//100*KPa*m^2= deca N  (N/10)
+		}
 	}
 }
 
@@ -55,8 +59,7 @@ static int messuredForceCylinderLoad_deciN[SUM_WHEELS] = {0};
 static void calculateLoadForceOnCylinder(void) {
 	uint8 x = 0;
 	uint8 i = 0;
-	for(x = 0; x <SUM_WHEELS; x++) {
-		//Load_force[x] = (forceData[i] - forceData[i+1]);
+	for (x = 0; x <SUM_WHEELS; x++) {
 		messuredForceCylinderLoad_deciN[x] = (forceChamberData[i] - forceChamberData[i+1]);
 		i = i + 2;
 	}
@@ -67,13 +70,14 @@ static sint32 sumOfVerticalForce = 0;
 static void calculateVerticalForceOnWheelAndTotalMass(void) {
 	int wheel = 0;
 	sumOfVerticalForce = 0;
-	//Get vertical force depending on pendulum arm current position
+	/* Get vertical force depending on pendulum arm current position */
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		calculatedVerticalForceOnWheel[wheel] = convertCylinderLoadForceToVericalOnWheel(posData_mm[wheel], messuredForceCylinderLoad_deciN[wheel]);
-		if (calculatedVerticalForceOnWheel[wheel] > 0) {
+		bool wheelIsConnectedToGround = (calculatedVerticalForceOnWheel[wheel] > 0);
+		if (wheelIsConnectedToGround) {
 			sumOfVerticalForce = sumOfVerticalForce + calculatedVerticalForceOnWheel[wheel];
 		}
-	}  //Get vertical force depending on pendulum arm current position
+	}
 }
 
 void PAFSendCylinderChamberForceOnCAN(uint8 CANChannel, uint32 backID, uint32 middleID, uint32 frontID) {
@@ -138,12 +142,14 @@ void PAFSendVerticalWheelForceOnCAN(uint8 CANChannel, uint32 middleAndBackID, ui
 
 static float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 
-	float bxy = 0.4991;
-	float l1 = 1.008;
-	float l3 = 1.211;
-	float theta3 = 0.2983;
-	float theta2 =  0.3370;
-	float pi =  3.14159265358979323846;
+	/* Constants */
+	const float bxy 	= 0.4991;
+	const float l1 		= 1.008;
+	const float l3 		= 1.211;
+	const float theta3 	= 0.2983;
+	const float theta2 	= 0.3370;
+	const float pi 		= M_PI;
+
 
 	float stroke = 0.82 + (cylinderPoss_mm / 1000.0);
 	float alpha  = acos( (pow(bxy,2) + pow(l3,2) - pow(stroke,2)) / (2 * bxy * l3) );
@@ -151,7 +157,6 @@ static float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 	float theta1 = theta - theta3;
 	float beta1  = acos((pow(stroke,2) + pow(bxy,2) - pow(l3,2)) / (2 * stroke * bxy));
 	float gamma  = 0;
-	float Load_force  = 1;
 	float forceGroundRelationshipConstant = 0;
 
 	if (beta1 < pi / 2 + theta2) {
@@ -161,13 +166,13 @@ static float forceRelationshipFromLoadToGround(uint16 cylinderPoss_mm) {
 	}
 
 	if (theta1 > pi/2) {
-		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(theta1 - pi / 2) - cos(gamma) * sin(theta1 - pi / 2)) / (l1 * cos(theta - pi / 2)));
+		forceGroundRelationshipConstant = l3 * ((sin(gamma) * cos(theta1 - pi / 2) - cos(gamma) * sin(theta1 - pi / 2)) / (l1 * cos(theta - pi / 2)));
 	} else if (gamma > 0) {
-		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
+		forceGroundRelationshipConstant = l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
 	} else {
-		forceGroundRelationshipConstant = Load_force * l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
+		forceGroundRelationshipConstant = l3 * ((sin(gamma) * cos(pi / 2 - theta1) + cos(gamma) * sin(pi / 2 - theta1)) / (l1 * cos(pi / 2 - theta)));
 	}
-	return forceGroundRelationshipConstant;  // FG/FL Relationship
+	return forceGroundRelationshipConstant;  /* FG/FL Relationship */
 }
 
 static sint32 convertCylinderLoadForceToVericalOnWheel(uint16 cylinderPoss_mm, sint16 cylinderLoadForce) {
@@ -195,10 +200,6 @@ static void calculateMassCenterLocation(void) {
 	massCenterLocationX_m = 1 / sumOfForcesOnWheels_N * (calculatedVerticalForceOnWheel[FR] + calculatedVerticalForceOnWheel[MR] + calculatedVerticalForceOnWheel[BR]) * widthOfForwarder_m;
 	massCenterLocationY_m = 1 / sumOfForcesOnWheels_N * ((calculatedVerticalForceOnWheel[ML] + calculatedVerticalForceOnWheel[MR]) * lengthToMidOfForwarder_m + (calculatedVerticalForceOnWheel[BL] + calculatedVerticalForceOnWheel[BR]) * lengthOfForwarder_m);
 
-	// Low pass filter
-	//massCenterLocationX_m = massCenterLocationX_m * 0.999 + 0.001 * massCenterLocationX_mNew;
-	//massCenterLocationY_m = massCenterLocationY_m * 0.999 + 0.001 * massCenterLocationY_mNew;
-
 }
 
 void PAFSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
@@ -220,23 +221,16 @@ void PAFSendMassCenterLocationOnCAN(uint CANChannel, uint32 ID) {
 static int forceReferenceOptimalDistrubutionVertical_N[SUM_WHEELS] = {0};
 static int forceRefOptDispForCylinderLoad_N[SUM_WHEELS] = {0};
 static void calculateOptimalForceForAllWheels(void) {
-	float lengthOfForwarder_m = LENGTH_OF_FORWARDER_m;
-	float lengthToMidOfForwarder_m = LENGTH_TO_MID_OFF_FORWARDER_m;
-	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
-
-	/* Center of mass had coded */
-		// float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
-		// float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
-	/* end */
+	const float lengthOfForwarder_m 		= LENGTH_OF_FORWARDER_m;
+	const float lengthToMidOfForwarder_m 	= LENGTH_TO_MID_OFF_FORWARDER_m;
+	const float widthOfForwarder_m 			= WIDTH_OF_FORWARDER_m;
 
 	/* Dynamic center of FORCE */
 	float massCenterLocationX_mLocal = massCenterLocationX_m;
 	float massCenterLocationY_mLocal = massCenterLocationY_m;
 	/* end */
 
-	//float kMidScalingConstant = (float)1 / 3;
-
-	/* New kMid Scaling constant calculations */
+	/* kMid Scaling constant calculations */
 	const float maxValueAmplitude = 0.3388; /* got this value from finding the point where kM, kF and kB intercet */
 	const float offset = asin(1) - (float)lengthToMidOfForwarder_m / (lengthOfForwarder_m - lengthToMidOfForwarder_m) * M_PI / 2;
 
@@ -246,24 +240,15 @@ static void calculateOptimalForceForAllWheels(void) {
 		omega = massCenterLocationY_mLocal / (lengthOfForwarder_m - lengthToMidOfForwarder_m) * M_PI / 2 + offset;
 		kMidScalingConstant = sin(omega) * maxValueAmplitude;
 	}
-	/* end */
 
+	/* Calculate scaling constants */
 	float kFront = (lengthOfForwarder_m - massCenterLocationY_mLocal - (lengthOfForwarder_m - lengthToMidOfForwarder_m) * kMidScalingConstant) / lengthOfForwarder_m;
 	float kLeft  = 1 - massCenterLocationX_mLocal / widthOfForwarder_m;
 	float kMid   = kMidScalingConstant;
 	float kRear  = (massCenterLocationY_mLocal - lengthToMidOfForwarder_m * kMidScalingConstant) / lengthOfForwarder_m;
 	float kRight = massCenterLocationX_mLocal / widthOfForwarder_m;
 
-	/* Test new scaling constants */
-	/*
-	g_debug1 = kMid * 100;
-	g_debug2 = kFront * 100;
-	g_debug3 = kRear * 100;
-	g_debug4 = massCenterLocationY_mLocal * 100;
-	*/
-	/* end test */
-
-	//Optimal force ref vector vertical
+	/* Optimal force reference vector vertical */
 	forceReferenceOptimalDistrubutionVertical_N[FL]  = kFront * kLeft  * sumOfVerticalForce;
 	forceReferenceOptimalDistrubutionVertical_N[FR]  = kFront * kRight * sumOfVerticalForce;
 	forceReferenceOptimalDistrubutionVertical_N[ML]  = kMid   * kLeft  * sumOfVerticalForce;
@@ -271,8 +256,9 @@ static void calculateOptimalForceForAllWheels(void) {
 	forceReferenceOptimalDistrubutionVertical_N[BL]  = kRear  * kLeft  * sumOfVerticalForce;
 	forceReferenceOptimalDistrubutionVertical_N[BR]  = kRear  * kRight * sumOfVerticalForce;
 
-	sint16 wheel = 0;
-	//convert to optimalFOrceRef on cylinder. The check of calculations is corret calculate sum of vertical ref and compare to weight
+	/* Convert to optimalFOrceRef on cylinder. The check of calculations is
+	 * correct calculate sum of vertical reference and compare to weight */
+	int wheel = 0;
 	for (wheel = 0; wheel < 6; wheel++) {
 		forceRefOptDispForCylinderLoad_N[wheel] = PAFConvertVerticalForceOnWheelToCylinderLoadForce(posData_mm[wheel], forceReferenceOptimalDistrubutionVertical_N[wheel]);
 	}
@@ -280,8 +266,8 @@ static void calculateOptimalForceForAllWheels(void) {
 
 void PAFSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID) {
 	sint16 forceReferenceDispSum_N = 0;
-	sint16 wheel = 0;
-	//convert to optimalFOrceRef on cylinder.
+	/* Convert to optimalFOrceRef on cylinder. */
+	int wheel = 0;
 	for (wheel = 0; wheel < 6; wheel++) {
 		forceReferenceDispSum_N = forceReferenceDispSum_N + forceReferenceOptimalDistrubutionVertical_N[wheel];
 	}
@@ -301,8 +287,8 @@ void PAFSendOptimalForceRefOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint
 }
 
 void PAFSendForceErrorPercentageOnCAN(uint8 CANChannel, uint32 frontAndMiddleID, uint32 backID) {
-	sint32 wheel = 0;
 	sint32 forceErrorInPercent[SUM_WHEELS] = {0};
+	int wheel = 0;
 	int convertToPercent = 100;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		forceErrorInPercent[wheel] = -(float)( (float)(forceRefOptDispForCylinderLoad_N[wheel] - messuredForceCylinderLoad_deciN[wheel])

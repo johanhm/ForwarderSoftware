@@ -149,26 +149,25 @@ float PAPOSGetAvrageHeightVelocityOfForwarder(void) {
 }
 
 float PAPOSGetBeta(void) {
-
 	/* Calculate angle between front and back pendelumj arms */
-	float hFrontAvg  = (getVerticalHeightForWheel_m(FR) + getVerticalHeightForWheel_m(FL) ) / 2;
-	float hMiddleAvg = (getVerticalHeightForWheel_m(MR) + getVerticalHeightForWheel_m(ML) ) / 2;
-	float hBackAvg   = (getVerticalHeightForWheel_m(BR) + getVerticalHeightForWheel_m(BL) ) / 2;
+	float hFrontAvg_m  = (getVerticalHeightForWheel_m(FR) + getVerticalHeightForWheel_m(FL) ) / 2;
+	float hMiddleAvg_m = (getVerticalHeightForWheel_m(MR) + getVerticalHeightForWheel_m(ML) ) / 2;
+	float hBackAvg_m   = (getVerticalHeightForWheel_m(BR) + getVerticalHeightForWheel_m(BL) ) / 2;
 
-	float betaMiddle = atan( (hFrontAvg - hMiddleAvg) / LENGTH_TO_MID_OFF_FORWARDER_m );
-	float betaBack = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
-	float betaAvg = (betaMiddle + betaBack) / 2;
+	float betaMiddle_rad = atan( (hFrontAvg_m - hMiddleAvg_m) / LENGTH_TO_MID_OFF_FORWARDER_m );
+	float betaBack_rad = atan( (hFrontAvg_m - hBackAvg_m) / LENGTH_OF_FORWARDER_m );
+	float betaAvg_rad = (betaMiddle_rad + betaBack_rad) / 2;
 
-	float betaAvgRawDeg = betaAvg * 180 / M_PI; /* raw value, it works! */
+	float betaAvgRaw_deg = betaAvg_rad * 180 / M_PI; /* raw value, it works! */
 
 	/* Low pass filter */
-	static float betaAvgFilterdOld = 0;
-	const float alpha = 0.995;
+	static float betaAvgFilterdOld_deg = 0;
+	const float lowPassFilterAlpha = 0.995;
 
-	float betaFilterd = betaAvgFilterdOld * alpha + betaAvgRawDeg * (1 - alpha);
-	betaAvgFilterdOld = betaFilterd;
+	float betaFilterd_deg = betaAvgFilterdOld_deg * lowPassFilterAlpha + betaAvgRaw_deg * (1 - lowPassFilterAlpha);
+	betaAvgFilterdOld_deg = betaFilterd_deg;
 
-	return betaFilterd;
+	return betaFilterd_deg;
 }
 
 static float getVerticalHeightForWheel_m(int wheel) {
