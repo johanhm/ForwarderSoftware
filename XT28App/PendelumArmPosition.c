@@ -148,7 +148,6 @@ float PAPOSGetAvrageHeightVelocityOfForwarder(void) {
 	return forwarderAvrageVelZc;
 }
 
-/* Needs to be debugged */
 float PAPOSGetBeta(void) {
 
 	/* Calculate angle between front and back pendelumj arms */
@@ -173,25 +172,25 @@ float PAPOSGetBeta(void) {
 }
 
 static float getVerticalHeightForWheel_m(int wheel) {
-	/* Meter [m] */
-	const float bCylArm = 0.4991;
-	const float lengthArmWheel = 1.008;
-	const float lengtharmCyl = 1.211;
-	const float cylinderLengthOfsett = 0.85;
+	/* Static gemoetry on the machine in Meter [m] */
+	const float bCylArm_m = 0.4991;
+	const float lengthArmWheel_m = 1.008;
+	const float lengtharmCyl_m = 1.211;
+	const float cylinderLengthOfsett_m = 0.85;
 
 	/* Randians [rad] */
-	const float theta3 = 0.2983;
-	const float theta2 =  0.3370;
+	const float theta3_rad = 0.2983;
+	const float theta2_rad =  0.3370;
 
 	/* Estimate beta */
 	int cylinderExtraction = PAPOSGetPosDataForWheel_mm(wheel);
-	float lengthMessured = (float)cylinderExtraction / 1000 + cylinderLengthOfsett;
-	float alpha = acos( (pow(lengthMessured, 2) - pow(bCylArm, 2) - pow(lengtharmCyl, 2)) / (-2 * bCylArm * lengtharmCyl) );
-	float gamma = (alpha + theta2 + theta3) - M_PI / 2;
+	float lengthMessured = (float)cylinderExtraction / 1000 + cylinderLengthOfsett_m;
+	float alpha = acos( (pow(lengthMessured, 2) - pow(bCylArm_m, 2) - pow(lengtharmCyl_m, 2)) / (-2 * bCylArm_m * lengtharmCyl_m) );
+	float gamma = (alpha + theta2_rad + theta3_rad) - M_PI / 2;
 
-	float estimatedHeightVertical = lengthArmWheel * sin(gamma);
+	float estimatedHeightVertical_m = lengthArmWheel_m * sin(gamma);
 
-	return estimatedHeightVertical;
+	return estimatedHeightVertical_m;
 }
 
 void PAPOSSendPosDataOnCAN(uint CANChannel, uint32 middleAndBackID, uint32 frontID) {
