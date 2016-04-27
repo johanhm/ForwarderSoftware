@@ -1,11 +1,10 @@
 #include "PendelumArmPosition.h"
 
-//private prototypes
+/* Private prototypes */
 static void uppdateForwarderAvrageHeightAndVelocity(void);
 static float getVerticalHeightForWheel_m(int wheel);
-static int checkPosSensorsForErrors(void);
 
-
+/* Publick functions */
 void PAPOSConfigurePositionSensorsVoltageInput(void) {
 	/* Configure pos sensors */
 	in_cfgVoltageInput(IN_1_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Front right
@@ -18,18 +17,9 @@ void PAPOSConfigurePositionSensorsVoltageInput(void) {
 
 static uint16 posData_mm[SUM_WHEELS] = {0};
 static sint16 velData[SUM_WHEELS] = {0};
-bool PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
-	/* Check for errors first */
-	if (checkPosSensorsForErrors() > 0) {
-		//return POS_ERROR;
-	}
+void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
-	sampleTime_ms = 0; /* Not used rigtht now , uppdate so the filters depend on this and remove this comment !!! */
-
-	/* old */
-	//static uint16 minPos[SUM_WHEELS] = {1061, 1199, 1115, 1108, 1105, 1068}; //current mV
-	//static uint16 maxPos[SUM_WHEELS] = {3864, 4200, 4126, 4039, 4096, 4046}; //current mV
-	/* end old wil remove when check that new works */
+	sampleTime_ms = 0; /* Fixme Not used rigtht now , uppdate so the filters depend on this and remove this comment !!! */
 
 	static uint16 minPos[SUM_WHEELS] = {500, 500, 500, 500, 500, 500}; //current mV
 	static uint16 maxPos[SUM_WHEELS] = {4500, 4500, 4500, 4500, 4500, 4500}; //current mV
@@ -41,7 +31,7 @@ bool PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	/* Read Position sensors  and calculate velocities */
 
-	//Save Pos(k-1)
+	/* Save Pos(k-1) */
 	for (x = 0; x < SUM_WHEELS; x++) {
 		posData_last[x] = posData_mm[x];
 	}
@@ -76,19 +66,38 @@ bool PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 
 	uppdateForwarderAvrageHeightAndVelocity();
 
-	return FALSE; /* No error */
 }
-static int checkPosSensorsForErrors(void) {
 
-	int error = 0;
-	error += in_getStatus(IN_1_AIV);
-	error += in_getStatus(IN_2_AIV);
-	error += in_getStatus(IN_3_AIV);
-	error += in_getStatus(IN_4_AIV);
-	error += in_getStatus(IN_5_AIV);
-	error += in_getStatus(IN_6_AIV);
+bool PAPOSCheckPosSensorsForErrors(void) {
+	uint32 sensorPorts[6] = {IN_1_AIV,
+			IN_2_AIV,
+			IN_3_AIV,
+			IN_4_AIV,
+			IN_5_AIV,
+			IN_6_AIV
+	};
+	int sensor = 0;
+	for (sensor = 0; sensor < 6; sensor ++) {
 
-	return error;
+		uint8 error = in_getStatus(sensorPorts[sensor]);
+		switch (error) {
+		case DIAG_NOFAILURE_DU8:
+			return FALSE;
+		case DIAG_RANGE_DU8:
+			return FALSE;
+		case DIAG_SCGND_DU8:
+			return TRUE;
+		case DIAG_SCUBAT_DU8:
+			return TRUE;
+		case DIAG_OL_DU8:
+			return TRUE;
+		case DIAG_SCGND_OR_OL_DU8:
+			return TRUE;
+		case DIAG_SCUBAT_OR_OL_DU8:
+			return TRUE;
+		}
+	}
+	return TRUE; /* this should never happen, here to make the compuler shutup */
 }
 
 static uint16 forwarderAvrageHeightZc = 0;
@@ -142,6 +151,7 @@ float PAPOSGetAvrageHeightVelocityOfForwarder(void) {
 /* Needs to be debugged */
 float PAPOSGetBeta(void) {
 
+	/* Calculate angle between front and back pendelumj arms */
 	float hFrontAvg  = (getVerticalHeightForWheel_m(FR) + getVerticalHeightForWheel_m(FL) ) / 2;
 	float hMiddleAvg = (getVerticalHeightForWheel_m(MR) + getVerticalHeightForWheel_m(ML) ) / 2;
 	float hBackAvg   = (getVerticalHeightForWheel_m(BR) + getVerticalHeightForWheel_m(BL) ) / 2;
@@ -150,10 +160,18 @@ float PAPOSGetBeta(void) {
 	float betaBack = atan( (hFrontAvg - hBackAvg) / LENGTH_OF_FORWARDER_m );
 	float betaAvg = (betaMiddle + betaBack) / 2;
 
-	return betaAvg * 180 / M_PI;
+	float betaAvgRawDeg = betaAvg * 180 / M_PI; /* raw value, it works! */
+
+	/* Low pass filter */
+	static float betaAvgFilterdOld = 0;
+	const float alpha = 0.995;
+
+	float betaFilterd = betaAvgFilterdOld * alpha + betaAvgRawDeg * (1 - alpha);
+	betaAvgFilterdOld = betaFilterd;
+
+	return betaFilterd;
 }
 
-/* Needs to be debugged */
 static float getVerticalHeightForWheel_m(int wheel) {
 	/* Meter [m] */
 	const float bCylArm = 0.4991;

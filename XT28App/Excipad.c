@@ -125,9 +125,10 @@ typedef enum {
 } exipadCANMessageState;
 
 static exipadButton pressedButtonOld = NONE;
+static exipadButton pressedButton = NONE;
 exipadButton EXPGetLastPressedButtonWithToggle(void) {
 	static exipadCANMessageState exipadCANMessageState = ACCEPT_NEW_MESSAGE;
-	static exipadButton pressedButton = NONE;
+
 	switch (exipadCANMessageState) {
 	case ACCEPT_NEW_MESSAGE:
 		if (EXPGetUserIsHoldingAButtonDown() == TRUE) {
@@ -148,8 +149,8 @@ exipadButton EXPGetLastPressedButtonWithToggle(void) {
 	return pressedButton;
 }
 
-void EXPSetLastPressedButtonToNone(void) {
-	pressedButtonOld = NONE;
+void EXPSetButtonStateTo(exipadButton setButtonState) {
+	pressedButton = setButtonState;
 }
 
 exipadButton EXPGetCurrentlyPressedButton(void) {

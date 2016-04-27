@@ -70,7 +70,15 @@ uint16 IMUInit(void);
  * @return Return if the sensor data was uppdated correctly or not
  *
  */
-bool IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+void IMUUppdateFilterdAngelsWithComplementaryFilter(void);
+
+/*!
+ * Check if the IMU have timeouted
+ * @param callTime_ms
+ * @param timeoutTime_ms
+ * @return
+ */
+bool IMUCheckTimeout(int callTime_ms, int timeoutTime_ms);
 /** @}*/
 
 

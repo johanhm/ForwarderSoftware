@@ -39,7 +39,13 @@ void PAPOSConfigurePositionSensorsVoltageInput(void);
  * @param sampleTime_ms  The sample time this function is called, in unit milliseconds.
  * @return error code
  */
-bool PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
+void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms);
+
+/*!
+ * Check pos sensor for connection error
+ * @return
+ */
+bool PAPOSCheckPosSensorsForErrors(void);
 /** @} */
 
 /*! \name Get Sensor Data */

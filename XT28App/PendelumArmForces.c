@@ -225,8 +225,8 @@ static void calculateOptimalForceForAllWheels(void) {
 	float widthOfForwarder_m = WIDTH_OF_FORWARDER_m;
 
 	/* Center of mass had coded */
-	// float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
-	// float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
+		// float massCenterLocationX_mLocal = 0.48 * widthOfForwarder_m;
+		// float massCenterLocationY_mLocal = 0.33 * lengthOfForwarder_m;
 	/* end */
 
 	/* Dynamic center of FORCE */
@@ -234,12 +234,7 @@ static void calculateOptimalForceForAllWheels(void) {
 	float massCenterLocationY_mLocal = massCenterLocationY_m;
 	/* end */
 
-	/* Testing new mass center is ok for all values */
-	//static float temp = 0;
-	//temp = temp + 0.001;
-	//massCenterLocationY_mLocal = temp;
 	//float kMidScalingConstant = (float)1 / 3;
-	/* end test */
 
 	/* New kMid Scaling constant calculations */
 	const float maxValueAmplitude = 0.3388; /* got this value from finding the point where kM, kF and kB intercet */

@@ -93,7 +93,7 @@ float EXPGetJoystickScaledValueUppDown(void);
 /*!
  *  Sets the last pressed button to state NONE.
  */
-void EXPSetLastPressedButtonToNone(void);
+void EXPSetButtonStateTo(exipadButton setButtonState);
 /** @}*/
 
 #endif /* XT28API_EXCIPAD_EXCIPAD_H_ */

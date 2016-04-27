@@ -3,7 +3,6 @@
 
 /* Private prototytpes */
 static void lowPassFilterPressureSensor(float sampleTime);
-static int checkPressureSensorsForErrors(void);
 
 // Start of implementations
 void PAPRConfigurePressureSensorsVoltageInput(void) {
@@ -37,7 +36,7 @@ void PAPRConfigurePressureSensorsVoltageInput(void) {
 
 static uint16 pressureData_mV[INDEX_SIZE_PRESSURESENS]  = {0};
 static uint16 pressureData_Bar[INDEX_SIZE_PRESSURESENS] = {0};
-bool PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
+void PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 
 	float sampleTime = (float)sampleTimeUppdate_ms / 1000;
 	/* Read Pressure sensors and calculate Cylinder Forces */
@@ -71,38 +70,45 @@ bool PAPRUppdatePressureDataWithSampleTime(int sampleTimeUppdate_ms) {
 	//g_debug2 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_A];
 	//g_debug4 = pressureData_Bar[ANALOG_FRONT_LEFT_PENDULUM_PRESSURE_B];
 
-	if (checkPressureSensorsForErrors() > 0) {
-		return TRUE;
-	}
-	return FALSE; /* No Error */
 }
 
-static int checkPressureSensorsForErrors(void) {
+bool PAPRCheckPressureSensorForErrors(void) {
 
-	int error = 0;
+	uint32 sensorPorts[12] = {IN_FR_A,
+			IN_FR_B,
+			IN_FL_A,
+			IN_FL_B,
+			IN_MR_A,
+			IN_MR_B,
+			IN_ML_A,
+			IN_ML_B,
+			IN_BR_A,
+			IN_BR_B,
+			IN_BL_A,
+			IN_BL_B
+	};
+	int sensor = 0;
+	for (sensor = 0; sensor < 12; sensor ++) {
 
-	error += in_getStatus(IN_FR_A);
-	error += in_getStatus(IN_FR_B);
-	error += in_getStatus(IN_FL_A);
-	error += in_getStatus(IN_FL_B);
-	error += in_getStatus(IN_MR_A);
-	error += in_getStatus(IN_MR_B);
-	error += in_getStatus(IN_ML_A);
-	error += in_getStatus(IN_ML_B);
-	error += in_getStatus(IN_BR_A);
-	error += in_getStatus(IN_BR_B);
-	error += in_getStatus(IN_BL_A);
-	error += in_getStatus(IN_BL_B);
-
-	/*
-	g_debug1 = in_getStatus(IN_FR_A);
-	g_debug2 = in_getStatus(IN_FR_B);
-	g_debug3 = in_getStatus(IN_FL_A);
-	g_debug4 = in_getStatus(IN_FL_B);
-	g_debug5 = error;
-	*/
-
-	return error;
+		uint8 error = in_getStatus(sensorPorts[sensor]);
+		switch (error) {
+		case DIAG_NOFAILURE_DU8:
+			return FALSE;
+		case DIAG_RANGE_DU8:
+			return FALSE;
+		case DIAG_SCGND_DU8:
+			return TRUE;
+		case DIAG_SCUBAT_DU8:
+			return TRUE;
+		case DIAG_OL_DU8:
+			return TRUE;
+		case DIAG_SCGND_OR_OL_DU8:
+			return TRUE;
+		case DIAG_SCUBAT_OR_OL_DU8:
+			return TRUE;
+		}
+	}
+	return TRUE; /* this should never happen */
 }
 
 
