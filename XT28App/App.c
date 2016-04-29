@@ -17,9 +17,11 @@ static void checkSensorForErrors_50ms(void);
 static void sendSensorDataOnCAN(void);
 static void checkMachineStateAndActuate(void);
 static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static void activeDampeningControl(int timeSinceActivated_ms, float heightReferenceOffset);
+static void joystickTiltXY(void);
+static void activeDampeningControl(float heightReferenceOffset);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static float getBootupReference(float startingReference, float endReference, float maxTime_ms, int currentTime_ms);
+static void setADRampToTrue(void);
 
 /* Start of program */
 void sys_main(void) {
@@ -38,7 +40,8 @@ void sys_main(void) {
 	int databoxNrExipadJoystrick = 4;
 	EXPConfigureExcipad(CAN_3,
 			databoxNrExipadButtons,
-			databoxNrExipadJoystrick
+			databoxNrExipadJoystrick,
+			5
 	);
 	ADCFGConfigureParameterSettingsFromCAN(CAN_1,
 			3,
@@ -69,7 +72,7 @@ void sys_main(void) {
 			READ_SENSORS_OFFSET_MS,
 			0
 	);
-	 sys_registerTask( &checkSensorForErrors_50ms,
+	sys_registerTask( &checkSensorForErrors_50ms,
 			4,
 			50,
 			5,
@@ -107,15 +110,6 @@ static void readSensorsTask_10ms(void) {
 	/* 5. Send all the sensor data on CAN */
 	sendSensorDataOnCAN();
 
-	/*test */
-	/*
-	g_debug1 = PAPOSGetBeta() * 1000;
-	g_debug2 = IMUGetTheta() * 1000 + 1150;
-	g_debug3 = g_debug1 - g_debug2;
-	g_debug4 = (5000000 > sys_getTime_us());
-	*/
-	/* end test */
-
 }
 
 static void checkSensorForErrors_50ms(void) {
@@ -126,23 +120,11 @@ static void checkSensorForErrors_50ms(void) {
 	bool posError = PAPOSCheckPosSensorsForErrors();
 	bool pressureError = PAPRCheckPressureSensorForErrors();
 
-	/*test */
-	/*
-	g_debug1 = in_getStatus(IN_1_AIV);
-	g_debug2 = posError;
-	g_debug3 = in_getStatus(IN_2_AIV);
-	g_debug4 = g_debug4 + 50;
-	*/
-	/* end test */
-
 	bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE);
 	if (sensorError == TRUE) {
 		/* alert */
 	}
-
 }
-
-
 
 static void checkMachineStateAndActuate(void) {
 	/*! Fixme
@@ -150,23 +132,10 @@ static void checkMachineStateAndActuate(void) {
 	 */
 
 	static exipadButton machineStateOld = NONE;
-	static int timeSinceChangedState_ms = 0;
-
-	/* Uppdate state and time */
-	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
-
-	bool sensorsFiltersHaveSaturated = (sys_getTime_us() > 5000000);
-	static int ADDelayTime = 0;
 	static float heightReferenceOffset = 0;
-	if (sensorsFiltersHaveSaturated) {
-		timeSinceChangedState_ms = timeSinceChangedState_ms + (READ_SENSORS_TASK_TIME_MS);
-	}
 
-	bool newMachineStateHasBeenSet = machineState != machineStateOld;
-	if (newMachineStateHasBeenSet) {
-		timeSinceChangedState_ms = 0;
-		PAASetPAReferenceAndActuateToZero();
-	}
+	/* Uppdate state */
+	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
 
 	/* Switch on state */
 	switch (machineState) {
@@ -178,6 +147,7 @@ static void checkMachineStateAndActuate(void) {
 		break;
 	case BUTTON_2: /* Passive dampening activated */
 		PAASetPassiveDampeningState(TRUE);
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_3: /* Front Right */
 		joystickControl(ON, OFF, OFF, OFF, OFF, OFF);
@@ -187,6 +157,7 @@ static void checkMachineStateAndActuate(void) {
 		break;
 	case BUTTON_5: /* Passive dampening deactivated */
 		PAASetPassiveDampeningState(FALSE);
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_6: /* Mid Right */
 		joystickControl(OFF, OFF, ON, OFF, OFF, OFF);
@@ -195,64 +166,79 @@ static void checkMachineStateAndActuate(void) {
 		joystickControl(OFF, OFF, OFF, OFF, OFF, ON);
 		break;
 	case BUTTON_8: /* Nothing */
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_9: /* Back Right */
 		joystickControl(OFF, OFF, OFF, OFF, ON, OFF);
 		break;
 	case BUTTON_10: /* AD calm settings */
 		ADCFGNivPIDAndForcePIDCfg(2, 100, 40, 0);
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_11: /* AD best settings so far */
 		ADCFGNivPIDAndForcePIDCfg(10, 300, 80, 100);
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_12: /* AD update latest CAN settings */
 		ADCSetControlParametersWithCAN();
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_13: /* Incease height reference */
 		if (machineStateOld == BUTTON_18) {
-			heightReferenceOffset = heightReferenceOffset + 5;
-			if (heightReferenceOffset > 100) {
-				heightReferenceOffset = 100;
-			}
 			EXPSetButtonStateTo(BUTTON_18);
-			ADDelayTime = 400;
+			checkMachineStateAndActuate();
 		} else {
 			EXPSetButtonStateTo(NONE);
 		}
 		break;
 	case BUTTON_14: /* Lower height reference */
 		if (machineStateOld == BUTTON_18) {
-			heightReferenceOffset = heightReferenceOffset - 5;
-			if (heightReferenceOffset < -100) {
-				heightReferenceOffset = -100;
-			}
 			EXPSetButtonStateTo(BUTTON_18);
-			ADDelayTime = 400;
+			checkMachineStateAndActuate();
 		} else {
 			EXPSetButtonStateTo(NONE);
 		}
 		break;
 	case BUTTON_15: /* Nothing */
+		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_16: /* Tilt Phi */
-		joystickControl(UPP, DOWN, UPP, DOWN, UPP, DOWN);
+	case BUTTON_16: /* Tilt Phi and Theta */
+		joystickTiltXY();
 		break;
-	case BUTTON_17: /* Tilt Theta */
-		joystickControl(UPP, UPP, OFF, OFF, DOWN, DOWN);
+	case BUTTON_17: /* Nothing */
+		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_18: /* ADC Control */
-		if (ADDelayTime > 0) {
-			ADDelayTime = ADDelayTime - READ_SENSORS_TASK_TIME_MS;
-			timeSinceChangedState_ms = 0;
+	case BUTTON_18: { /* ADC Control */
+		bool shouldStartRampupPhase = EXPGetCurrentlyPressedButton() == BUTTON_18;
+		if (shouldStartRampupPhase == TRUE) {
+			setADRampToTrue();
 		}
-		if ((sensorsFiltersHaveSaturated) && (ADDelayTime == 0)) {
-			activeDampeningControl( timeSinceChangedState_ms, heightReferenceOffset);
+		bool shouldDecreaseHeightReference = (EXPGetCurrentlyPressedButton() == BUTTON_13);
+		if (shouldDecreaseHeightReference == TRUE) {
+			heightReferenceOffset = heightReferenceOffset - 0.5;
+			if (heightReferenceOffset < -150) {
+				heightReferenceOffset = -150;
+			}
+		}
+		bool shouldLowerHeightReference = (EXPGetCurrentlyPressedButton() == BUTTON_14);
+		if (shouldLowerHeightReference == TRUE) {
+			heightReferenceOffset = heightReferenceOffset + 0.5;
+			if (heightReferenceOffset > 100) {
+				heightReferenceOffset = 100;
+			}
+		}
+
+		bool sensorsFiltersHaveSaturated = (sys_getTime_us() > 5000000);
+		if (sensorsFiltersHaveSaturated == TRUE) {
+			activeDampeningControl(heightReferenceOffset);
 		}
 		break;
+	}
 	case BUTTON_19: /* All Upp */
 		buttonHoldControl(UPP, UPP, UPP, UPP, UPP, UPP);
 		break;
 	case BUTTON_20: /* Nothing */
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_21: /* Front Down */
 		buttonHoldControl(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN);
@@ -260,10 +246,15 @@ static void checkMachineStateAndActuate(void) {
 	}
 	machineStateOld = machineState;
 
-	g_debug1 = heightReferenceOffset;
+	//g_debug1 = heightReferenceOffset;
 }
 
-static void activeDampeningControl(int timeSinceActivated_ms, float heightReferenceOffset) {
+bool rampUp = TRUE;
+static void setADRampToTrue(void) {
+	rampUp = TRUE;
+}
+
+static void activeDampeningControl(float heightReferenceOffset) {
 
 	/* FIXME This function should also ramp up the force constant.
 	 * Think about the constraints we want on the force functionality
@@ -271,16 +262,23 @@ static void activeDampeningControl(int timeSinceActivated_ms, float heightRefere
 
 	const  float MaximumTime_ms = 5000;
 
-	static float startValueHeight_mm = 0;
-	static float startValuePhi_deg = 0;
-	static float startValueTheta_deg = 0;
+	static float startValueHeight_mm 	= 0;
+	static float startValuePhi_deg 		= 0;
+	static float startValueTheta_deg 	= 0;
 
-	static float endRefHeight_mm = 250;
-	static float endRefPhi_deg = 0;
-	static float endRefTheta_deg = -1; /* -1 becouse the IMU is mounted wrong by -1.25 deg */
-	static float endRefThetaStatic_deg = 0;
+	static float endRefHeight_mm 		= 250;
+	static float endRefPhi_deg 			= 0;
+	static float endRefTheta_deg 		= -1; /* -1 becouse the IMU is mounted wrong by -1.25 deg */
+	static float endRefThetaStatic_deg 	= 0;
 
-	if (timeSinceActivated_ms == 0) { /* Set start and end points of logistic curve */
+	static int timeSinceActivated_ms = 0;
+	timeSinceActivated_ms = timeSinceActivated_ms + 10;
+
+	if (rampUp == TRUE) { /* Set start and end points of logistic curve */
+
+		rampUp = FALSE;
+		timeSinceActivated_ms = 0;
+
 		startValueHeight_mm = PAPOSGetAvrageHeightOfForwarder();
 		startValuePhi_deg 	= IMUGetPhi();
 		startValueTheta_deg = IMUGetTheta();
@@ -291,6 +289,8 @@ static void activeDampeningControl(int timeSinceActivated_ms, float heightRefere
 		endRefTheta_deg 		= IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic_deg; /* Temp while evauating this method of beta; Using beta as reference then the error input to the control function is -beta only. Theta takes it self out so the error is not dependent on theta */
 	}
 	else if (timeSinceActivated_ms < MaximumTime_ms) { /* Ramping up following the logistic curve */
+		endRefHeight_mm 		= ADCFGetCANHeightRef() + heightReferenceOffset;
+
 		float startupHeightRef = getBootupReference(startValueHeight_mm, endRefHeight_mm, MaximumTime_ms, timeSinceActivated_ms);
 		float startupPhiRef = getBootupReference(startValuePhi_deg, endRefPhi_deg, MaximumTime_ms, timeSinceActivated_ms);
 		float startupThetaRef = getBootupReference(startValueTheta_deg, endRefTheta_deg, MaximumTime_ms, timeSinceActivated_ms);
@@ -298,8 +298,10 @@ static void activeDampeningControl(int timeSinceActivated_ms, float heightRefere
 		ADCFGNivPIDAndForcePID(startupHeightRef, startupPhiRef, startupThetaRef);
 	} else { /* Normal mode */
 		endRefTheta_deg = IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic_deg;
+		endRefHeight_mm = ADCFGetCANHeightRef() + heightReferenceOffset;
 		ADCFGNivPIDAndForcePID(endRefHeight_mm, endRefPhi_deg, endRefTheta_deg);
 	}
+
 }
 
 static float getBootupReference(float startingReference, float endReference, float maxTime_ms, int currentTime_ms) {
@@ -324,6 +326,21 @@ static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, 
 
 	PAAActuatePendelumArms();
 }
+
+static void joystickTiltXY(void) {
+
+	int joystickY = EXPGetJoystickScaledValueUppDown();
+	int joystickX = EXPGetJoystickXScaledValueLeftRight();
+	PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, ( joystickX  + joystickY));
+	PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, (-joystickX  + joystickY));
+	PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, joystickX);
+	PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, -joystickX);
+	PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, ( joystickX - joystickY));
+	PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, (-joystickX - joystickY));
+
+	PAAActuatePendelumArms();
+}
+
 
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
 
@@ -351,8 +368,9 @@ static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML
 }
 
 static void sendSensorDataOnCAN(void) {
-	// Send data on CAN
+	/* Send data on CAN */
 	CANSendSupplyVoltageOnCAN(CAN_1, 0x18FF1060);
+
 	IMUSendIMURawValuesOnCAN( CAN_1,
 			CAN_ID_GYRODATA_DATA,
 			CAN_ID_ACCELOMETER_DATA

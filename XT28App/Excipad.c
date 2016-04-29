@@ -3,11 +3,13 @@
 
 /* Config */
 #define EXIPAD_BUTTONS_DB_BUFF_LEN  	(5)
-#define EXIPAD_JOYSTICK_DB_BUFF_LEN  	(5)
+#define EXIPAD_JOYSTICK_Y_DB_BUFF_LEN  	(5)
+#define EXIPAD_JOYSTICK_X_DB_BUFF_LEN	(5)
 
 #define CAN_ID_LEFT_EXCIPAD_BUTTONS	 		(0x18FE030B)
 #define CAN_ID_RIGHT_EXCIPAD_BUTTONS		(0x18FE0315)
 #define CAN_ID_JOYSTICK_Y					(0x18FE010B)
+#define CAN_ID_JOYSTICK_X					(0x18FE000B)
 
 /* CAN message exipad */
 #define BUTTON_ID_1		(0x01) /* 1,  byte 3 */
@@ -48,20 +50,24 @@
 
 /* Priave Prototypes */
 static void exipadButtonsCallback(void);
-static void exipadJoystickCallback(void);
+static void exipadJoystickYCallback(void);
+static void exipadJoystickXCallback(void);
 //static int checkButtonState(uint8 message, uint8 buttonID, int currentState, int toggleIfThisState);
 
 static int exipadCANChannel = 0;
 static int exipadButtonDBNr = 0;
-static int exipadJoystrickDBNr = 0;
-void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxNr) {
+static int exipadJoystickYDBNr = 0;
+static int exipadJoystickXDBNr = 0;
+void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystickYDataboxNr, int joystickXDataboxNr) {
 
 	exipadCANChannel    = CANChannel;
 	exipadButtonDBNr    = buttonDataboxNr;
-	exipadJoystrickDBNr = joystrickDataboxNr;
+	exipadJoystickYDBNr = joystickYDataboxNr;
+	exipadJoystickXDBNr = joystickXDataboxNr;
 
 	static can_DataboxData_ts exipadButtonsDataboxBuffer[EXIPAD_BUTTONS_DB_BUFF_LEN];
-	static can_DataboxData_ts exipadJoystrickDataboxBuffer[EXIPAD_JOYSTICK_DB_BUFF_LEN];
+	static can_DataboxData_ts exipadJoystickYDataboxBuffer[EXIPAD_JOYSTICK_Y_DB_BUFF_LEN];
+	static can_DataboxData_ts exipadJoystickXDataboxBuffer[EXIPAD_JOYSTICK_X_DB_BUFF_LEN];
 	int exipadMessageNumOfBytes = 8;
 
 	can_initRxDatabox(CANChannel,
@@ -74,14 +80,24 @@ void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDat
 			exipadButtonsCallback
 	);
 	can_initRxDatabox(CANChannel,
-			joystrickDataboxNr,
+			joystickYDataboxNr,
 			CAN_ID_JOYSTICK_Y,
 			CAN_EXD_DU8,
 			exipadMessageNumOfBytes,
-			exipadJoystrickDataboxBuffer,
-			EXIPAD_JOYSTICK_DB_BUFF_LEN,
-			exipadJoystickCallback
+			exipadJoystickYDataboxBuffer,
+			EXIPAD_JOYSTICK_Y_DB_BUFF_LEN,
+			exipadJoystickYCallback
 	);
+	can_initRxDatabox(CANChannel,
+			joystickXDataboxNr,
+			CAN_ID_JOYSTICK_X,
+			CAN_EXD_DU8,
+			exipadMessageNumOfBytes,
+			exipadJoystickXDataboxBuffer,
+			EXIPAD_JOYSTICK_X_DB_BUFF_LEN,
+			exipadJoystickXCallback
+	);
+
 }
 
 static uint8 leftExcipadButtonsMessage[8] = {0};
@@ -95,10 +111,36 @@ static void exipadButtonsCallback(void) {
 }
 
 static uint8 joyStickYMessage[8] = {0};
-static void exipadJoystickCallback(void) {
+static void exipadJoystickYCallback(void) {
 	uint8 joystickYNumBytes_u8;
-	can_getDatabox(exipadCANChannel, exipadJoystrickDBNr, joyStickYMessage, &joystickYNumBytes_u8);
+	can_getDatabox(exipadCANChannel, exipadJoystickYDBNr, joyStickYMessage, &joystickYNumBytes_u8);
 }
+
+static uint8 joyStickXMessage[8] = {0};
+static void exipadJoystickXCallback(void) {
+	uint8 joystickXNumBytes_u8;
+	can_getDatabox(exipadCANChannel, exipadJoystickXDBNr, joyStickXMessage, &joystickXNumBytes_u8);
+}
+
+
+float EXPGetJoystickXScaledValueLeftRight(void) {
+
+	uint16 joystickXInputRaw = ((joyStickXMessage[7] << 8) | joyStickXMessage[6]);
+	float joystickInput = (float)joystickXInputRaw;
+
+	float joyRef = 0;
+	if ((joystickInput < JOYSTICK_Y_HIGH_DEADBAND) && (joystickInput > JOYSTICK_Y_LOW_DEADBAND)) {
+		joyRef = 0;
+	}
+	else if (joystickInput > JOYSTICK_Y_HIGH_DEADBAND) {
+		joyRef = (float)(joystickInput - JOYSTICK_Y_HIGH_DEADBAND) / (4300 - JOYSTICK_Y_HIGH_DEADBAND) * (float)300;
+	}  //Linear scaling
+	else if (joystickInput < JOYSTICK_Y_LOW_DEADBAND) {
+		joyRef = ((float)(joystickInput - JOYSTICK_Y_LOW_DEADBAND) / (JOYSTICK_Y_HIGH_DEADBAND - 350) * (float)300);
+	}
+	return joyRef;
+}
+
 
 float EXPGetJoystickScaledValueUppDown(void) {
 
@@ -224,18 +266,6 @@ exipadButton EXPGetCurrentlyPressedButton(void) {
 	if (leftExcipadButtonsMessage[2] == BUTTON_ID_21) {
 		exipadButtonPresed = BUTTON_21;
 	}
-
-	/* debugg, find the id of all bottons */
-	/*
-	g_debug1 = leftExcipadButtonsMessage[0];
-	g_debug2 = leftExcipadButtonsMessage[1];
-	g_debug3 = leftExcipadButtonsMessage[2];
-	g_debug4 = leftExcipadButtonsMessage[3];
-	g_debug5 = leftExcipadButtonsMessage[4];
-	g_debug6 = leftExcipadButtonsMessage[5];
-	*/
-	/* end debugg */
-
 	return exipadButtonPresed;
 }
 

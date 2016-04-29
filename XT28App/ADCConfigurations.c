@@ -35,8 +35,8 @@ void ADCFGNivPIDAndSkyhookSetup(bool state) {
 	float referenceCurrentArray[SUM_WHEELS] = {0};
 	ADPIDGetPIDSignalsForHeightPhiAndThetaArray(referenceCurrentArray,
 			(250 - PAPOSGetAvrageHeightOfForwarder()),
-			(0    - IMUGetPhi()),
-			(0  - IMUGetTheta())
+			(0   - IMUGetPhi()),
+			(0   - IMUGetTheta())
 	);
 
 	/* Skyhook */
