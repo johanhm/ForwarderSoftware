@@ -55,7 +55,7 @@ typedef enum {
  * \param[in] buttonDataboxNr A data box number, valid range is [1 - 100]
  * \param[in] joystrickDataboxNr A data box number, valid range is [1 - 100]
  */
-void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxNr);
+void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxYNr, int joystickDataboxXNr);
 /** @}*/
 
 
@@ -85,6 +85,12 @@ bool EXPGetUserIsHoldingAButtonDown(void);
  * \return Int values in range [-400 - 400]
  */
 float EXPGetJoystickScaledValueUppDown(void);
+
+/*!
+ *  Get the scaled value of the excipad joystick Left right X
+ * @param setButtonState
+ */
+float EXPGetJoystickXScaledValueLeftRight(void);
 /** @}*/
 
 
