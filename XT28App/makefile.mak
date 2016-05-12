@@ -66,6 +66,7 @@ OBJECTS          = $(OUTPUT_PATH)/App.o\
 									 $(OUTPUT_PATH)/PendelumArmForces.o\
 									 $(OUTPUT_PATH)/PendelumArmActuate.o\
 									 $(OUTPUT_PATH)/Excipad.o\
+									 $(OUTPUT_PATH)/Display.o\
 									 $(OUTPUT_PATH)/ActiveDampeningPID.o\
 									 $(OUTPUT_PATH)/ActiveDampeningSkyhook.o\
 									 $(OUTPUT_PATH)/ActiveDampeningSlidingMode.o\

@@ -11,7 +11,10 @@
 
 /* Actuate */
 #include "PendelumArmActuate.h"
+
+/* Driver interface */
 #include "Excipad.h"
+#include "Display.h"
 
 /* Support */
 #include "XT28CANSupport.h"

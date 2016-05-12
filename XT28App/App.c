@@ -16,8 +16,8 @@ static void checkSensorForErrors_50ms(void);
 
 static void sendSensorDataOnCAN(void);
 static void checkMachineStateAndActuate(void);
-static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
-static void joystickTiltXY(void);
+static void joystickControl(chairPosition chairPos, int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
+static void joystickTiltXY(chairPosition chairPos);
 static void activeDampeningControl(float heightReferenceOffset);
 static void buttonHoldControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL);
 static float getBootupReference(float startingReference, float endReference, float maxTime_ms, int currentTime_ms);
@@ -26,7 +26,10 @@ static void setADRampToTrue(void);
 /* Start of program */
 void sys_main(void) {
 
-	// CAN channels configuration
+	/* Sensor supply */
+	sys_setVSS(VSS_2, OFF);
+
+	/* CAN channels configuration */
 	CANConfigureXT28CANChannels();
 
 	int databoxNrGyro = 1;
@@ -50,18 +53,23 @@ void sys_main(void) {
 			8
 	);
 
+	DisplayConfigureCAN(CAN_4,
+			1
+	);
+
+
 	can_init(CAN_1, 1000000);
 	can_init(CAN_2, 500000);
 	can_init(CAN_3, 250000);
+	can_init(CAN_4, 250000);
 
 	IMUInit();
 
-
-	// Initialize RC/SRC.
+	/* Initialize RC/SRC */
 	sys_init("SMS", "RC30-00D6"); // RC28-14/30
 	emcy_disableInput(EMCY_DISABLE_KEY_DU32, ~EMCY_DISABLE_KEY_DU32);
 
-	// Configure analoge sensors.
+	/* Configure analoge sensors */
 	PAPRConfigurePressureSensorsVoltageInput();
 	PAPOSConfigurePositionSensorsVoltageInput();
 	PAAConfigurePendelumArmOutputs();
@@ -90,7 +98,7 @@ static void readSensorsTask_10ms(void) {
 	/* 1. System checkpoint and enable sensor voltage */
 	sys_triggerTC(0);
 	sys_setVP(VP_1, ON);
-	sys_setVP(VP_2, ON);
+	sys_setVP(VP_2, ON); /* fixme check if this power outpus is used, if not remove this line */
 
 	/* 2.1 Uppdate presure and recalculate force data */
 	IMUUppdateFilterdAngelsWithComplementaryFilter();
@@ -110,20 +118,43 @@ static void readSensorsTask_10ms(void) {
 	/* 5. Send all the sensor data on CAN */
 	sendSensorDataOnCAN();
 
+	/* testing */
+	static float testOffset = 0;
+	if (PAPOSIsStrokeLessThen(50) == TRUE) {
+		testOffset = testOffset + 0.5;
+	} else {
+		testOffset = testOffset - 0.5;
+	}
+	if (testOffset < 0) {
+		testOffset = 0;
+	}
+	//g_debug1 = testOffset;
+	//g_debug2 = DisplayGetHandBreakState();
+
+	/* end test */
 }
 
 static void checkSensorForErrors_50ms(void) {
 
-	const int callTime_ms = 50;
-	const int timeOutIMU_ms = 160;
-	bool imuError = IMUCheckTimeout(callTime_ms, timeOutIMU_ms);
+	static bool sensorAlertState = FALSE;
+
+	/* Sensor error and saturation check */
+	bool exipadError = EXPCheckTimeout(50, 180);
+	bool imuError = IMUCheckTimeout(0, 40);
 	bool posError = PAPOSCheckPosSensorsForErrors();
 	bool pressureError = PAPRCheckPressureSensorForErrors();
-
-	bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE);
-	if (sensorError == TRUE) {
-		/* alert */
+	bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE) || (exipadError == TRUE);
+	if (sensorError == TRUE ) {
+		sensorAlertState = TRUE;
+		DisplaySetSensorAlertStateTo(sensorAlertState);
+	} else {
+		sensorAlertState = FALSE;
+		DisplaySetSensorAlertStateTo(sensorAlertState);
 	}
+	if (exipadError == TRUE) {
+		EXPSetButtonStateTo(NONE);
+	}
+
 }
 
 static void checkMachineStateAndActuate(void) {
@@ -137,50 +168,93 @@ static void checkMachineStateAndActuate(void) {
 	/* Uppdate state */
 	exipadButton machineState = EXPGetLastPressedButtonWithToggle();
 
+	if (machineState == BUTTON_18) {
+		DisplaySetADStateTo(TRUE);
+	} else {
+		DisplaySetADStateTo(FALSE);
+	}
+
 	/* Switch on state */
 	switch (machineState) {
 	case NONE: /* All off */
 		PAASetPAReferenceAndActuateToZero();
 		break;
 	case BUTTON_1: /* Front Left */
-		joystickControl(OFF, ON, OFF, OFF, OFF, OFF);
+		joystickControl(DisplayGetChairPosition(),
+				OFF, ON, OFF, OFF, OFF, OFF
+		);
 		break;
-	case BUTTON_2: /* Passive dampening activated */
-		PAASetPassiveDampeningState(TRUE);
-		EXPSetButtonStateTo(NONE);
-		break;
+	case BUTTON_2: /* Nothing */
+
+	{
+		out(OUT_19_DOH, TRUE);
+		out(OUT_20_DOH, TRUE);
+		out(OUT_21_DOH, FALSE);
+		out(OUT_22_DOH, FALSE);
+		out(OUT_23_DOH, FALSE);
+		out(OUT_24_DOH, FALSE);
+	}
+
+	EXPSetButtonStateTo(NONE);
+	break;
 	case BUTTON_3: /* Front Right */
-		joystickControl(ON, OFF, OFF, OFF, OFF, OFF);
+		joystickControl(DisplayGetChairPosition(),
+				ON, OFF, OFF, OFF, OFF, OFF
+		);
 		break;
 	case BUTTON_4: /* Mid Left */
-		joystickControl(OFF, OFF, OFF, ON, OFF, OFF);
+		joystickControl(DisplayGetChairPosition(),
+				OFF, OFF, OFF, ON, OFF, OFF
+		);
 		break;
-	case BUTTON_5: /* Passive dampening deactivated */
-		PAASetPassiveDampeningState(FALSE);
-		EXPSetButtonStateTo(NONE);
-		break;
+	case BUTTON_5: /* Nothing */
+
+	{
+		out(OUT_19_DOH, TRUE);
+		out(OUT_20_DOH, TRUE);
+		out(OUT_21_DOH, FALSE);
+		out(OUT_22_DOH, FALSE);
+		out(OUT_23_DOH, TRUE);
+		out(OUT_24_DOH, TRUE);
+	}
+
+	EXPSetButtonStateTo(NONE);
+	break;
 	case BUTTON_6: /* Mid Right */
-		joystickControl(OFF, OFF, ON, OFF, OFF, OFF);
+		joystickControl(DisplayGetChairPosition(),
+				OFF, OFF, ON, OFF, OFF, OFF
+		);
 		break;
 	case BUTTON_7: /* Back Left */
-		joystickControl(OFF, OFF, OFF, OFF, OFF, ON);
+		joystickControl(DisplayGetChairPosition(),
+				OFF, OFF, OFF, OFF, OFF, ON
+		);
 		break;
 	case BUTTON_8: /* Nothing */
+		ADCSetControlParametersWithCAN();
+		g_debug1 = 4;
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_9: /* Back Right */
-		joystickControl(OFF, OFF, OFF, OFF, ON, OFF);
+		joystickControl(
+				DisplayGetChairPosition(),
+				OFF, OFF, OFF, OFF, ON, OFF
+		);
 		break;
 	case BUTTON_10: /* AD calm settings */
 		ADCFGNivPIDAndForcePIDCfg(2, 100, 40, 0);
+		g_debug1 = 1;
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_11: /* AD best settings so far */
 		ADCFGNivPIDAndForcePIDCfg(10, 300, 80, 100);
+		g_debug1 = 2;
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_12: /* AD update latest CAN settings */
-		ADCSetControlParametersWithCAN();
+		ADCFGNivPIDAndForcePIDCfg(11, 320, 100, 200);
+		g_debug1 = 3;
+		//ADCSetControlParametersWithCAN();
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_13: /* Incease height reference */
@@ -203,31 +277,61 @@ static void checkMachineStateAndActuate(void) {
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_16: /* Tilt Phi and Theta */
-		joystickTiltXY();
+		joystickTiltXY( DisplayGetChairPosition() );
 		break;
-	case BUTTON_17: /* Nothing */
+	case BUTTON_17: { /* Passive on/off */
+		static bool passiveState = FALSE;
+		passiveState = !passiveState;
+
+		PAASetPassiveDampeningState(passiveState);
+		DisplaySetPDStateTo(passiveState);
 		EXPSetButtonStateTo(NONE);
+
 		break;
+	}
 	case BUTTON_18: { /* ADC Control */
+
+		/* Startup phase check */
 		bool shouldStartRampupPhase = EXPGetCurrentlyPressedButton() == BUTTON_18;
 		if (shouldStartRampupPhase == TRUE) {
 			setADRampToTrue();
 		}
+
+		/* Height reference user offset check */
+		const float heightGrowth = 0.5;
+		const float heightOffsetMinimum = -150.0;
+		const float heightOffsetMaximum = 100.0;
+
 		bool shouldDecreaseHeightReference = (EXPGetCurrentlyPressedButton() == BUTTON_13);
 		if (shouldDecreaseHeightReference == TRUE) {
-			heightReferenceOffset = heightReferenceOffset - 0.5;
-			if (heightReferenceOffset < -150) {
-				heightReferenceOffset = -150;
+			heightReferenceOffset = heightReferenceOffset - heightGrowth;
+			if (heightReferenceOffset < heightOffsetMinimum) {
+				heightReferenceOffset = heightOffsetMinimum;
 			}
 		}
 		bool shouldLowerHeightReference = (EXPGetCurrentlyPressedButton() == BUTTON_14);
 		if (shouldLowerHeightReference == TRUE) {
-			heightReferenceOffset = heightReferenceOffset + 0.5;
-			if (heightReferenceOffset > 100) {
-				heightReferenceOffset = 100;
+			heightReferenceOffset = heightReferenceOffset + heightGrowth;
+			if (heightReferenceOffset > heightOffsetMaximum) {
+				heightReferenceOffset = heightOffsetMaximum;
 			}
 		}
 
+		/* Sensor error and saturation check */
+		bool imuError = IMUCheckTimeout(10, 40);
+		bool posError = PAPOSCheckPosSensorsForErrors();
+		bool pressureError = PAPRCheckPressureSensorForErrors();
+		bool sensorError = (imuError == TRUE) || (posError == TRUE) || (pressureError == TRUE);
+		if (sensorError == TRUE) {
+			EXPSetButtonStateTo(NONE);
+			break;
+		}
+		if (DisplayGetHandBreakState() == TRUE) {
+			EXPSetButtonStateTo(NONE);
+			break;
+		}
+
+		/* Do active dampening */
 		bool sensorsFiltersHaveSaturated = (sys_getTime_us() > 5000000);
 		if (sensorsFiltersHaveSaturated == TRUE) {
 			activeDampeningControl(heightReferenceOffset);
@@ -245,8 +349,6 @@ static void checkMachineStateAndActuate(void) {
 		break;
 	}
 	machineStateOld = machineState;
-
-	//g_debug1 = heightReferenceOffset;
 }
 
 bool rampUp = TRUE;
@@ -262,14 +364,16 @@ static void activeDampeningControl(float heightReferenceOffset) {
 
 	const  float MaximumTime_ms = 5000;
 
-	static float startValueHeight_mm 	= 0;
-	static float startValuePhi_deg 		= 0;
-	static float startValueTheta_deg 	= 0;
+	static float startValueHeight_mm 	    = 0;
+	static float startValuePhi_deg 		    = 0;
+	static float startValueTheta_deg 	    = 0;
+	const float  startValueForceGainPercent = 0;
 
-	static float endRefHeight_mm 		= 250;
-	static float endRefPhi_deg 			= 0;
-	static float endRefTheta_deg 		= -1; /* -1 becouse the IMU is mounted wrong by -1.25 deg */
-	static float endRefThetaStatic_deg 	= 0;
+	static float endRefHeight_mm 		  = 250;
+	static float endRefPhi_deg 			  = 0;
+	static float endRefTheta_deg 		  = -1; /* -1 becouse the IMU is mounted wrong by -1.25 deg */
+	static float endRefThetaStatic_deg 	  = 0;
+	const float  endValueForceGainPercent = 1;
 
 	static int timeSinceActivated_ms = 0;
 	timeSinceActivated_ms = timeSinceActivated_ms + 10;
@@ -289,18 +393,22 @@ static void activeDampeningControl(float heightReferenceOffset) {
 		endRefTheta_deg 		= IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic_deg; /* Temp while evauating this method of beta; Using beta as reference then the error input to the control function is -beta only. Theta takes it self out so the error is not dependent on theta */
 	}
 	else if (timeSinceActivated_ms < MaximumTime_ms) { /* Ramping up following the logistic curve */
-		endRefHeight_mm 		= ADCFGetCANHeightRef() + heightReferenceOffset;
+		endRefHeight_mm = ADCFGetCANHeightRef() + heightReferenceOffset;
+		endRefTheta_deg = IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic_deg;
 
 		float startupHeightRef = getBootupReference(startValueHeight_mm, endRefHeight_mm, MaximumTime_ms, timeSinceActivated_ms);
 		float startupPhiRef = getBootupReference(startValuePhi_deg, endRefPhi_deg, MaximumTime_ms, timeSinceActivated_ms);
 		float startupThetaRef = getBootupReference(startValueTheta_deg, endRefTheta_deg, MaximumTime_ms, timeSinceActivated_ms);
+		float startupForceGain = getBootupReference( startValueForceGainPercent, endValueForceGainPercent, MaximumTime_ms, timeSinceActivated_ms);
 
-		ADCFGNivPIDAndForcePID(startupHeightRef, startupPhiRef, startupThetaRef);
+		ADCFGNivPIDAndForcePID(startupHeightRef, startupPhiRef, startupThetaRef, startupForceGain);
 	} else { /* Normal mode */
 		endRefTheta_deg = IMUGetTheta() - PAPOSGetBeta() + endRefThetaStatic_deg;
 		endRefHeight_mm = ADCFGetCANHeightRef() + heightReferenceOffset;
-		ADCFGNivPIDAndForcePID(endRefHeight_mm, endRefPhi_deg, endRefTheta_deg);
+		ADCFGNivPIDAndForcePID(endRefHeight_mm, endRefPhi_deg, endRefTheta_deg, 1);
 	}
+
+	DisplaySetHeightReference(endRefHeight_mm);
 
 }
 
@@ -314,30 +422,51 @@ static float getBootupReference(float startingReference, float endReference, flo
 
 }
 
-static void joystickControl(int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
+static void joystickControl(chairPosition chairPos, int wheelFR, int wheelFL, int wheelMR, int wheelML, int wheelBR, int wheelBL) {
 
 	int joystrickReferenceCurrent = EXPGetJoystickScaledValueUppDown();
-	PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, wheelFR * joystrickReferenceCurrent);
-	PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, wheelFL * joystrickReferenceCurrent);
-	PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, wheelMR * joystrickReferenceCurrent);
-	PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, wheelML * joystrickReferenceCurrent);
-	PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, wheelBR * joystrickReferenceCurrent);
-	PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, wheelBL * joystrickReferenceCurrent);
 
+	if (chairPos == CHAIR_IS_FRONT) {
+		PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, wheelFR * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, wheelFL * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, wheelMR * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, wheelML * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, wheelBR * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, wheelBL * joystrickReferenceCurrent);
+	}
+	else if (chairPos == CHAIR_IS_BACK) {
+		PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, wheelBL * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, wheelBR * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, wheelML * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, wheelMR * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, wheelFL * joystrickReferenceCurrent);
+		PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, wheelFR * joystrickReferenceCurrent);
+	}
 	PAAActuatePendelumArms();
 }
 
-static void joystickTiltXY(void) {
+static void joystickTiltXY(chairPosition chairPos) {
 
 	int joystickY = EXPGetJoystickScaledValueUppDown();
 	int joystickX = EXPGetJoystickXScaledValueLeftRight();
-	PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, ( joystickX  + joystickY));
-	PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, (-joystickX  + joystickY));
-	PAASetReferenceForWheelWithUnit(MR, CURRENT_MA, joystickX);
-	PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, -joystickX);
-	PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, ( joystickX - joystickY));
-	PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, (-joystickX - joystickY));
 
+	/* fixme refactor this and just pass a sign that change depending on char pos */
+	if (chairPos == CHAIR_IS_FRONT) {
+		PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, ( joystickX  + joystickY) );
+		PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, (-joystickX  + joystickY) );
+		PAASetReferenceForWheelWithUnit(MR, CURRENT_MA,  joystickX );
+		PAASetReferenceForWheelWithUnit(ML, CURRENT_MA, -joystickX );
+		PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, ( joystickX - joystickY) );
+		PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, (-joystickX - joystickY) );
+	}
+	else if (chairPos == CHAIR_IS_BACK) {
+		PAASetReferenceForWheelWithUnit(FR, CURRENT_MA, (-joystickX  - joystickY) );
+		PAASetReferenceForWheelWithUnit(FL, CURRENT_MA, ( joystickX  - joystickY) );
+		PAASetReferenceForWheelWithUnit(MR, CURRENT_MA,  -joystickX );
+		PAASetReferenceForWheelWithUnit(ML, CURRENT_MA,   joystickX );
+		PAASetReferenceForWheelWithUnit(BR, CURRENT_MA, (-joystickX + joystickY) );
+		PAASetReferenceForWheelWithUnit(BL, CURRENT_MA, ( joystickX + joystickY) );
+	}
 	PAAActuatePendelumArms();
 }
 
@@ -437,4 +566,6 @@ static void sendSensorDataOnCAN(void) {
 	);
 
 	CANSendDebuggMessage(CAN_1);
+
+	DisplaySendLatestStatesOnCAN();
 }

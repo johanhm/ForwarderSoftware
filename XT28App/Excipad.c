@@ -100,14 +100,13 @@ void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystickYDat
 
 }
 
+static int exipadButtonsUpdateTime_ms = 0;
 static uint8 leftExcipadButtonsMessage[8] = {0};
 static void exipadButtonsCallback(void) {
 	uint8 leftExcipadNumBytes_u8 = 0;
 	can_getDatabox(exipadCANChannel, exipadButtonDBNr, leftExcipadButtonsMessage, &leftExcipadNumBytes_u8);
-
-	/* Debugg remove when done */
-	//can_sendData(CAN_1, 0x18FE1050, CAN_EXD_DU8, 8, leftExcipadButtonsMessage);
-	/* End debugg, remove when done */
+	/* Set timeout to zero */
+	exipadButtonsUpdateTime_ms = 0;
 }
 
 static uint8 joyStickYMessage[8] = {0};
@@ -122,6 +121,14 @@ static void exipadJoystickXCallback(void) {
 	can_getDatabox(exipadCANChannel, exipadJoystickXDBNr, joyStickXMessage, &joystickXNumBytes_u8);
 }
 
+bool EXPCheckTimeout(int callTime_ms, int timeoutTime_ms) {
+	/* Check timeout error */
+	if (exipadButtonsUpdateTime_ms > timeoutTime_ms) {
+		return TRUE; /* timeout */
+	}
+	exipadButtonsUpdateTime_ms += callTime_ms;
+	return FALSE; /* working */
+}
 
 float EXPGetJoystickXScaledValueLeftRight(void) {
 

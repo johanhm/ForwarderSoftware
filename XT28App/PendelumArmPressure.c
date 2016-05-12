@@ -87,30 +87,37 @@ bool PAPRCheckPressureSensorForErrors(void) {
 			IN_BL_A,
 			IN_BL_B
 	};
-	int sensor = 0;
-	for (sensor = 0; sensor < 12; sensor ++) {
 
+	int sensor = 0;
+	bool sensorError = FALSE;
+	for (sensor = 0; sensor < 12; sensor ++) {
 		uint8 error = in_getStatus(sensorPorts[sensor]);
 		switch (error) {
 		case DIAG_NOFAILURE_DU8:
-			return FALSE;
+			/* No faliure */
+			break;
 		case DIAG_RANGE_DU8:
-			return FALSE;
+			/* No faliure */
+			break;
 		case DIAG_SCGND_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCUBAT_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCGND_OR_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCUBAT_OR_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		}
 	}
-	return TRUE; /* this should never happen */
+	return sensorError;
 }
-
 
 static void lowPassFilterPressureSensor(float sampleTime) {
 	static uint32 pressureDataLast_Bar[INDEX_SIZE_PRESSURESENS];

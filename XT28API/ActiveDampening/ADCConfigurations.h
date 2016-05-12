@@ -71,9 +71,12 @@ void ADCFGPesudoForceWithOptimalForceRefPIDSkyhookSlidingMode(bool state);
  * 4. Set reference for pendulum arm in Current
  * 5. Actuate and pray.
  *
- * @param state Set to true to use this setup, false and its deactivated.
+ * @param setHeightRef
+ * @param setPhiRef
+ * @param setThetaRef
+ * @param forceGainPercent
  */
-void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaRef);
+void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaRef, float forceGainPercent);
 
 /*!
  * Is this a smart way do handle setting constants?

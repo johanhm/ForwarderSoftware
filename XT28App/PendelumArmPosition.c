@@ -7,8 +7,8 @@ static float getVerticalHeightForWheel_m(int wheel);
 /* Publick functions */
 void PAPOSConfigurePositionSensorsVoltageInput(void) {
 	/* Configure pos sensors */
-	in_cfgVoltageInput(IN_1_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Front right
-	in_cfgVoltageInput(IN_2_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Front left
+	in_cfgVoltageInput(IN_1_AIV, 500, 4500, 100, 450, 4800, 200); //angle sensor Front right
+	in_cfgVoltageInput(IN_2_AIV, 500, 4500, 100, 450, 4800, 200); //angle sensor Front left
 	in_cfgVoltageInput(IN_3_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Mid right
 	in_cfgVoltageInput(IN_4_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Mid left
 	in_cfgVoltageInput(IN_5_AIV, 500, 4500, 100, 200, 4800, 200); //angle sensor Rear right
@@ -69,6 +69,7 @@ void PAPOSUppdatePosSensorsDataWithSampleTime(int sampleTime_ms) {
 }
 
 bool PAPOSCheckPosSensorsForErrors(void) {
+
 	uint32 sensorPorts[6] = {IN_1_AIV,
 			IN_2_AIV,
 			IN_3_AIV,
@@ -76,28 +77,37 @@ bool PAPOSCheckPosSensorsForErrors(void) {
 			IN_5_AIV,
 			IN_6_AIV
 	};
+
+	bool sensorError = FALSE;
 	int sensor = 0;
 	for (sensor = 0; sensor < 6; sensor ++) {
 
 		uint8 error = in_getStatus(sensorPorts[sensor]);
 		switch (error) {
 		case DIAG_NOFAILURE_DU8:
-			return FALSE;
+			/* No failure */
+			break;
 		case DIAG_RANGE_DU8:
-			return FALSE;
+			/* No failure */
+			break;
 		case DIAG_SCGND_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCUBAT_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCGND_OR_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		case DIAG_SCUBAT_OR_OL_DU8:
-			return TRUE;
+			sensorError = TRUE;
+			break;
 		}
 	}
-	return TRUE; /* this should never happen, here to make the compuler shutup */
+	return sensorError;
 }
 
 static uint16 forwarderAvrageHeightZc = 0;
@@ -116,6 +126,26 @@ static void uppdateForwarderAvrageHeightAndVelocity(void) {
 		forwarderAvrageVelZc = forwarderAvrageVelZc + velData[x];
 	}
 	forwarderAvrageVelZc = forwarderAvrageVelZc / SUM_WHEELS;  //Observer for average chassis height velocity
+}
+
+bool PAPOSIsStrokeLessThen(int minimumStroke) {
+	uint8 wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		if (PAPOSGetPosDataForWheel_mm(wheel) < minimumStroke) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+bool PAPOSIsStrokeLargerThen(int maximumStroke) {
+	uint8 wheel = 0;
+	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
+		if (PAPOSGetPosDataForWheel_mm(wheel) > maximumStroke) {
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 
 int PAPOSGetPosDataForWheel_mm(int wheel) {

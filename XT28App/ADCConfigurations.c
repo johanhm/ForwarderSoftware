@@ -192,7 +192,7 @@ void ADCFGNivPIDAndForcePIDCfg(float heightGain, float thetaGain, float phiGain,
 	ADPIDSetForceControllerParametersPID(forceGain, 0, 0);
 }
 
-void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaRef) {
+void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaRef, float forceGainPercent) {
 
 	/* 2. Get signal and put in array */
 	float heightPhiThetaSignalArray[SUM_WHEELS] = {0};
@@ -215,12 +215,20 @@ void ADCFGNivPIDAndForcePID(float setHeightRef, float setPhiRef, float setThetaR
 			TRUE														/* Deadband              */
 	);
 
+	/* 1. Check input is correct */
+	if (forceGainPercent > 1) {
+		forceGainPercent = 1;
+	}
+	else if (forceGainPercent < 0) {
+		forceGainPercent = 0;
+	}
+
 	/* 4. Set reference current */
 	int wheel = 0;
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		PAASetReferenceForWheelWithUnit(wheel,
 				CURRENT_MA,
-				(heightPhiThetaSignalArray[wheel] + forceControllerOut[wheel])
+				(heightPhiThetaSignalArray[wheel] + (forceControllerOut[wheel] * forceGainPercent) )
 		);
 	}
 

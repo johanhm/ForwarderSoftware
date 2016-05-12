@@ -3,46 +3,55 @@
 #include "XT28CANSupport.h"
 #include "api_lib_basic.h"
 
-#define CAN_1_TX_BUF_LEN_DU8            	500
-#define CAN_2_TX_BUF_LEN_DU8            	25
-#define CAN_3_TX_BUF_LEN_DU8            	25
+#define CAN_1_TX_BUF_LEN_DU8            	(500)
+#define CAN_2_TX_BUF_LEN_DU8            	(25)
+#define CAN_3_TX_BUF_LEN_DU8            	(25)
+#define CAN_4_TX_BUF_LEN_DU8            	(25)
 
-#define CAN_1_RX_BUF_LEN_DU8            	5
-#define CAN_2_RX_BUF_LEN_DU8            	15
-#define CAN_3_RX_BUF_LEN_DU8            	15
+#define CAN_1_RX_BUF_LEN_DU8            	(5)
+#define CAN_2_RX_BUF_LEN_DU8            	(15)
+#define CAN_3_RX_BUF_LEN_DU8            	(15)
+#define CAN_4_RX_BUF_LEN_DU8            	(15)
 
-#define CAN_1_NUM_RX_DATABOXES_DU16    		100
-#define CAN_2_NUM_RX_DATABOXES_DU16    		100
-#define CAN_3_NUM_RX_DATABOXES_DU16    		100
+#define CAN_1_NUM_RX_DATABOXES_DU16    		(100)
+#define CAN_2_NUM_RX_DATABOXES_DU16    		(100)
+#define CAN_3_NUM_RX_DATABOXES_DU16    		(100)
+#define CAN_4_NUM_RX_DATABOXES_DU16    		(10)
 
 void CANConfigureXT28CANChannels(void) {
 
-	// register restrive buffer
+	/* Register resive buffer */
 	static can_Message_ts     can_1_RxBuf_as[CAN_1_RX_BUF_LEN_DU8];
 	static can_Message_ts     can_2_RxBuf_as[CAN_2_RX_BUF_LEN_DU8];
 	static can_Message_ts     can_3_RxBuf_as[CAN_3_RX_BUF_LEN_DU8];
+	static can_Message_ts     can_4_RxBuf_as[CAN_4_RX_BUF_LEN_DU8];
 
 	can_registerRxBuf(CAN_1, can_1_RxBuf_as, CAN_1_RX_BUF_LEN_DU8);
 	can_registerRxBuf(CAN_2, can_2_RxBuf_as, CAN_2_RX_BUF_LEN_DU8);
 	can_registerRxBuf(CAN_3, can_3_RxBuf_as, CAN_3_RX_BUF_LEN_DU8);
+	can_registerRxBuf(CAN_4, can_4_RxBuf_as, CAN_4_RX_BUF_LEN_DU8);
 
-	// Registrer transive buffers
+	/* Register transive buffers */
 	static can_Message_ts     can_1_TxBuf_as[CAN_1_TX_BUF_LEN_DU8];
 	static can_Message_ts     can_2_TxBuf_as[CAN_2_TX_BUF_LEN_DU8];
 	static can_Message_ts     can_3_TxBuf_as[CAN_3_TX_BUF_LEN_DU8];
+	static can_Message_ts     can_4_TxBuf_as[CAN_4_TX_BUF_LEN_DU8];
 
 	can_registerTxBuf(CAN_1, can_1_TxBuf_as, CAN_1_TX_BUF_LEN_DU8);
 	can_registerTxBuf(CAN_2, can_2_TxBuf_as, CAN_3_TX_BUF_LEN_DU8);
 	can_registerTxBuf(CAN_3, can_3_TxBuf_as, CAN_3_TX_BUF_LEN_DU8);
+	can_registerTxBuf(CAN_4, can_4_TxBuf_as, CAN_4_TX_BUF_LEN_DU8);
 
-	//Register how many databoxed
+	/* Register how many databoxed */
 	static can_RxDatabox_ts   can_1_RxDataboxes_as[CAN_1_NUM_RX_DATABOXES_DU16];
 	static can_RxDatabox_ts   can_2_RxDataboxes_as[CAN_2_NUM_RX_DATABOXES_DU16];
 	static can_RxDatabox_ts   can_3_RxDataboxes_as[CAN_3_NUM_RX_DATABOXES_DU16];
+	static can_RxDatabox_ts   can_4_RxDataboxes_as[CAN_4_NUM_RX_DATABOXES_DU16];
 
 	can_registerRxDataboxes(CAN_1, can_1_RxDataboxes_as, CAN_1_NUM_RX_DATABOXES_DU16);
 	can_registerRxDataboxes(CAN_2, can_2_RxDataboxes_as, CAN_2_NUM_RX_DATABOXES_DU16);
 	can_registerRxDataboxes(CAN_3, can_3_RxDataboxes_as, CAN_3_NUM_RX_DATABOXES_DU16);
+	can_registerRxDataboxes(CAN_4, can_4_RxDataboxes_as, CAN_4_NUM_RX_DATABOXES_DU16);
 }
 
 void CANSend_sint16(uint8 CANChannel, uint32 ID, sint16 A, sint16 B, sint16 C, sint16 D) {  //Send up to 4x16bit Variables on CAN1 msg

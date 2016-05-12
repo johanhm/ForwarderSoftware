@@ -92,13 +92,27 @@ float PAPOSGetAvrageHeightOfForwarder(void);
  * @return Average machine velocity in Z axis in unit millimeters per second
  */
 float PAPOSGetAvrageHeightVelocityOfForwarder(void);
-/** @} */
 
-/**!
+/*!
  *  Get the angle between front and back wheels
  * @return beta in radians
  */
 float PAPOSGetBeta(void);
+
+/*!
+ *  Check if any cylinder is less then
+ * @param maximumStroke
+ * @return
+ */
+bool PAPOSIsStrokeLargerThen(int maximumStroke);
+
+/*!
+ *  Check if any cylinder is larger then
+ * @param minimumStroke
+ * @return
+ */
+bool PAPOSIsStrokeLessThen(int minimumStroke);
+/** @} */
 
 /*! \name CAN Send */
 /*!

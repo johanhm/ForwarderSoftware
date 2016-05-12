@@ -225,16 +225,13 @@ static void addDeadbandCurrentToOutputAndSplitIntoAB(int wheel) {
 	else if (referenceSoleonidOutputCurrent_ma[wheel] < 0) {//Output scaled on B  turn off A
 		referenceCurrentPortA[wheel] = 0;
 		referenceCurrentPortB[wheel] = (-1 * referenceSoleonidOutputCurrent_ma[wheel]) + DEADZONE_FOR_SOLEONID_CURRENT_mA;	} //Out between 400 and 800
-	/* debugg */
-	//g_debug3 = referenceCurrentPortA[0];
-	//g_debug4 = referenceCurrentPortB[0];
 
 }
 
 static void checkCylinderPosLimit(void) {
 	uint8 wheel = 0;
 
-	//Cylinder position limit control, does not let cylinder be actuated further in the direction that passed the limit
+	/* Cylinder position limit control, does not let cylinder be actuated further in the direction that passed the limit */
 	for (wheel = 0; wheel < SUM_WHEELS; wheel++) {
 		if (PAPOSGetPosDataForWheel_mm(wheel) < CYL_POS_MIN) { //Assuming REF_A() makes the cylinder go to the positive (extending) direction
 			referenceCurrentPortA[wheel] = 0;

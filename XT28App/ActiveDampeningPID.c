@@ -170,7 +170,7 @@ static float deadbandCheckForceError(float forceErrorPercentage, int wheel) {
 	static deadbandStateEnum state[SUM_WHEELS] = {DEADBAND_STATE_ACTIVE};
 
 	/* Limit for state change, constant */
-	const float deadBandLimit = 0.04;
+	const float deadBandLimit = 0.005;
 
 	/* Check if the error have reached zero or changed sign */
 	int errorSign = 0;

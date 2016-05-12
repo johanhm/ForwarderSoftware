@@ -56,6 +56,14 @@ typedef enum {
  * \param[in] joystrickDataboxNr A data box number, valid range is [1 - 100]
  */
 void EXPConfigureExcipad(uint8 CANChannel, int buttonDataboxNr, int joystrickDataboxYNr, int joystickDataboxXNr);
+
+/*!
+ * Check if exipad have timedout, if it has the actuate should disable.
+ * @param callTime_ms
+ * @param timeoutTime_ms
+ * @return
+ */
+bool EXPCheckTimeout(int callTime_ms, int timeoutTime_ms);
 /** @}*/
 
 
