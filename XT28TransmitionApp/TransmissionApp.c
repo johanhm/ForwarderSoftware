@@ -2,6 +2,7 @@
 
 #include "AngleJointSensor.h"
 #include "SystemPressureSensors.h"
+#include "GasPedalSensor.h"
 
 
 #define CAN_ID_TX_SENSOR_INFO_DMS_1				0x18FE1010 	//Sensor data
@@ -28,6 +29,8 @@ void sys_main(void) {
 	SPSConfigureSystemPressureSensors();
 	SPSConfigureSendSensorDatabox(CAN_1, 15, CAN_ID_TX_SENSOR_INFO_DMS_1);
 
+	GPSConfigureGasPedalInputSensors();
+
 	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
 	sys_initTC(0, 10);
 	can_cfgBufs(CAN_1, 5, 5, 40, 40);
@@ -51,6 +54,7 @@ static void mainTask_10ms(void) {
 	/* Uppdate sensor stuff */
 	AJSUppdateAngleSensorData();
 	SPSUppdateSystemPressureSensors();
+	GPSUppdatePedalSensorData();
 
 
 	/* Send stuff on CAN */

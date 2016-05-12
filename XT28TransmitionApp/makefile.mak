@@ -58,6 +58,7 @@ OBJECTS          = $(OUTPUT_PATH)/TransmissionApp.o\
 									 $(OUTPUT_PATH)/Display.o\
 									 $(OUTPUT_PATH)/AngleJointSensor.o\
 									 $(OUTPUT_PATH)/SystemPressureSensors.o\
+									 $(OUTPUT_PATH)/GasPedalSensor.o\
 									 
 ####################################################################################################
 # Path to libraries which should be included

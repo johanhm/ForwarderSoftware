@@ -1,6 +1,24 @@
 
 #include "SystemPressureSensors.h"
 
+#define ANALOG_PUMP1_PRESSURE_A				0
+#define ANALOG_PUMP1_PRESSURE_B				1
+#define ANALOG_PUMP2_PRESSURE_A				2
+#define ANALOG_PUMP2_PRESSURE_B				3
+#define MBAR_PUMP1_PRESSURE_A				4
+#define MBAR_PUMP1_PRESSURE_B				5
+#define MBAR_PUMP2_PRESSURE_A				6
+#define MBAR_PUMP2_PRESSURE_B				7
+#define MBAR_LP_PUMP1_PRESSURE_A			8
+#define MBAR_LP_PUMP1_PRESSURE_B			9
+#define MBAR_LP_PUMP2_PRESSURE_A			10
+#define MBAR_LP_PUMP2_PRESSURE_B			11
+#define MBAR_LP_OLD_PUMP1_PRESSURE_A		12
+#define MBAR_LP_OLD_PUMP1_PRESSURE_B		13
+#define MBAR_LP_OLD_PUMP2_PRESSURE_A		14
+#define MBAR_LP_OLD_PUMP2_PRESSURE_B		15
+#define INDEX_SIZE_PRESSURE					16
+
 
 void SPSConfigureSystemPressureSensors(void) {
 

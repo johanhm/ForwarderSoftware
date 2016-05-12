@@ -89,7 +89,7 @@ LIBRARIES        = $(PLATFORM_PATH)/Libs/lib_basic.a\
 ###################################################################################################
 
 # additional compiler flags (see compiler_settings.mak)
-CC_FLAGS        += -I(PLATFORM_PATH)/XT28API/Sensors
+CC_FLAGS        +=
 # additional assembler flags (see compiler_settings.mak)
 AS_FLAGS        +=
 # additional linker flags (see compiler_settings.mak) 
