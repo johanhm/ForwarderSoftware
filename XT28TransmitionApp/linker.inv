@@ -1,0 +1,1506 @@
+/***************************************************************************************************
+*
+* FILENAME: linker.inv
+*
+* DESCRIPTION:
+* Linker script, for CORE executables.
+* ATTENTION: .ALIGN(x) at the end of a section is mandantory!!!
+*
+* PROJECT: API RC30 platform
+* Hardware: RC30-00D6
+*
+* FILE VERSION INFORMATION:
+*   $Revision: 2828 $
+*   $Date: 2010-07-16 08:21:07 +0200 (Fr, 16 Jul 2010) $
+*   $Author: gtg2si $
+*
+***************************************************************************************************/
+
+OUTPUT_FORMAT("elf32-tricore")
+OUTPUT_ARCH(tricore)
+
+start = 0x80018078;
+
+ENTRY(start)
+
+/* Lowest RAM address
+* Addresses below this value are assumed to be outside the RAM */
+__LOWEST_RAM_ADDRESS  = 0x82000000;  /* EXT_RAM 82000000 , Else C0000000 */
+
+
+MEMORY
+{
+    BootVect    :   org = 0x80800000,
+                    l   = 0x100
+    HSB         :   org = 0x8001FF00,
+                    l   = 0xE0
+    ABM         :   org = 0x8001FFE0,
+                    l   = 0x20
+    /* Note: The first 128 kbytes are reserved for boot blocks (SB and CB) */
+    FlashCode   :   org = 0x80020000,
+                    l   = 0x803FFFFF + 1 - 0x80020000
+    EXT_RAM     :   org = 0x82000000,
+                    l   = 0x100000
+    /* TC1797 104k DMEM (LDRAM/DCACHE) area @ 0xD0000000                    */
+    /* We do not use any DCACHE so there is a total of 104k LDRAM available */
+    /* Note: The first 2k are reserved (placeholder for "protected" RAM)    */
+    DMI_RAM     :   org = 0xD0000000,
+                    l   = 0xD0019FFF + 1 - 0xD0000000
+    /* TC1797 40k PMEM (SPRAM/ICACHE) area @ 0xC0000000                          */
+    /* ICACHE default config (activated in SB startup code): 8k (32k SPRAM left) */
+    /* Note: The first 468 bytes are reserved (SB and CB "protected" variables)  */
+    PMI_SPRAM   :   org = 0xC00001D4,
+                    l   = 0xC0007FFF + 1 - 0xC00001D4
+    PCP_PRAM    :   org = 0xF0050000,
+                    l   = 0xF0051FFF + 1 - 0xF0050000
+    PCP_PCODE    :  org = 0xF0060000,
+                    l   = 0xF0063FFF + 1 - 0xF0060000
+
+    /* Dummy area for unspecified input sections. Size 0        */
+    /* causes an linker error if there is an input section      */
+    /* not considered in linker command file.                   */
+    must_be_empty : org = 0, len = 0
+}
+
+/*
+ * Define the start address and size of the user stack.
+ * start address: End of DMI RAM which can be used by ASW
+ *                8 bit aligned
+ * size: 4 KByte
+ * note: Stack pointer will be decremented!
+ *
+ */
+__USTACK_END = 0xD0019FF8;
+__USTACK_MIN = DEFINED (__USTACK_MIN) ? __USTACK_MIN : 4K ;
+
+/*
+ * Define the size of the context save area.
+ */
+__CSA_SIZE = DEFINED (__CSA_SIZE) ? __CSA_SIZE : 4k ;
+
+/*
+ * Define the address range of external RAM
+ */
+__EXT_RAM_START = 0x82000000;
+__EXT_RAM_SIZE  = 0x100000;
+__EXT_RAM_END   = __EXT_RAM_START + __EXT_RAM_SIZE;
+
+/*
+ * Define the address range of external RAM for uncached access
+ */
+__EXT_RAM_START_UCA = 0xA2000000;
+__EXT_RAM_SIZE_UCA  = 0x100000 - 4;
+__EXT_RAM_END_UCA   = __EXT_RAM_START_UCA + __EXT_RAM_SIZE_UCA;
+
+/*
+ * Define linker labels for memory check
+ */
+__SP_RAM_START = 0xC0000000;
+__SP_RAM_SIZE = 0x00008000;
+__SP_RAM_END = __SP_RAM_START + __SP_RAM_SIZE;
+__LD_RAM_START = 0xD0000000;
+__LD_RAM_SIZE = 0x0001A000;
+__LD_RAM_END = __LD_RAM_START + __LD_RAM_SIZE;
+__PCP_DRAM_START = 0xF0050000;
+__PCP_DRAM_SIZE = 0x00002000;
+__PCP_DRAM_END = __PCP_DRAM_START + __PCP_DRAM_SIZE;
+__PCP_PRAM_START = 0xF0060000;
+__PCP_PRAM_SIZE = 0x00004000;
+__PCP_PRAM_END = __PCP_PRAM_START + __PCP_PRAM_SIZE;
+__PMU_RAM_START = 0xAFE80000;
+__PMU_RAM_SIZE = 0x00002000;
+__PMU_RAM_END = __PMU_RAM_START + __PMU_RAM_SIZE;
+
+/*
+ * The heap is the memory between the top of the user stack and
+ * __EXT_RAM_END (as defined above); programs can dynamically allocate
+ * space in this area using malloc() and various other functions.
+ * Below you can define the minimum amount of memory that the heap
+ * should provide.
+ */
+__HEAP_MIN = DEFINED (__HEAP_MIN) ? __HEAP_MIN : 0x100 ;
+
+/*
+ * Define the address range of SB_RESERVED.
+ * That means this RAM will be not written by sb and cb and therefor it has to be used for
+ * unititialised or proteced var.'s of ASW which must be saved their values beyond a reset of ECU.
+ */
+__SB_RESERVED_START = 0xD0000000;
+__SB_RESERVED_END   = 0xD00007FF;
+
+
+SECTIONS
+{
+/* -> FLASH ***************************************************************************************/
+
+  /* Allocate .text and other read-only sections. *************************************************/
+
+  .header :
+  {
+    /* header must be at first !!! */
+    __HEADER_START_ADDR = .;
+    *(.header)
+    __CRC_PATCH_ADDR = . -120;
+
+    . = ALIGN(64);
+    __CRC_START_ADDR = .;
+    *(.csentry)
+
+    . = ALIGN(4);
+    __HEADER_END_ADDR = .;
+
+    . = ALIGN(8);
+  } > FlashCode = 0
+
+  __HEADER_SIZE = __HEADER_END_ADDR - __HEADER_START_ADDR;
+
+  .text :
+  {
+    *(.main)
+    *(.text)
+    *(.text.*)
+
+    /*
+     * interrupt vector table
+     * Bits 0..12 of this table must be 0!!!
+     */
+    . = ALIGN(0x2000);
+    __INT_TABLE = .;
+    *(.inttab)
+    __INT_TABLE_END = .;
+
+    /*
+     * .gnu.warning sections are handled specially by elf32.em.
+     */
+
+    *(.gnu.warning)
+  } > FlashCode
+
+    /***********************************************************/
+    /* DSERAP vector table in ASW Flash                        */
+    /* - register A9 relative addressed                        */
+    /* - last non bypass entry in asw, as table grows with     */
+    /*   internal bypass                                       */
+    /* - only two DSERAP areas are supported by DME driver     */
+    /***********************************************************/
+    .sdata4 :
+    {
+        . = ALIGN(4);
+        _SMALL_DATA4_ = .;
+        __PTA_STARTVECT = .;
+        *(.sdata.ptavect0)
+        *(SORT(.sdata.pta_vectbyp_*))                /* sort additional data from internal bypass */
+        . = ALIGN(0x4);
+        __PTA_ENDVECT = . ;
+        *(.pta_endvect)
+        . = ALIGN(0x4);
+    } > FlashCode
+    __PTAVECT_SIZE = __PTA_ENDVECT - __PTA_STARTVECT;
+    __DME_VECTTAB_ELEMENTS = __PTAVECT_SIZE / 4 ;
+
+    .code_end :
+    {
+      *(.ds0_compref)
+      *(.ds0_epilog)
+      *(.toc)
+      *(.endpattern)
+      . = ALIGN(0x4);
+      __INITVAR_FLASH_START   = .;
+    }> FlashCode
+
+    /***********************************************************/
+    /* Flash dataset 0:                                        */
+    /***********************************************************/
+    .ds0_data_flash_start :
+    {
+        . = ALIGN(0x4);
+        __DS0_DATA_FLASH_START = .;
+        __DS0_DATA_START = .;
+        /* non PTA calibration data */
+        *(.caldata_byptab)
+        *(.caldata0)
+        /* PTA/DSERAP calibration data */
+        . = ALIGN(0x4);
+        __PTA_DATA_START = .;
+        *(.ptadata0)
+        *(SORT(.pta_databyp_*))                     /* sort additional data from internal bypass */
+        . = ALIGN(0x4);
+        __PTA_DATA0_END   = . - 1;
+        __PTA_DATA_END   = . - 1;
+        *(SORT(.caldatabyp*))                       /* sort additional data from internal bypass */
+        . = ALIGN(0x4);
+        __DS0_DATA_END = . - 1 ;
+    } > FlashCode
+    /***********************************************************/
+    /*                                                         */
+    /*                   EMULATION DEVICE                      */
+    /*                                                         */
+    /***********************************************************/
+    /* Accessing this area on a non ED device causes a trap.   */
+    /***********************************************************/
+    .edram (0x8FF00000) (NOLOAD) :
+    {
+        /* Memory is cleared on each reset by Dme_FirstInit() */
+        __EDRAM_CLEAR_START = .;
+        *(.bss.edram_clear)
+        . = ALIGN(0x4);
+        __EDRAM_CLEAR_END = . - 1;
+        /* Memory is cleared on poweron reset by Dme_FirstInit() */
+        __EDRAM_PROTECTED_START = .;
+        *(.bss.edram_protected)
+        . = ALIGN(0x4);
+        __EDRAM_PROTECTED_END = . - 1;
+        /* Memory is cleared on ED power fail by Dme_FirstInit() */
+        __EDRAM_STANDBY_START = .;
+        *(.bss.edram_standby)
+        . = ALIGN(0x4);
+        __EDRAM_STANDBY_END = . - 1;
+        *(.bss.edram_standby_cs)
+        /* Memory is never cleared or initialized */
+        *(.bss.edram_noclear)
+        . = ALIGN(0x4);
+        /* calibration memory in EDRAM */
+        . = ALIGN(4);
+        __EDRAM_DYN_START = .;
+        . += 0x8FF7FFFF + 1 - ABSOLUTE(.);
+        __EDRAM_DYN_END   = . - 1;
+    } > edram
+/***********************************************************/
+/*                                                         */
+/* EMULATION DEVICE                                        */
+/*                                                         */
+/***********************************************************/
+/***********************************************************/
+/* statically allocated ED-RAM                             */
+/***********************************************************/
+.bss.edram_static ALIGN(0x10000) :
+{
+/* .bss.edram_info must be the first section. It is referenced at a fix
+address from ED-PCP */
+__EDRAM_INFO_START = .;
+*(.bss.edram_info)
+*(.edram_info) /* deprecated, will be removed */
+. = ALIGN(0x4);
+/* Memory is cleared on each reset */
+__EDRAM_CLEAR_START = .;
+*(.bss.edram_clear)
+. = ALIGN(0x4);
+__EDRAM_CLEAR_END = . - 1;
+/* Memory is cleared on poweron reset */
+__EDRAM_PROTECTED_START = .;
+__EDRAM_XCPUSB_DAQ_START = .;
+*(.bss.edram_protected)
+*(.edram_mem) /* deprecated, will be removed */
+. = ALIGN(0x4);
+__EDRAM_XCPUSB_DAQ_END = .;
+__EDRAM_PROTECTED_END = . - 1;
+/* Memory is cleared on ED power loss */
+__EDRAM_STANDBY_START = .;
+*(.bss.edram_standby)
+. = ALIGN(0x4);
+__EDRAM_STANDBY_END = . - 1;
+*(.bss.edram_standby_cs)
+. = ALIGN(0x4);
+} > edram
+__EDRAM_CLEAR_SIZE      = __EDRAM_CLEAR_END     + 1 - __EDRAM_CLEAR_START;
+__EDRAM_PROTECTED_SIZE  = __EDRAM_PROTECTED_END + 1 - __EDRAM_PROTECTED_START;
+__EDRAM_STANDBY_SIZE    = __EDRAM_STANDBY_END   + 1 - __EDRAM_STANDBY_START;
+    .endpattern :
+    {
+      *(.endpattern);
+    }> FlashEndPattern
+  /* version identification of api libraries
+     (max. 32 modules, 16 bytes for each  module) in flash code
+  */
+  .Version_Info_Libs :
+  {
+    __START_ADRESS_VERSION_INFO_LIBS = .;
+    *(.VERSION_LIB_BASIC)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0010), "VERSION_LIB_BASIC too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0010;
+    *(.VERSION_LIB_SRC_RC_BASIC)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0020),
+                                                               "VERSION_LIB_SRC_RC_BASIC too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0020;
+    *(.VERSION_LIB_EEPROM)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0030), "VERSION_LIB_EEPROM too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0030;
+    *(.VERSION_LIB_DIAG)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0040), "VERSION_LIB_DIAG too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0040;
+    *(.VERSION_LIB_POTI)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0050), "VERSION_LIB_POTI too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0050;
+    *(.VERSION_LIB_STM)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0060), "VERSION_LIB_STM too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0060;
+    *(.VERSION_LIB_CANOPEN)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0070), "VERSION_LIB_CANOPEN too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0070;
+    *(.VERSION_LIB_J1939)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0080), "VERSION_LIB_J1939 too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0080;
+    *(.VERSION_LIB_RTS)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0090), "VERSION_LIB_RTS too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0090;
+    *(.VERSION_LIB_CANOPEN_RCE)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00A0),
+                                                                "VERSION_LIB_CANOPEN_RCE too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00A0;
+    *(.VERSION_LIB_UDS)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00B0), "VERSION_LIB_UDS too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00B0;
+    *(.VERSION_LIB_OUTEXT)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00C0), "VERSION_LIB_OUTEXT too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00C0;
+    *(.VERSION_LIB_ACOM)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00D0), "VERSION_LIB_ACOM too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00D0;
+    *(.VERSION_LIB_RTM)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00E0), "VERSION_LIB_RTM too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00E0;
+    *(.VERSION_LIB_CCP)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x00F0), "VERSION_LIB_CCP too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x00F0;
+    *(.VERSION_LIB_ISOBUS)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0100), "VERSION_LIB_ISOBUS too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0100;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0110;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0120;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0130;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0140;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0150;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0160;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0170;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0180;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0190;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01A0;
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01B0;
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01C0;
+    *(.VERSION_LIB_DUMMY1)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x01D0), "VERSION_LIB_DUMMY1 too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01D0;
+    *(.VERSION_LIB_DUMMY2)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x01E0), "VERSION_LIB_DUMMY2 too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01E0;
+    *(.VERSION_LIB_DUMMY3)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x01F0), "VERSION_LIB_DUMMY3 too big.");
+
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x01F0;
+    *(.VERSION_LIB_DUMMY4)
+    _. = ASSERT(. <= (__START_ADRESS_VERSION_INFO_LIBS + 0x0200), "VERSION_LIB_DUMMY4 too big.");
+
+    /* Set the location counter at the end of the version info block.
+       It is needed because some sections are not available and therefore
+       they do not allocate memory when the library is not linked.
+       In this case the memory contains the value 0xFF.
+    */
+    . = __START_ADRESS_VERSION_INFO_LIBS + 0x0200;
+  } > FlashCode
+
+  /* library function table
+     4 bytes (= address in flash) per library in flash code
+  */
+  .Library_Function_Table :
+  {
+    __START_ADDR_LIB_FUNCTION_TABLE = .;
+    *(.FUNCTABLE_LIB_DIAG)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0004), "FUNCTABLE_LIB_DIAG too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0004;
+    *(.FUNCTABLE_LIB_POTI)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0008), "FUNCTABLE_LIB_POTI too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0008;
+    *(.FUNCTABLE_LIB_STM)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x000C), "FUNCTABLE_LIB_STM too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x000C;
+    *(.FUNCTABLE_LIB_CANOPEN)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0010), "FUNCTABLE_LIB_CANOPEN too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0010;
+    *(.FUNCTABLE_LIB_J1939)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0014), "FUNCTABLE_LIB_J1939 too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0014;
+    *(.FUNCTABLE_LIB_RTS)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0018), "FUNCTABLE_LIB_RTS too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0018;
+    *(.FUNCTABLE_LIB_UDS)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x001C), "FUNCTABLE_LIB_UDS too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x001C;
+    *(.FUNCTABLE_LIB_CCP)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0020), "FUNCTABLE_LIB_CCP too big.");
+
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0020;
+    *(.FUNCTABLE_LIB_ISOBUS)
+    _. = ASSERT(. <= (__START_ADDR_LIB_FUNCTION_TABLE + 0x0024), "FUNCTABLE_LIB_ISOBUS too big.");
+
+    /* Set the location counter at the end of the library function table block.
+       It is needed because some sections are not available and therefore
+       they do not allocate memory when the library is not linked.
+       In this case the memory contains the value 0xFF.
+    */
+    . = __START_ADDR_LIB_FUNCTION_TABLE + 0x0024;
+
+    /*
+     * interrupt function of RTM module
+    */
+    __RTM_INT_FUNC = .;
+    *(.RTM_INT_FUNC)
+    . = ALIGN(8);
+  } > FlashCode
+
+  .rodata :
+  {
+    . = ALIGN(8);
+    *(.rodata)
+    *(.rodata.*)
+    *(.rodata1)
+    *(SORT(.pta_data*))
+    *(.toc)
+
+    /*
+     * Create the clear and copy tables that tell the startup code
+     * which memory areas to clear and to copy, respectively.
+     */
+
+    . = ALIGN(8);
+    PROVIDE(__clear_table = .) ;
+    LONG(0 + ADDR(.bss));                  LONG(SIZEOF(.bss));
+    LONG(0 + ADDR(.sbss));                 LONG(SIZEOF(.sbss));
+    LONG(0 + ADDR(.zbss));                 LONG(SIZEOF(.zbss));
+    LONG(0 + ADDR(.bss_dmiram));           LONG(SIZEOF(.bss_dmiram));
+    LONG(0 + ADDR(.bss_extram));           LONG(SIZEOF(.bss_extram));
+    LONG(0 + ADDR(.bss_ram1));             LONG(SIZEOF(.bss_ram1));
+    LONG(-1);                              LONG(-1);
+
+    PROVIDE(__copy_table = .) ;
+    LONG(LOADADDR(.data));          LONG(0 + ADDR(.data));             LONG(SIZEOF(.data));
+    LONG(LOADADDR(.sdata));         LONG(0 + ADDR(.sdata));            LONG(SIZEOF(.sdata));
+    LONG(LOADADDR(.zdata));         LONG(0 + ADDR(.zdata));            LONG(SIZEOF(.zdata));
+    LONG(LOADADDR(.pcpdata));       LONG(0 + ADDR(.pcpdata));          LONG(SIZEOF(.pcpdata));
+    LONG(LOADADDR(.pcptext));       LONG(0 + ADDR(.pcptext));          LONG(SIZEOF(.pcptext));
+    LONG(LOADADDR(.data_dmiram));   LONG(0 + ADDR(.data_dmiram));      LONG(SIZEOF(.data_dmiram));
+    LONG(LOADADDR(.data_extram));   LONG(0 + ADDR(.data_extram));      LONG(SIZEOF(.data_extram));
+    LONG(-1);                       LONG(-1);                          LONG(-1);
+    . = ALIGN(8);
+  } > FlashCode
+
+  /* flash code end address */
+  API_FlashCode_END = . - 1;
+
+/* <- FLASH ***************************************************************************************/
+
+  /*
+   * We're done now with the text part of the executable.  The
+   * following sections are special in that their initial code or
+   * data (if any) must also be stored in said text part of an
+   * executable, but they "live" at completely different addresses
+   * at runtime -- usually in RAM areas.  NOTE: This is not really
+   * necessary if you use a special program loader (e.g., a debugger)
+   * to load a complete executable consisting of code, data, BSS, etc.
+   * into the RAM of some target hardware or a simulator, but it *is*
+   * necessary if you want to burn your application into non-volatile
+   * memories such as EPROM or FLASH.
+   */
+
+/* -> PCP *****************************************************************************************/
+
+  .pcptext :
+  {
+    . = ALIGN(8);
+    __PCODE_RAM_START = . ;
+    *(.pcptext)
+    *(.pcptext.*)
+    . = ALIGN(4);
+    LONG(0xDEADBEEF);
+    __PCODE_RAM_END = . ;
+  } > PCP_PCODE AT> FlashCode = 0
+
+  __PCODE_START = LOADADDR(.pcptext) + (__PCODE_RAM_START - ADDR(.pcptext));
+  __PCODE_END = LOADADDR(.pcptext) + (__PCODE_RAM_END - ADDR(.pcptext));
+  __PCODE_SIZE = __PCODE_RAM_END - __PCODE_RAM_START;
+
+  /* pcp code end address */
+  API_PCP_PCODE_END = . - 1;
+
+  .pcpdata :
+  {
+    . = ALIGN(8);
+    PRAM_START = . ;
+    *(.pcpdata)
+    *(.pcpdata.*)
+    . = ALIGN(8);
+    PRAM_END = .;
+  } > PCP_PRAM AT> FlashCode
+
+  /* pcp data end address */
+  API_PCP_PRAM_END = . - 1;
+
+/* -> PCP *****************************************************************************************/
+
+/* -> DMI RAM *************************************************************************************/
+
+  /* .ram0_boot is part of ram0 area */
+  .ram0_boot 0xD0000000 (NOLOAD) :
+  {
+    __RAM0_START = .;
+    __UNIQUE_CHIP_ID = .;
+
+      /* size of unique chip ID is 24 bytes for TC1767 and newer */
+      . += 24;
+      . = ALIGN(8);
+  } > DMI_RAM
+
+  /* Absolute addressing sections must be loctated in the first 16k from a segment */
+  .zbss (NOLOAD) :
+  {
+    . = ALIGN(8);
+    ZBSS_START = . ;
+    *(.zbss.a1)
+    *(.zbss.a2)
+    *(.zbss.a4)
+    *(.zbss.a8)
+    *(.zbss)
+    *(.bbss)
+    . = ALIGN(8);
+    ZBSS_END = .;
+  } > DMI_RAM
+
+  .zdata :
+  {
+    . = ALIGN(8);
+    ZDATA_START = . ;
+    *(.zdata.a1)
+    *(.zdata.a2)
+    *(.zdata.a4)
+    *(.zdata.a8)
+    *(.zdata)
+    *(.bdata)
+    . = ALIGN(8);
+    ZDATA_END = .;
+  } > DMI_RAM AT> FlashCode
+
+  /* Allocate space for CSA in DMI_RAM after absolute addressing section */
+  .csa (NOLOAD) :
+  {
+    . = ALIGN(64) ;
+    __CSA_BEGIN = .;
+    . += __CSA_SIZE;
+    . = ALIGN(64) ;
+    __CSA_END = . - 1;
+  } > DMI_RAM
+
+  /* All uinitialised var.'s must be placed in RAM range of SB_RESERVED */
+  /* because sb + cb don't write this RAM!                              */
+
+  /* section used by core */
+  .bss_ram1 (NOLOAD):
+  {
+    __RAM1_START   = .;
+    *(.bss.ram1)
+    . = ALIGN(0x4);
+    __RAM1_END = .;
+  } > DMI_RAM
+    .zbss.ram0 (NOLOAD) :
+    {
+        *(.zbss.ram0)
+        *(.zbss.ram1)  /* if RAM1 not available for absolue adressing */
+        *(.bbss.ram0)
+        *(.bbss.ram1)  /* if RAM1 not available for absolue adressing */
+        . = ALIGN(8);
+    } > DMI_RAM
+  /* Sections uninitialised ***********************************************************************/
+
+  .dmiram (NOLOAD) :
+  {
+    . = ALIGN(8);
+     /* .ram0_boot is part of ram0 area */
+    __RAM0_BOOT_START = .;
+    *(.ram0)
+    __RAM0_BOOT_END = .;
+
+    /* C-API lib basic high performance access for uninitialised var's. */
+    LIBBASIC_ACCESS_HIGH_START = .;
+    *(.LibBasic_AccessHigh)
+    LIBBASIC_ACCESS_HIGH_END = .;
+
+    /* C-API lib basic middle performance access for uninitialised var's. */
+    LIBBASIC_ACCESS_MIDDLE_START = .;
+    *(.LibBasic_AccessMiddle)
+    LIBBASIC_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib CANopen high performance access for uninitialised var's. */
+    LIBCANOPEN_ACCESS_HIGH_START = .;
+    *(.LibCANopen_AccessHigh)
+    LIBCANOPEN_ACCESS_HIGH_END = .;
+
+    /* C-API lib CANopen middle performance access for uninitialised var's. */
+    LIBCANOPEN_ACCESS_MIDDLE_START = .;
+    *(.LibCANopen_AccessMiddle)
+    LIBCANOPEN_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib poti high performance access for uninitialised var's. */
+    LIBPOTI_ACCESS_HIGH_START = .;
+    *(.LibPoti_AccessHigh)
+    LIBPOTI_ACCESS_HIGH_END = .;
+
+    /* C-API lib poti middle performance access for uninitialised var's. */
+    LIBPOTI_ACCESS_MIDDLE_START = .;
+    *(.LibPoti_AccessMiddle)
+    LIBPOTI_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib diag high performance access for uninitialised var's. */
+    LIBDIAG_ACCESS_HIGH_START = .;
+    *(.LibDiag_AccessHigh)
+    LIBDIAG_ACCESS_HIGH_END = .;
+
+    /* C-API lib diag middle performance access for uninitialised var's. */
+    LIBDIAG_ACCESS_MIDDLE_START = .;
+    *(.LibDiag_AccessMiddle)
+    LIBDIAG_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib j1939 high performance access for uninitialised var's. */
+    LIBJ1939_ACCESS_HIGH_START = .;
+    *(.LibJ1939_AccessHigh)
+    LIBJ1939_ACCESS_HIGH_END = .;
+
+    /* C-API lib j1939 middle performance access for uninitialised var's. */
+    LIBJ1939_ACCESS_MIDDLE_START = .;
+    *(.LibJ1939_AccessMiddle)
+    LIBJ1939_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib UDS high performance access for uninitialised var's. */
+    LIBUDS_ACCESS_HIGH_START = .;
+    *(.LibUDS_AccessHigh)
+    LIBUDS_ACCESS_HIGH_END = .;
+
+    /* C-API lib UDS middle performance access for uninitialised var's. */
+    LIBUDS_ACCESS_MIDDLE_START = .;
+    *(.LibUDS_AccessMiddle)
+    LIBUDS_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib EMCY high performance access for uninitialised var's. */
+    LIBEMCY_ACCESS_HIGH_START = .;
+      *(.LibEMCY_AccessHigh)
+    LIBEMCY_ACCESS_HIGH_END = .;
+
+    /* Uninitialised var's. Requirement: These var's have not changed after a soft reset! */
+    /* needed by C-API */
+    *(.uninitializedData)
+
+    /* application uninitialised var's */
+    APPL_DMI_LDRAM_START = .;
+    *(.appl_DMI_LDRAM)
+    APPL_DMI_LDRAM_END = . - 1;
+
+    . = ALIGN(8);
+  } > DMI_RAM
+
+  /***********************************************************/
+  /* Protected ASW variables                                 */
+  /***********************************************************/
+  .bss_protram (NOLOAD) :
+  {
+    . = ALIGN(0x4);
+    BSS_PROTRAM_START = . ;
+    *(.bss.protram.a8)
+    *(.bss.protram.a4)
+    *(.bss.protram.a2)
+    *(.bss.protram.a1)
+    *(.bss.protram)
+    *(.prot_ram)            /* deprecated, will be removed */
+    . = ALIGN(0x8);
+    BSS_PROTRAM_END = .;
+  } > DMI_RAM
+
+  /* No more uinitialised/protected sections in DMI RAM!
+   * Make sure uninitialised/protected ram is in address range of SB_RESERVED
+   *
+   */
+  _. = ASSERT (. > __SB_RESERVED_END , "Uninitialised var.'s in DMI RAM outside SB_RESERVED !") ;
+
+  /* Sections initialised with values different from zero *****************************************/
+
+  .data_dmiram :
+  {
+    . = ALIGN(8);
+    __DATA_DMIRAM_START = .;
+
+    /* C-API lib basic high performance access for var's initialised different from zero. */
+    DATA_LIBBASIC_ACCESS_HIGH_START = .;
+    *(.data.LibBasic_AccessHigh)
+    DATA_LIBBASIC_ACCESS_HIGH_END = .;
+
+    /* C-API lib basic middle performance access for var's initialised different from zero. */
+    DATA_LIBBASIC_ACCESS_MIDDLE_START = .;
+    *(.data.LibBasic_AccessMiddle)
+    DATA_LIBBASIC_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib CANopen high performance access for var's initialised different from zero. */
+    DATA_LIBCANOPEN_ACCESS_HIGH_START = .;
+    *(.data.LibCANopen_AccessHigh)
+    DATA_LIBCANOPEN_ACCESS_HIGH_END = .;
+
+    /* C-API lib CANopen middle performance access for var's initialised different from zero. */
+    DATA_LIBCANOPEN_ACCESS_MIDDLE_START = .;
+    *(.data.LibCANopen_AccessMiddle)
+    DATA_LIBCANOPEN_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib poti high performance access for var's initialised different from zero. */
+    DATA_LIBPOTI_ACCESS_HIGH_START = .;
+    *(.data.LibPoti_AccessHigh)
+    DATA_LIBPOTI_ACCESS_HIGH_END = .;
+
+    /* C-API lib poti middle performance access for var's initialised different from zero. */
+    DATA_LIBPOTI_ACCESS_MIDDLE_START = .;
+    *(.data.LibPoti_AccessMiddle)
+    DATA_LIBPOTI_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib diag high performance access for var's initialised different from zero. */
+    DATA_LIBDIAG_ACCESS_HIGH_START = .;
+    *(.data.LibDiag_AccessHigh)
+    DATA_LIBDIAG_ACCESS_HIGH_END = .;
+
+    /* C-API lib diag middle performance access for var's initialised different from zero. */
+    DATA_LIBDIAG_ACCESS_MIDDLE_START = .;
+    *(.data.LibDiag_AccessMiddle)
+    DATA_LIBDIAG_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib j1939 high performance access for var's initialised different from zero. */
+    DATA_LIBJ1939_ACCESS_HIGH_START = .;
+    *(.data.LibJ1939_AccessHigh)
+    DATA_LIBJ1939_ACCESS_HIGH_END = .;
+
+    /* C-API lib j1939 middle performance access for var's initialised different from zero. */
+    DATA_LIBJ1939_ACCESS_MIDDLE_START = .;
+    *(.data.LibJ1939_AccessMiddle)
+    DATA_LIBJ1939_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib UDS high performance access for var's initialised different from zero. */
+    DATA_LIBUDS_ACCESS_HIGH_START = .;
+    *(.data.LibUDS_AccessHigh)
+    DATA_LIBUDS_ACCESS_HIGH_END = .;
+
+    /* C-API lib UDS middle performance access for var's initialised different from zero. */
+    DATA_LIBUDS_ACCESS_MIDDLE_START = .;
+    *(.data.LibUDS_AccessMiddle)
+    DATA_LIBUDS_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib EMCY high performance access for var's initialised different from zero. */
+    DATA_LIBEMCY_ACCESS_HIGH_START = .;
+      *(.data.LibEMCY_AccessHigh)
+    DATA_LIBEMCY_ACCESS_HIGH_END = .;
+
+    /* C-API lib EMCY middle performance access for var's initialised different from zero. */
+    DATA_LIBEMCY_ACCESS_MIDDLE_START = .;
+      *(.data.LibEMCY_AccessMiddle)
+    DATA_LIBEMCY_ACCESS_MIDDLE_END = .;
+
+    *(.data.Mo_RamTmp)
+
+    /* application var's initialised with values different from zero */
+    DATA_APPL_DMI_LDRAM_START = .;
+    *(.data.appl_DMI_LDRAM)
+    DATA_APPL_DMI_LDRAM_END = . - 1;
+
+    /* sdata general section of API var's */
+    SDATA_API_START = . ;
+    . = ALIGN(8);
+    PROVIDE(__sdata_api_start = .);
+    *(.sdata.api.a1)
+    *(.sdata.api.a2)
+    *(.sdata.api.a4)
+    *(.sdata.api.a8)
+    *(.sdata.api)
+    SDATA_API_END = . ;
+
+    /* sdata general section of core var's */
+    SDATA_CORE_START = . ;
+    . = ALIGN(8);
+    PROVIDE(__sdata_api_start = .);
+    *(.sdata.core.a1)
+    *(.sdata.core.a2)
+    *(.sdata.core.a4)
+    *(.sdata.core.a8)
+    *(.sdata.core)
+    SDATA_CORE_END = . ;
+
+    /* data general section of API var's */
+    . = ALIGN(8);
+    DATA_API_START = . ;
+    *(.data.api.a1)
+    *(.data.api.a2)
+    *(.data.api.a4)
+    *(.data.api.a8)
+    *(.data.api)
+    . = ALIGN(8);
+    DATA_API_END = . ;
+
+    /* data general section of core var's */
+    . = ALIGN(8);
+    DATA_CORE_START = . ;
+    *(.data.core.a1)
+    *(.data.core.a2)
+    *(.data.core.a4)
+    *(.data.core.a8)
+    *(.data.core)
+    . = ALIGN(8);
+    DATA_CORE_END = . ;
+
+    /* General DMI RAM of var's initialised different from zero -> can be used by application */
+    . = ALIGN(8);
+    *(.data.dmiram)
+    . = ALIGN(8);
+    __DATA_DMIRAM_END = .;
+  } > DMI_RAM AT> FlashCode
+
+  /* Sections initialised with zero ***************************************************************/
+
+  .bss_dmiram (NOLOAD) :
+  {
+    . = ALIGN(8);
+    __BSS_DMIRAM_START = .;
+
+    /* Library CANopen objects
+    ATTENTION: This section has to be placed so that its address will be not changed if the
+                application is changed by user !
+          The best way is to place this section at first in the choosen output section.
+    */
+    BSS_LIBCANOPEN_OBJ_START = .;
+      *(.bss.LibCANopen_Obj)
+    BSS_LIBCANOPEN_OBJ_END = .;
+
+    /* Hardware monitor: double-buffered var's - part 1 normal saved - initialised with zero. */
+  . = ALIGN(4);
+    __MO_RAMCYCLICCHECK_START = .;
+    *(.bss.Mo_RamCyclicCheck)
+    . = ALIGN(4);
+    __MO_RAMCYCLICCHECK_END = .;
+
+    /* C-API lib basic high performance access for var's initialised with zero. */
+    BSS_LIBBASIC_ACCESS_HIGH_START = .;
+    *(.bss.LibBasic_AccessHigh)
+    BSS_LIBBASIC_ACCESS_HIGH_END = .;
+
+    /* C-API lib basic middle performance access for var's initialised with zero. */
+    BSS_LIBBASIC_ACCESS_MIDDLE_START = .;
+    *(.bss.LibBasic_AccessMiddle)
+    BSS_LIBBASIC_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib CANopen high performance access for var's initialised with zero. */
+    BSS_LIBCANOPEN_ACCESS_HIGH_START = .;
+    *(.bss.LibCANopen_AccessHigh)
+    BSS_LIBCANOPEN_ACCESS_HIGH_END = .;
+
+    /* C-API lib CANopen middle performance access for var's initialised with zero. */
+    BSS_LIBCANOPEN_ACCESS_MIDDLE_START = .;
+    *(.bss.LibCANopen_AccessMiddle)
+    BSS_LIBCANOPEN_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib poti high performance access for var's initialised with zero. */
+    BSS_LIBPOTI_ACCESS_HIGH_START = .;
+    *(.bss.LibPoti_AccessHigh)
+    BSS_LIBPOTI_ACCESS_HIGH_END = .;
+
+    /* C-API lib poti middle performance access for var's initialised with zero. */
+    BSS_LIBPOTI_ACCESS_MIDDLE_START = .;
+    *(.bss.LibPoti_AccessMiddle)
+    BSS_LIBPOTI_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib diag high performance access for var's initialised with zero. */
+    BSS_LIBDIAG_ACCESS_HIGH_START = .;
+    *(.bss.LibDiag_AccessHigh)
+    BSS_LIBDIAG_ACCESS_HIGH_END = .;
+
+    /* C-API lib diag middle performance access for var's initialised with zero. */
+    BSS_LIBDIAG_ACCESS_MIDDLE_START = .;
+    *(.bss.LibDiag_AccessMiddle)
+    BSS_LIBDIAG_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib j1939 high performance access for var's initialised with zero. */
+    BSS_LIBJ1939_ACCESS_HIGH_START = .;
+    *(.bss.LibJ1939_AccessHigh)
+    BSS_LIBJ1939_ACCESS_HIGH_END = .;
+
+    /* C-API lib j1939 middle performance access for var's initialised with zero. */
+    BSS_LIBJ1939_ACCESS_MIDDLE_START = .;
+    *(.bss.LibJ1939_AccessMiddle)
+    BSS_LIBJ1939_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib UDS high performance access for var's initialised with zero. */
+    BSS_LIBUDS_ACCESS_HIGH_START = .;
+    *(.bss.LibUDS_AccessHigh)
+    BSS_LIBUDS_ACCESS_HIGH_END = .;
+
+    /* C-API lib UDS middle performance access for var's initialised with zero. */
+    BSS_LIBUDS_ACCESS_MIDDLE_START = .;
+    *(.bss.LibUDS_AccessMiddle)
+    BSS_LIBUDS_ACCESS_MIDDLE_END = .;
+
+    /* C-API lib EMCY high performance access for var's initialised with zero. */
+    BSS_LIBEMCY_ACCESS_HIGH_START = .;
+      *(.bss.LibEMCY_AccessHigh)
+    BSS_LIBEMCY_ACCESS_HIGH_END = .;
+
+    /* C-API lib ISOBUS high performance access for var's initialised with zero. */
+    BSS_LIBISOBUS_ACCESS_HIGH_START = .;
+      *(.bss.LibISOBUS_AccessHigh)
+    BSS_LIBISOBUS_ACCESS_HIGH_END = .;
+
+    *(.bss.Mo_RamTmp)
+
+    /* application var's initialised with zero */
+    BSS_APPL_DMI_LDRAM_START = .;
+    *(.bss.appl_DMI_LDRAM)
+    BSS_APPL_DMI_LDRAM_END = . - 1;
+
+    /* sbss general section of API var's */
+    . = ALIGN(8);
+    SBSS_API_START = . ;
+    PROVIDE(__sbss_api_start = .);
+    *(.sbss.api.a1)
+    *(.sbss.api.a2)
+    *(.sbss.api.a4)
+    *(.sbss.api.a8)
+    *(.sbss.api)
+    . = ALIGN(8);
+    SBSS_API_END = . ;
+
+    /* sbss general section of core var's */
+    . = ALIGN(8);
+    SBSS_CORE_START = . ;
+    PROVIDE(__sbss_core_start = .);
+    *(.sbss.core.a1)
+    *(.sbss.core.a2)
+    *(.sbss.core.a4)
+    *(.sbss.core.a8)
+    *(.sbss.core)
+    . = ALIGN(8);
+    SBSS_CORE_END = . ;
+
+    /* bss general section of API var's */
+    . = ALIGN(8);
+    BSS_API_START = . ;
+    *(.bss.api.a1)
+    *(.bss.api.a2)
+    *(.bss.api.a4)
+    *(.bss.api.a8)
+    *(.bss.api)
+    *(COMMON.api)
+    . = ALIGN(8);
+    BSS_API_END = . ;
+
+    /* bss general section of core var's */
+    . = ALIGN(8);
+    BSS_CORE_START = . ;
+    *(.bss.core.a1)
+    *(.bss.core.a2)
+    *(.bss.core.a4)
+    *(.bss.core.a8)
+    *(.bss.core)
+    *(COMMON.core)
+    . = ALIGN(8);
+    BSS_CORE_END = . ;
+
+    /* General DMI RAM of var's initialised by zero -> can be used by application */
+    . = ALIGN(8);
+    *(.bss.dmiram)
+
+    . = ALIGN(8);
+    __BSS_DMIRAM_END = .;
+  } > DMI_RAM
+
+  __MO_RAMCYCLICCHECK_SIZE = __MO_RAMCYCLICCHECK_END - __MO_RAMCYCLICCHECK_START;
+
+  /***********************************************************/
+  /* Emulated non volatile RAM ("stand-by RAM")              */
+  /***********************************************************/
+  /* ENVRAM is not used and therefor RAM has to be spared because the big alignment of this RAM!
+  .bss_envram ALIGN(0x1000) (NOLOAD):
+  {
+      __ENVRAM_START = . ;
+      *(.bss.envram.a8)
+      *(.bss.envram.a4)
+      *(.bss.envram.a2)
+      *(.bss.envram.a1)
+      *(.bss.envram)
+      *(.envram)              / deprecated, will be removed /
+      . = ALIGN(0x4);
+      __ENVRAM_END = .;
+  }  > DMI_RAM
+*/
+
+  /***********************************************************/
+  /* RAM for Reset, which is cleared in early boot stage     */
+  /***********************************************************/
+  .asw_earlycleared (NOLOAD) :
+  {
+      . = ALIGN(8);
+      __RAM_EARLY_CLEARED_START = . ;
+      *(.bss.earlycleared)
+      . = ALIGN(8);
+      __RAM_EARLY_CLEARED_END = . ;
+  } > DMI_RAM
+
+  /* dmi ram end address */
+  API_DMI_RAM_END = . - 1;
+
+  /* Allocate space for user stack. Must be in DMI RAM ! */
+  .userstack (NOLOAD) :
+  {
+    . = ALIGN(8);
+    __USTACK_START = .;
+    __USTACK_SIZE = (__USTACK_END - __USTACK_START);
+    /* Attention: -7 because ALIGN(8)! */
+    . = . + __USTACK_SIZE - 7;
+    . = ALIGN(8);
+    __USTACK = . ;
+  } > DMI_RAM
+
+  /* last address of DMI RAM used by ASW */
+  __RAM0_END = __USTACK_END;
+
+/* <- DMI RAM *************************************************************************************/
+
+/* -> EXTERNAL RAM ********************************************************************************/
+
+  /* Sections uninitialised ***********************************************************************/
+
+  .extram (NOLOAD):
+  {
+    . = ALIGN(8) ;
+    EXTRAM_START = . ;
+
+    /* reserved area for external RAM check, do not change! */
+    . = . + 8;
+    . = ALIGN(8) ;
+
+    /* RAM for var. eeprom mirror (C-API Lib basic) */
+    *(.eep_mirror)
+
+    /* RAM for var. eeprom buffer (C-API Lib basic eeprom) */
+    *(.eep_buffer)
+
+    /* C-API lib EMCY middle performance access for uninitialised var's. */
+    LIBEMCY_ACCESS_MIDDLE_START = .;
+     *(.LibEMCY_AccessMiddle)
+    LIBEMCY_ACCESS_MIDDLE_END = .;
+
+    /* application uninitialised var's */
+    APPL_EXT_RAM_START = .;
+    *(.appl_EXT_RAM)
+    APPL_EXT_RAM_END = . - 1;
+
+    /* General external RAM */
+    *(.extRAM)
+
+    . = ALIGN(8);
+    EXTRAM_END = . - 1;
+  } > EXT_RAM
+
+  /* Sections initialised with zero ***************************************************************/
+
+  .bss_extram (NOLOAD):
+  {
+    . = ALIGN(8);
+    BSS_EXTRAM_START = . ;
+
+    /* C-API lib EMCY middle performance access for var's initialised with zero. */
+    BSS_LIBEMCY_ACCESS_MIDDLE_START = .;
+    *(.bss.LibEMCY_AccessMiddle)
+    BSS_LIBEMCY_ACCESS_MIDDLE_END = .;
+
+    /* Hardware monitor: double-buffered var's - part 2 inverse saved - initialised with zero. */
+    __MO_RAMNOCYCLICCHECK_START = .;
+    *(.bss.Mo_RamCpl)
+    . = ALIGN(4);
+    __MO_RAMNOCYCLICCHECK_END = .;
+
+    /* application var's initialised with zero */
+    BSS_APPL_EXT_RAM_START = .;
+    *(.bss.appl_EXT_RAM)
+    BSS_APPL_EXT_RAM_END = . - 1;
+
+    /* General external RAM of var's initialised by zero -> can be used by application */
+    . = ALIGN(8);
+    *(.bss.extram)
+    . = ALIGN(8);
+    BSS_EXTRAM_END = .;
+  } > EXT_RAM
+
+  /* Sections initialised with values different from zero *****************************************/
+
+  .data_extram :
+  {
+    . = ALIGN(8);
+    DATA_EXTRAM_START = . ;
+
+    /* C-API lib EMCY middle performance access for var's initialised different from zero. */
+    DATA_LIBEMCY_ACCESS_MIDDLE_START = .;
+    *(.data.LibEMCY_AccessMiddle)
+    DATA_LIBEMCY_ACCESS_MIDDLE_END = .;
+
+    /* application var's initialised with values different from zero */
+    DATA_APPL_EXT_RAM_START = .;
+    *(.data.appl_EXT_RAM)
+    DATA_APPL_EXT_RAM_END = . - 1;
+
+    /* General external RAM of var's initialised different from zero-> can be used by application */
+    . = ALIGN(8);
+    *(.data.extram)
+    . = ALIGN(8);
+    DATA_EXTRAM_END = .;
+  } > EXT_RAM AT> FlashCode
+
+  /* general sections have to placed at the end of SECTIONS !!! ***********************************/
+
+  .data :
+  {
+    . = ALIGN(8);
+    DATA_START = .;
+    *(.data.a1)
+    *(.data.a2)
+    *(.data.a4)
+    *(.data.a8)
+    *(.data)
+    . = ALIGN(8);
+    DATA_END = .;
+  } > EXT_RAM AT> FlashCode
+
+  .sdata :
+  {
+    . = ALIGN(8);
+    SDATA_START = . ;
+    PROVIDE(__sdata_start = .);
+    *(.sdata.a1)
+    *(.sdata.a2)
+    *(.sdata.a4)
+    *(.sdata.a8)
+    *(.sdata)
+    *(SORT(.sdata.pta_vect*))
+    . = ALIGN(8);
+    SDATA_END = .;
+  } > EXT_RAM AT> FlashCode
+
+  .sbss (NOLOAD) :
+  {
+    . = ALIGN(8);
+    SBSS_START = . ;
+    PROVIDE(__sbss_start = .);
+    *(.sbss.a1)
+    *(.sbss.a2)
+    *(.sbss.a4)
+    *(.sbss.a8)
+    *(.sbss)
+    . = ALIGN(8);
+    SBSS_END = .;
+  } > EXT_RAM
+
+  .bss (NOLOAD) :
+  {
+    . = ALIGN(8);
+    BSS_START = . ;
+    *(.bss.a1)
+    *(.bss.a2)
+    *(.bss.a4)
+    *(.bss.a8)
+    *(.bss)
+    *(COMMON)
+    . = ALIGN(8);
+    BSS_END = .;
+    . = ALIGN(8);
+  } > EXT_RAM
+
+  /* external ram end address */
+  API_EXT_RAM_END = . - 1;
+
+  /************************************************************/
+  /* HEAP at the end of used external RAM with reserved space */
+  /* RAM test pattern (size - 16)                             */
+  /************************************************************/
+  .heap (NOLOAD) :
+  {
+    EXTRAM_END = . ;
+    . = ALIGN(8);
+    __HEAP = . ;
+    __HEAP_SIZE = __EXT_RAM_END - __HEAP;
+    . = . + __HEAP_SIZE - 16;
+    __HEAP_END = . ;
+  } > EXT_RAM
+
+  /***********************************************************/
+  /* test pattern reserved space at end of external RAM      */
+  /* do not change!                                          */
+  /***********************************************************/
+  .extramtestpatt (NOLOAD) :
+  {
+    . = ALIGN(8);
+    . = . + 8;
+    . = ALIGN(8);
+  } > EXT_RAM
+
+/* <- EXTERNAL RAM ********************************************************************************/
+
+/* -> FOOTER **************************************************************************************/
+/*
+ * footer structure must be located @ the total end of application (code and data!)
+ *    - the endpattern (inside the footer structure) must be located @ the 1st 4 bytes of the
+ *      otherwise unused last flash page (256 byte for TriCore PFlash)
+ *    - __CRC_END_ADDR must be 64 byte aligned
+ *      (means: <next 64 byte boundary after endpattern> - 4)
+ *    - unused space (gaps) after endpattern.. till __CRC_END_ADDR must be filled with the
+ *      erase pattern (TriCore PFlash: 0)
+ */
+  .footer LOADADDR(.sdata) + SIZEOF(.sdata) : /* locate section @ absolute end of application */
+  {
+      /* align endpattern to start of next PFlash page (256 bytes) */
+    . = (((ABSOLUTE(.) + 0x8C + 0xFF) & ~ 0xFF) - 0x8C - ABSOLUTE(.));
+    *(.footer)
+    __ENDPATTERN_ADDR = . - 4;
+    /* align __CRC_END_ADDR to next 64 byte boundary - 4 */
+    . = ALIGN(64);
+    __CRC_END_ADDR = . - 1;
+    . = ALIGN(256);
+  } > FlashCode = 0 /* fill gaps with PFlash erase pattern */
+
+/* <- FOOTER **************************************************************************************/
+
+  _end = __HEAP_END ;
+  PROVIDE(end = _end) ;
+
+  /* Make sure CSA, stack and CRC addresses are properly aligned.  */
+  _. = ASSERT ((__CSA_BEGIN & 0x3f) == 0 , "illegal CSA start address") ;
+  _. = ASSERT ((__CSA_SIZE & 0x3f) == 0 , "illegal CSA size") ;
+  _. = ASSERT ((__USTACK & 7) == 0 , "USTACK not doubleword aligned") ;
+  _. = ASSERT ((__HEAP_END & 7) == 0 , "HEAP not doubleword aligned") ;
+
+  _. = ASSERT ((__CRC_START_ADDR & 0x3F) == 0 , "CRC Start: incorrect alignement") ;
+  _. = ASSERT ((__CRC_END_ADDR & 0x3F) == 0x3F , "CRC Last: incorrect alignement") ;
+
+  /* Make sure enough memory is available for user stack.  */
+  _. = ASSERT ((__USTACK_SIZE) >= __USTACK_MIN , "not enough memory for STACK #1") ;
+  _. = ASSERT (__USTACK_END >= __USTACK_START , "not enough memory for STACK #2") ;
+
+  /* Make sure enough memory is available for heap.  */
+  _. = ASSERT ((__HEAP_END - __HEAP) >= __HEAP_MIN , "not enough memory for HEAP #1") ;
+  _. = ASSERT (__HEAP_END >= __HEAP , "not enough memory for HEAP #2") ;
+
+  /* Define a default symbol for address 0.  */
+  NULL = DEFINED (NULL) ? NULL : 0 ;
+
+  /*
+   * DWARF debug sections.
+   * Symbols in the DWARF debugging sections are relative to the
+   * beginning of the section, so we begin them at 0.
+   */
+
+  /*
+   * DWARF 1
+   */
+
+  .comment         0 : { *(.comment) }
+  .debug           0 : { *(.debug) }
+  .line            0 : { *(.line) }
+
+  /*
+   * GNU DWARF 1 extensions
+   */
+
+  .debug_srcinfo   0 : { *(.debug_srcinfo) }
+  .debug_sfnames   0 : { *(.debug_sfnames) }
+
+  /*
+   * DWARF 1.1 and DWARF 2
+   */
+  .debug_aranges   0 : { *(.debug_aranges) }
+  .debug_pubnames  0 : { *(.debug_pubnames) }
+
+  /*
+   * DWARF 2
+   */
+
+  .debug_info      0 : { *(.debug_info) }
+  .debug_abbrev    0 : { *(.debug_abbrev) }
+  .debug_line      0 : { *(.debug_line) }
+  .debug_frame     0 : { *(.debug_frame) }
+  .debug_str       0 : { *(.debug_str) }
+  .debug_loc       0 : { *(.debug_loc) }
+  .debug_macinfo   0 : { *(.debug_macinfo) }
+  .debug_ranges    0 : { *(.debug_ranges) }
+
+  /*
+   * SGI/MIPS DWARF 2 extensions
+   */
+
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
+
+  /*
+   * Optional sections that may only appear when relocating.
+   */
+
+  /*
+   * Optional sections that may appear regardless of relocating.
+   */
+
+  .boffs           0 : { KEEP (*(.boffs)) }
+
+  /***********************************************************/
+  /* DISCARD c++ sections automatically created              */
+  /* by compiler but not really required                     */
+  /***********************************************************/
+  /DISCARD/ :
+  {
+      *(.userCSA_a64)
+  }
+}
+/* end of SECTIONS */
+
+  __RAM0_SIZE  = __RAM0_END + 1 - __RAM0_START;
+  __RAM1_SIZE  = __RAM1_END + 1 - __RAM1_START;
+
+  /*
+   * Address for boot from internal flash.
+   * If boot from external flash is required, use alternative linker label definition.
+   * __MEMLAY_SB_START = 0x80808000;
+   */
+  __MEMLAY_SB_START = 0x80018000;
+
+  /*
+   * Symbols used by PCP
+   * Offset is calculated automatically by linker. Option --pcpmap is required!
+   * Available in DS Softwarebuild: SWB.3.2.0
+   */
+  __OFFS_SPB_DMI = 0x0;
+
+  /* CPLD register - ECU specific */
+  CPLD = 0xE0000000;
+
+  ADC = 0xF0101000;
+  ADC0 = 0xF0101000;
+  ADC1 = 0xF0101400;
+  ADC2 = 0xF0101800;
+  /* async. serial interfaces (UART) */
+  ASC = 0xF0000A00;
+  ASC0 = 0xF0000A00;
+  ASC1 = 0xF0000B00;
+  /* MultiCAN controller */
+  CAN = 0xF0004000;
+  /* On-Chip Debug Support (Cerberus) */
+  CBS = 0xF0000464;
+  /* Core registers */
+  CORE = 0xF7E1FD00;
+  /* CPU slave interface registers */
+  CPS = 0xF7E0FF08;
+  CPS_CPU_SRC0 = 0xF7E0FFFC; /* for ERCOSEK: SRN control register to be the scheduling interrupt */
+  /* CPU tricore registers */
+  CPU = 0xF7E19004;
+  /* core special function registers */
+  CSFR = 0xF7E1FE00;
+  /* DMA */
+  DMA = 0xF0003C00;
+  /* CPU DMI Registers */
+  DMI = 0xF87FFC08;
+  /* EBU Registers */
+  EBU = 0xF8000000;
+  /* Flexray Registers*/
+  ERAY = 0xF0010000;
+  /* FADC */
+  FADC = 0xF0100400;
+  /* Flash module */
+  FLASH = 0xF8002008;
+  FLASH0 = 0xF8002008;
+  FLASH1 = 0xF8004008;
+  /* Floating-Point Unit registers */
+  FPU = 0xF7E1A000;
+  /* General purpose registers */
+  GPR = 0xF7E1FF00;
+  /* general purpose timer array */
+  GPTA0 = 0xF0001800;
+  GPTA1 = 0xF0002000;
+  /* Local Memory Bus Control Unit */
+  LBCU = 0xF87FFE08;
+  /* LFI */
+  LFI = 0xF87FFF08;
+  /* Local timer cells array */
+  LTCA2 = 0xF0002808;
+  /* Memory checker */
+  MCHK = 0xF010C208;
+  /* MLI */
+  MLI = 0xF010C008;
+  MLI0 = 0xF010C008;
+  MLI1 = 0xF010C108;
+  /* MMU */
+  MMU = 0xF7E18000;
+  /* Memory protection */
+  MPR = 0xF7E1C000;
+  /* MicroSecond Bus Controller */
+  MSC = 0xF0000800;
+  MSC0 = 0xF0000800;
+  MSC1 = 0xF0000900;
+  /* Overlay Control Unit (OVC) */
+  OVC = 0xF87FFB20;
+  /* GPIO ports */
+  P0 = 0xF0000C00;
+  P1 = 0xF0000D00;
+  P2 = 0xF0000E00;
+  P3 = 0xF0000F00;
+  P4 = 0xF0001000;
+  P5 = 0xF0001100;
+  P6 = 0xF0001200;
+  P7 = 0xF0001300;
+  P8 = 0xF0001400;
+  P9 = 0xF0001500;
+  P10 = 0xF0001600;
+  P11 = 0xF0001700;
+  P12 = 0xF0300000;
+  P13 = 0xF0300100;
+  P14 = 0xF0300200;
+  P15 = 0xF0300300;
+  P16 = 0xF0300400;
+  /* peripheral control processor */
+  PCP = 0xF0043F00;
+  /* PMI */
+  PMI = 0xF87FFD08;
+  /* PMU */
+  PMU = 0xF8000508;
+  /* System bus control unit */
+  SBCU = 0xF0000108;
+  /* system control unit */
+  SCU = 0xF0000508;
+  SCU_WDT_ERCOSEK = 0xF00005F0 - 0x20; /* for ERCOSEK: WDT-control register adress to lock/unlock
+                                          registers in Ercosek code */
+                                       /* -0x20, because the ERCOSEK-Lib is compiled for TC1796 and
+                                          adds the TC1796-Offset of &SCU.WDT_CON0-&SCU (+0x20) */
+  /* synchronous serial interfaces (SPI) */
+  SSC = 0xF0100100;
+  SSC0 = 0xF0100100;
+  SSC1 = 0xF0100200;
+  /* system timer */
+  STM = 0xF0000200;
