@@ -4,6 +4,8 @@
 #include "SystemPressureSensors.h"
 #include "GasPedalSensor.h"
 #include "CabinSensors.h"
+#include "WheelMotorActuate.h"
+#include "WheelMotorSensor.h"
 
 
 #define CAN_ID_TX_SENSOR_INFO_DMS_1				0x18FE1010 	//Sensor data
@@ -32,7 +34,11 @@ void sys_main(void) {
 
 	GPSConfigureGasPedalInputSensors();
 
+	WMASetupOutputToMotors();
+
 	CSConfigureCabinSensors();
+
+	WMSInitAndConfigureSpeedSensors();
 
 	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
 	sys_initTC(0, 10);
@@ -59,9 +65,14 @@ static void mainTask_10ms(void) {
 	SPSUppdateSystemPressureSensors();
 	GPSUppdatePedalSensorData();
 	CSUpdateCabinSensor();
+	WMSUpdateSensorValues();
 
 	/* Send stuff on CAN */
 	AJSSendAngleDataOnCAN();
 	SPSSendSensorDataOnCAN();
+	WMSSendSensorDataOnCAN();
+
+	WMASetMotorReferenceAndActuate(FORWARD_DRIVE, TRUE, 10);
+	WMASetBreakState(FALSE);
 
 }
