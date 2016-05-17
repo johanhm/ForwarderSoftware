@@ -1,7 +1,7 @@
 
 #include "WheelMotorActuate.h"
 
-static int saturateMotorSignal(int motorSignal);
+static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
 static void pumpActuate(driveState xt28DriveState);
 
 //Pump/Motor
@@ -162,7 +162,6 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	static uint16 Motor_5_mEpsilon = 0;
 	static uint16 Motor_6_mEpsilon = 0;
 
-
 	static sint16 Motor_1_mEpsilon_ns = 0;
 	static sint16 Motor_2_mEpsilon_ns = 0;
 	static sint16 Motor_3_mEpsilon_ns = 0;
@@ -173,6 +172,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	driveState DriveSTATE = machineDriveState;
 
 	/* From drive task */
+	/* Step 1 - Set Epsilons depending on drive state! */
 	switch(DriveSTATE){
 	case NEUTRAL_DRIVE:
 
@@ -194,11 +194,11 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Pump_OD_mEpsilon = 1000;
 			Motor_OD_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 		} else {
-			Pump_OD_mEpsilon = pMilLowPassGasPedalSignal*2;
+			Pump_OD_mEpsilon = pMilLowPassGasPedalSignal * 2;
 			Motor_OD_mEpsilon = 1000;
 		}
 
-		if (overideState){
+		if (overideState) {
 			Pump_1_B_mEpsilon = Pump_OD_mEpsilon;
 			Pump_2_B_mEpsilon = Pump_OD_mEpsilon;
 			Pump_1_A_mEpsilon = 0;
@@ -208,7 +208,8 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_3_mEpsilon = 0;
 			Motor_4_mEpsilon = 0;
 			Motor_5_mEpsilon = 0;
-			Motor_6_mEpsilon = 0;}
+			Motor_6_mEpsilon = 0;
+		}
 		else {
 			Pump_1_B_mEpsilon = Pump_OD_mEpsilon;
 			Pump_2_B_mEpsilon = Pump_OD_mEpsilon;
@@ -219,7 +220,8 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_3_mEpsilon = Motor_OD_mEpsilon;
 			Motor_4_mEpsilon = Motor_OD_mEpsilon;
 			Motor_5_mEpsilon = Motor_OD_mEpsilon;
-			Motor_6_mEpsilon = Motor_OD_mEpsilon;	}
+			Motor_6_mEpsilon = Motor_OD_mEpsilon;
+		}
 
 		break;
 	case BACKWARD_DRIVE: /* Action in state Backward*/
@@ -234,7 +236,8 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_3_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 			Motor_4_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 			Motor_5_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
-			Motor_6_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;}
+			Motor_6_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+		}
 		else {
 			Pump_1_B_mEpsilon = 0;
 			Pump_2_B_mEpsilon = 0;
@@ -265,7 +268,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	static uint16 k5 = 0;
 	static uint16 k6 = 0;
 
-	/* Set k values depending on state or CAN */
+	/* Step 2 - Set k values depending on drive state or CAN */
 	if (DriveSTATE == PID_DRIVE) {
 		k1 = 14;;
 		k2 = 14;
@@ -291,6 +294,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 		k6 = msg_CAN_ALYZER_4[5] / 10;
 	}
 
+	/* Step 3 -  Tune lowpass filter constants depending on avrage RPM*/
 	/* low pass filter Sliping stuff */
 	static float f_cutoff_ns;
 	static float Tf_S_ns;
@@ -305,6 +309,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	Tf_S_ns = 1 / (2 * M_PI * f_cutoff_ns);
 	alpha_S_ns = Tf_S_ns / (Tf_S_ns + (float)periodicCallTime_ms / 1000);
 
+	/* Step 4 - Calculate slip offset, and lowpass filter this badboj */
 	/* Slip */
 	static sint16 slip1 		= 0;
 	static sint16 slip1_old_lp 	= 0;
@@ -354,6 +359,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	slip6_old_lp = slip6_lp;
 	slip6_lp = alpha_S_ns * slip6_old_lp + (1 - alpha_S_ns) * slip6;
 
+	/* Step 5 - Substract the slip */
 	Motor_1_mEpsilon_ns = Motor_1_mEpsilon - slip1_lp;
 	Motor_2_mEpsilon_ns = Motor_2_mEpsilon - slip2_lp;
 	Motor_3_mEpsilon_ns = Motor_3_mEpsilon - slip3_lp;
@@ -361,49 +367,18 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	Motor_5_mEpsilon_ns = Motor_5_mEpsilon - slip5_lp;
 	Motor_6_mEpsilon_ns = Motor_6_mEpsilon - slip6_lp;
 
+	/* Step 6 - Saftey saturate */
+	Motor_1_mEpsilon_ns = saturateAnInt(Motor_1_mEpsilon_ns, 1000, 1000, 0, 0);
+	Motor_2_mEpsilon_ns = saturateAnInt(Motor_2_mEpsilon_ns, 1000, 1000, 0, 0);
+	Motor_3_mEpsilon_ns = saturateAnInt(Motor_3_mEpsilon_ns, 1000, 1000, 0, 0);
+	Motor_4_mEpsilon_ns = saturateAnInt(Motor_4_mEpsilon_ns, 1000, 1000, 0, 0);
+	Motor_5_mEpsilon_ns = saturateAnInt(Motor_5_mEpsilon_ns, 1000, 1000, 0, 0);
+	Motor_6_mEpsilon_ns = saturateAnInt(Motor_6_mEpsilon_ns, 1000, 1000, 0, 0);
 
-	if (Motor_1_mEpsilon_ns > 1000) {
-		Motor_1_mEpsilon_ns = 1000;
-	}
-	if (Motor_2_mEpsilon_ns > 1000) {
-		Motor_2_mEpsilon_ns = 1000;
-	}
-	if (Motor_3_mEpsilon_ns > 1000) {
-		Motor_3_mEpsilon_ns = 1000;
-	}
-	if (Motor_4_mEpsilon_ns > 1000) {
-		Motor_4_mEpsilon_ns = 1000;
-	}
-	if (Motor_5_mEpsilon_ns > 1000) {
-		Motor_5_mEpsilon_ns = 1000;
-	}
-	if (Motor_6_mEpsilon_ns > 1000) {
-		Motor_6_mEpsilon_ns = 1000;
-	}
-
-	if (Motor_1_mEpsilon_ns < 0) {
-		Motor_1_mEpsilon_ns = 0;
-	}
-	if (Motor_2_mEpsilon_ns < 0) {
-		Motor_2_mEpsilon_ns = 0;
-	}
-	if (Motor_3_mEpsilon_ns < 0) {
-		Motor_3_mEpsilon_ns = 0;
-	}
-	if (Motor_4_mEpsilon_ns < 0) {
-		Motor_4_mEpsilon_ns = 0;
-	}
-	if (Motor_5_mEpsilon_ns < 0) {
-		Motor_5_mEpsilon_ns = 0;
-	}
-	if (Motor_6_mEpsilon_ns < 0) {
-		Motor_6_mEpsilon_ns = 0;
-	}
-
-
+	/* Step 7 - Calculate the PWM signal from the given epsilon */
 	const int m_imax = 650;
 	const int m_imin = 150;
-
+	/**! FIXME What is the point of this if case when its rewritten in the lines below anyway */
 	if (slipState == TRUE) {
 		Motor_1_PWM = (m_imin - m_imax) * Motor_1_mEpsilon_ns / 1000 + m_imax;
 		Motor_2_PWM = (m_imin - m_imax) * Motor_2_mEpsilon_ns / 1000 + m_imax;
@@ -420,14 +395,15 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	Motor_5_PWM = (m_imin - m_imax) * Motor_5_mEpsilon_ns / 1000 + m_imax;
 	Motor_6_PWM = (m_imin - m_imax) * Motor_6_mEpsilon_ns / 1000 + m_imax;
 
-	Motor_1_PWM = saturateMotorSignal(Motor_1_PWM);
-	Motor_2_PWM = saturateMotorSignal(Motor_2_PWM);
-	Motor_3_PWM = saturateMotorSignal(Motor_3_PWM);
-	Motor_4_PWM = saturateMotorSignal(Motor_4_PWM);
-	Motor_5_PWM = saturateMotorSignal(Motor_5_PWM);
-	Motor_6_PWM = saturateMotorSignal(Motor_6_PWM);
+	/* Step 8 - FIXME Saturate again? why signal is allready saturated and then a static calculation is made. I suggest removeing the first saturation and keep this one */
+	Motor_1_PWM = saturateAnInt(Motor_1_PWM, 650, 650, 155, 0);
+	Motor_2_PWM = saturateAnInt(Motor_2_PWM, 650, 650, 155, 0);
+	Motor_3_PWM = saturateAnInt(Motor_3_PWM, 650, 650, 155, 0);
+	Motor_4_PWM = saturateAnInt(Motor_4_PWM, 650, 650, 155, 0);
+	Motor_5_PWM = saturateAnInt(Motor_5_PWM, 650, 650, 155, 0);
+	Motor_6_PWM = saturateAnInt(Motor_6_PWM, 650, 650, 155, 0);
 
-	/* Actuate finaly */
+	/* Step 9 - Actuate finaly */
 	out(POH_CL_MOTOR_1_mA, Motor_1_PWM);
 	out(POH_CL_MOTOR_2_mA, Motor_2_PWM);
 	out(POH_CL_MOTOR_3_mA, Motor_3_PWM);
@@ -435,7 +411,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	out(POH_CL_MOTOR_5_mA, Motor_5_PWM);
 	out(POH_CL_MOTOR_6_mA, Motor_6_PWM);
 
-	/* Actuate pump */
+	/* Step 10 - Actuate pump */
 	pumpActuate(DriveSTATE);
 
 }
@@ -465,28 +441,10 @@ static void pumpActuate(driveState xt28DriveState) {
 		Pump_2_B_PWM = Pump_2_B_mEpsilon * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
 	}
 
-	if	(Pump_1_A_PWM > 650) {
-		Pump_1_A_PWM = 650;
-	}
-	else if (Pump_1_A_PWM < 155) {
-		Pump_1_A_PWM = 0;
-	}
-	if	(Pump_1_B_PWM > 650) {
-		Pump_1_B_PWM = 650;
-	}
-	else if (Pump_1_B_PWM < 155) {
-		Pump_1_B_PWM = 0;
-	}
-	if	(Pump_2_A_PWM > 650) {
-		Pump_2_A_PWM = 650;
-	} else if (Pump_2_A_PWM < 155) {
-		Pump_2_A_PWM = 0;
-	}
-	if	(Pump_2_B_PWM > 650) {
-		Pump_2_B_PWM = 650;
-	} else if (Pump_2_B_PWM < 155) {
-		Pump_2_B_PWM = 0;
-	}
+	Pump_1_A_PWM = saturateAnInt(Pump_1_A_PWM, 650, 650, 155, 0);
+	Pump_1_B_PWM = saturateAnInt(Pump_1_B_PWM, 650, 650, 150, 0);
+	Pump_2_A_PWM = saturateAnInt(Pump_2_A_PWM, 650, 650, 155, 0);
+	Pump_2_B_PWM = saturateAnInt(Pump_2_B_PWM, 650, 650, 155, 0);
 
 	out(POH_CL_PUMP_1_A_mA, Pump_1_A_PWM);
 	out(POH_CL_PUMP_1_B_mA, Pump_1_B_PWM);
@@ -495,16 +453,14 @@ static void pumpActuate(driveState xt28DriveState) {
 
 }
 
-
-
-static int saturateMotorSignal(int motorSignal) {
-	if	(motorSignal>650) {
-		motorSignal=650;
+static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue) {
+	if	(signal > maxValue) {
+		signal = setMaxValue;
 	}
-	else if (motorSignal < 155) {
-		motorSignal = 0;
+	else if (signal < minValue) {
+		signal = setMinvalue;
 	}
-	return motorSignal;
+	return signal;
 }
 
 void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
