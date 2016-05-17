@@ -43,6 +43,7 @@ AS_INCLUDES      =
 # c compiler include directories
 CC_INCLUDES      = -I$(PLATFORM_PATH)/Includes/core\
 									 -I$(PLATFORM_PATH)/Includes\
+									 -I$(PLATFORM_PATH)/XT28TransmitionApp/SimulinkCodeGeneration/codegen/lib/NinjaController\
 									 -I.
 									 											
 
@@ -57,11 +58,14 @@ OBJECTS          = $(OUTPUT_PATH)/TransmissionApp.o\
 									 $(OUTPUT_PATH)/Excipad.o\
 									 $(OUTPUT_PATH)/Display.o\
 									 $(OUTPUT_PATH)/AngleJointSensor.o\
+									 $(OUTPUT_PATH)/AngleJointActuate.o\
 									 $(OUTPUT_PATH)/SystemPressureSensors.o\
 									 $(OUTPUT_PATH)/GasPedalSensor.o\
 									 $(OUTPUT_PATH)/CabinSensors.o\
 									 $(OUTPUT_PATH)/WheelMotorActuate.o\
 									 $(OUTPUT_PATH)/WheelMotorSensor.o\
+									 $(OUTPUT_PATH)/CodeGenerationTest.o\
+									 
 									 
 ####################################################################################################
 # Path to libraries which should be included

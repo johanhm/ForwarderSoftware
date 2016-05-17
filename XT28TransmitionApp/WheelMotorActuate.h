@@ -52,7 +52,7 @@ void WMASetBreakState(bool state);
  * @param slipState
  * @param periodicCallTime_ms
  */
-void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool slipState, int periodicCallTime_ms);
+void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal);
 
 /*!
  *

@@ -86,7 +86,7 @@ void WMASetupOutputToMotors(void) {
 void WMASetBreakState(bool state) {
 
 	/* ------BREAK----- */
-	if (state == FALSE) {
+	if (state == TRUE) {
 		out(DOH_PBRAKEVALVE1,TRUE);		//Pbrake valve 1 output
 		out(DOH_PBRAKEVALVE2,TRUE);		//Pbrake valve 2 output
 		out(DOH_PBRAKEVALVE3,TRUE);		//Pbrake valve 3 output
@@ -97,10 +97,8 @@ void WMASetBreakState(bool state) {
 	}
 }
 
-
 static uint8 msg_CAN_ALYZER_4[8] = {0};
 static uint8 msg_CAN_ALYZER_2[8] = {0};
-
 
 static uint16 Motor_1_PWM = 0;
 static uint16 Motor_2_PWM = 0;
@@ -108,17 +106,22 @@ static uint16 Motor_3_PWM = 0;
 static uint16 Motor_4_PWM = 0;
 static uint16 Motor_5_PWM = 0;
 static uint16 Motor_6_PWM = 0;
-void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool slipState, int periodicCallTime_ms) {
+void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal) {
 
-	driveState DriveSTATE = machineDriveState;
+	static uint16 Pump_OD_mEpsilon = 0;
+	static uint16 Pump_1_A_mEpsilon = 0;
+	static uint16 Pump_1_B_mEpsilon = 0;
+	static uint16 Pump_2_A_mEpsilon = 0;
+	static uint16 Pump_2_B_mEpsilon = 0;
 
-	//static uint16 Motor_OD_mEpsilon = 0;
+	static uint16 Motor_OD_mEpsilon = 0;
 	static uint16 Motor_1_mEpsilon = 0;
 	static uint16 Motor_2_mEpsilon = 0;
 	static uint16 Motor_3_mEpsilon = 0;
 	static uint16 Motor_4_mEpsilon = 0;
 	static uint16 Motor_5_mEpsilon = 0;
 	static uint16 Motor_6_mEpsilon = 0;
+
 
 	static sint16 Motor_1_mEpsilon_ns = 0;
 	static sint16 Motor_2_mEpsilon_ns = 0;
@@ -127,6 +130,93 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool slipState
 	static sint16 Motor_5_mEpsilon_ns = 0;
 	static sint16 Motor_6_mEpsilon_ns = 0;
 
+	driveState DriveSTATE = machineDriveState;
+
+	/* From drive task */
+	switch(DriveSTATE){
+	case NEUTRAL_DRIVE:
+
+		Pump_1_A_mEpsilon = 0;
+		Pump_1_B_mEpsilon = 0;
+		Pump_2_A_mEpsilon = 0;
+		Pump_2_B_mEpsilon = 0;
+		Motor_1_mEpsilon = 1000;
+		Motor_2_mEpsilon = 1000;
+		Motor_3_mEpsilon = 1000;
+		Motor_4_mEpsilon = 1000;
+		Motor_5_mEpsilon = 1000;
+		Motor_6_mEpsilon = 1000;
+
+		break;
+	case FORWARD_DRIVE:
+		/* Action in state forward*/
+		if (pMilLowPassGasPedalSignal > 500){
+			Pump_OD_mEpsilon = 1000;
+			Motor_OD_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+		} else {
+			Pump_OD_mEpsilon = pMilLowPassGasPedalSignal*2;
+			Motor_OD_mEpsilon = 1000;
+		}
+
+		if (overideState){
+			Pump_1_B_mEpsilon = Pump_OD_mEpsilon;
+			Pump_2_B_mEpsilon = Pump_OD_mEpsilon;
+			Pump_1_A_mEpsilon = 0;
+			Pump_2_A_mEpsilon = 0;
+			Motor_1_mEpsilon = Motor_OD_mEpsilon;
+			Motor_2_mEpsilon = Motor_OD_mEpsilon;
+			Motor_3_mEpsilon = 0;
+			Motor_4_mEpsilon = 0;
+			Motor_5_mEpsilon = 0;
+			Motor_6_mEpsilon = 0;}
+		else {
+			Pump_1_B_mEpsilon = Pump_OD_mEpsilon;
+			Pump_2_B_mEpsilon = Pump_OD_mEpsilon;
+			Pump_1_A_mEpsilon = 0;
+			Pump_2_A_mEpsilon = 0;
+			Motor_1_mEpsilon = Motor_OD_mEpsilon;
+			Motor_2_mEpsilon = Motor_OD_mEpsilon;
+			Motor_3_mEpsilon = Motor_OD_mEpsilon;
+			Motor_4_mEpsilon = Motor_OD_mEpsilon;
+			Motor_5_mEpsilon = Motor_OD_mEpsilon;
+			Motor_6_mEpsilon = Motor_OD_mEpsilon;	}
+
+		break;
+	case BACKWARD_DRIVE: /* Action in state Backward*/
+
+		if (pMilLowPassGasPedalSignal > 500){
+			Pump_1_B_mEpsilon = 0;
+			Pump_2_B_mEpsilon = 0;
+			Pump_1_A_mEpsilon = 1000;
+			Pump_2_A_mEpsilon = 1000;
+			Motor_1_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+			Motor_2_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+			Motor_3_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+			Motor_4_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+			Motor_5_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+			Motor_6_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;}
+		else {
+			Pump_1_B_mEpsilon = 0;
+			Pump_2_B_mEpsilon = 0;
+			Pump_1_A_mEpsilon = pMilLowPassGasPedalSignal * 2;
+			Pump_2_A_mEpsilon = pMilLowPassGasPedalSignal * 2;
+			Motor_1_mEpsilon = 1000;
+			Motor_2_mEpsilon = 1000;
+			Motor_3_mEpsilon = 1000;
+			Motor_4_mEpsilon = 1000;
+			Motor_5_mEpsilon = 1000;
+			Motor_6_mEpsilon = 1000;
+		}
+		break;
+	case PID_DRIVE:
+		/* NYI so much code, did not want to clean it all*/
+		break;
+	default:
+		DriveSTATE = NEUTRAL_DRIVE;
+		break;
+	}
+
+	/* FROM OUTPUT TASK */
 	//--------MOTOR-----//
 	static uint16 k1 = 0;
 	static uint16 k2 = 0;
@@ -306,6 +396,16 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool slipState
 
 }
 
+static int saturateMotorSignal(int motorSignal) {
+	if	(motorSignal>650) {
+		motorSignal=650;
+	}
+	else if (motorSignal < 155) {
+		motorSignal = 0;
+	}
+	return motorSignal;
+}
+
 void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
 	if (buttonCANSendState == TRUE && msg_CAN_ALYZER_2[0] > 0){
 		Motor_1_PWM = msg_CAN_ALYZER_2[0] * 3;
@@ -318,12 +418,4 @@ void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
 
 }
 
-static int saturateMotorSignal(int motorSignal) {
-	if	(motorSignal>650) {
-		motorSignal=650;
-	}
-	else if (motorSignal < 155) {
-		motorSignal = 0;
-	}
-	return motorSignal;
-}
+

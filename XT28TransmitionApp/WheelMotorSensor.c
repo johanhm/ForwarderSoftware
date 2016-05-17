@@ -41,11 +41,18 @@ static int speedData[INDEX_SIZE_FREQUENCY_MOTOR] = {0};
 #define WHEEL_6					11
 #define INDEX_SIZE_MOTOR		12
 static int revCount[INDEX_SIZE_MOTOR] = {0};
-static int cm_wheeldistance_sint32[INDEX_SIZE_MOTOR] = {0};
+//static int cm_wheeldistance_sint32[INDEX_SIZE_MOTOR] = {0};
 
 
 /* Public Functions */
 void WMSInitAndConfigureSpeedSensors(void) {
+
+	in_cfgVoltageInput(FI_Motor_1_hz, 1000, 4000, 100, 200, 4800, 200);
+	in_cfgVoltageInput(FI_Motor_2_hz, 1000, 4000, 100, 200, 4800, 200);
+	in_cfgVoltageInput(FI_Motor_3_hz, 1000, 4000, 100, 200, 4800, 200);
+	in_cfgVoltageInput(FI_Motor_4_hz, 1000, 4000, 100, 200, 4800, 200);
+	in_cfgVoltageInput(FI_Motor_5_hz, 1000, 4000, 100, 200, 4800, 200);
+	in_cfgVoltageInput(FI_Motor_6_hz, 1000, 4000, 100, 200, 4800, 200);
 
 }
 
@@ -53,12 +60,12 @@ void WMSInitAndConfigureSpeedSensors(void) {
 
 void WMSUpdateSensorValues(void) {
 
-	speedData[FREQUENCY_MOTOR_1]=in(FI_Motor_1_hz);
-	speedData[FREQUENCY_MOTOR_2]=in(FI_Motor_2_hz);
-	speedData[FREQUENCY_MOTOR_3]=in(FI_Motor_3_hz);
-	speedData[FREQUENCY_MOTOR_4]=in(FI_Motor_4_hz);
-	speedData[FREQUENCY_MOTOR_5]=in(FI_Motor_6_hz);
-	speedData[FREQUENCY_MOTOR_6]=in(FI_Motor_5_hz);
+	speedData[FREQUENCY_MOTOR_1] = in(FI_Motor_1_hz);
+	speedData[FREQUENCY_MOTOR_2] = in(FI_Motor_2_hz);
+	speedData[FREQUENCY_MOTOR_3] = in(FI_Motor_3_hz);
+	speedData[FREQUENCY_MOTOR_4] = in(FI_Motor_4_hz);
+	speedData[FREQUENCY_MOTOR_5] = in(FI_Motor_6_hz);
+	speedData[FREQUENCY_MOTOR_6] = in(FI_Motor_5_hz);
 
 	revCount[MOTOR_1]=in(CI_Motor_1);
 	revCount[MOTOR_1]=in(CI_Motor_2);
@@ -88,7 +95,7 @@ void WMSUpdateSensorValues(void) {
 
 
 void WMSSendSensorDataOnCAN(void) {
-
+	/** fixme Implement */
 }
 
 int WMSGetRPMForWheel(int wheel) {

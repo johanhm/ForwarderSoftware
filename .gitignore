@@ -1,5 +1,6 @@
 XT28App/obj/
 XT28TransmitionApp/obj/
+XT28TransmitionApp/SimulinkCodeGeneration/codegen/
 Template/obj/
 .settings/
 .cproject
