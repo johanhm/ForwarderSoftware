@@ -204,7 +204,7 @@ static void rearPIDControl(int avrageWheelSpeed) {
 }
 
 static void saturateAndActuateAngleJoint(void) {
-	/** fixme Change this function so it works on inputs and not globals? */
+	/** fixme Change this function so it works on arguments inputs and not globals? */
 	if (PWM_turn_front_A > TurningValve_Imin) {
 		out(POH_CL_TURN_FRONT_A_mA, PWM_turn_front_A);
 	} else {

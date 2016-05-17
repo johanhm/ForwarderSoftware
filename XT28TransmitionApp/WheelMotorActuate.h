@@ -22,6 +22,12 @@
 #define	POH_CL_MOTOR_5_mA 					OUT_9_POH_CL
 #define	POH_CL_MOTOR_6_mA 					OUT_10_POH_CL
 
+/* Pumps */
+#define	POH_CL_PUMP_1_A_mA					OUT_1_POH_CL
+#define	POH_CL_PUMP_1_B_mA					OUT_2_POH_CL
+#define	POH_CL_PUMP_2_A_mA					OUT_3_POH_CL
+#define	POH_CL_PUMP_2_B_mA					OUT_4_POH_CL
+
 /* Brake */
 #define	DOH_PBRAKEVALVE1					OUT_20_DOH	//	(*Pbrake valve 1*)
 #define	DOH_PBRAKEVALVE2					OUT_21_DOH	//	(*Pbrake valve 2*)
@@ -38,7 +44,7 @@ typedef enum {
 /*!
  *
  */
-void WMASetupOutputToMotors(void);
+void WMASetupOutputToMotorsAndPumps(void);
 
 /*!
  * Set break on or off

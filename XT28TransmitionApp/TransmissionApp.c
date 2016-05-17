@@ -44,7 +44,7 @@ void sys_main(void) {
 	CSConfigureCabinSensors();
 
 	/* Wheel motor sensor and actuate */
-	WMASetupOutputToMotors();
+	WMASetupOutputToMotorsAndPumps();
 	WMSInitAndConfigureSpeedSensors();
 
 	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
@@ -81,6 +81,7 @@ static void mainTask_10ms(void) {
 	AJSSendAngleDataOnCAN();
 	SPSSendSensorDataOnCAN();
 	WMSSendSensorDataOnCAN();
+	WMASendMotorPWNOnCAN(TRUE);
 
 	/* Code generation test */
 	float gg = NinjaController(10,10);
@@ -94,7 +95,6 @@ static void setMachineState(void) {
 
 	/* Static states, initialized with default states */
 	static driveState xt28DriveState 	= NEUTRAL_DRIVE;
-	static driveState xt28DriveStateOld = NEUTRAL_DRIVE;
 	static turnState  xt28TurnState     = TURN_COMBINED;
 	static bool 	  overdriveState    = FALSE;
 	static bool 	  xt28BreakState 	= FALSE;
@@ -168,11 +168,6 @@ static void setMachineState(void) {
 
 
 	/* Drive state */
-	if (xt28DriveState != xt28DriveStateOld) {
-		/* Set actuate to zero? */
-	}
-	xt28DriveStateOld = xt28DriveState;
-
 	if (xt28BreakState == TRUE) {
 		WMASetBreakState(TRUE);
 	} else {

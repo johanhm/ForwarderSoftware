@@ -2,6 +2,7 @@
 #include "WheelMotorActuate.h"
 
 static int saturateMotorSignal(int motorSignal);
+static void pumpActuate(driveState xt28DriveState);
 
 //Pump/Motor
 #define	cfg_PM_DEBOUNCE 			100					/* debounce time [ms] for error detection */
@@ -13,7 +14,45 @@ static int saturateMotorSignal(int motorSignal);
 #define	cfg_PM_KP_PM2 				400					/*Kp factor*/
 #define	cfg_PM_KI_PM2				262					/*Ki factor*/
 
-void WMASetupOutputToMotors(void) {
+void WMASetupOutputToMotorsAndPumps(void) {
+
+	/*****************PUMP1****************/
+	out_cfg(POH_CL_PUMP_1_A_mA, 				//(* PWM output close loop *)
+			cfg_PM_DEBOUNCE,				//(* debounce time [ms] for error detection *)
+			cfg_PM_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
+			cfg_PM_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
+			cfg_PM_RESISTANCE_MAX );		//(* max resistance of solenoid for error detection[mOhm] *)
+	out_cfgPI ( POH_CL_PUMP_1_A_mA,			//(* Channel*)
+			cfg_PM_KP_PM,					//(*Kp factor*)
+			cfg_PM_KI_PM );					//(*Ki factor*)
+
+	out_cfg(POH_CL_PUMP_1_B_mA, 				//(* PWM output close loop *)
+			cfg_PM_DEBOUNCE,				//(* debounce time [ms] for error detection *)
+			cfg_PM_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
+			cfg_PM_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
+			cfg_PM_RESISTANCE_MAX );		//(* max resistance of solenoid for error detection[mOhm] *)
+	out_cfgPI ( POH_CL_PUMP_1_B_mA,			//(* Channel*)
+			cfg_PM_KP_PM,					//(*Kp factor*)
+			cfg_PM_KI_PM );					//(*Ki factor*)
+
+	/*****************PUMP2****************/
+	out_cfg(POH_CL_PUMP_2_A_mA, 				//(* PWM output close loop *)
+			cfg_PM_DEBOUNCE,				//(* debounce time [ms] for error detection *)
+			cfg_PM_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
+			cfg_PM_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
+			cfg_PM_RESISTANCE_MAX );		//(* max resistance of solenoid for error detection[mOhm] *)
+	out_cfgPI ( POH_CL_PUMP_2_A_mA,			//(* Channel*)
+			cfg_PM_KP_PM,					//(*Kp factor*)
+			cfg_PM_KI_PM );					//(*Ki factor*)
+
+	out_cfg(POH_CL_PUMP_2_B_mA, 				//(* PWM output close loop *)
+			cfg_PM_DEBOUNCE,				//(* debounce time [ms] for error detection *)
+			cfg_PM_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
+			cfg_PM_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
+			cfg_PM_RESISTANCE_MAX );		//(* max resistance of solenoid for error detection[mOhm] *)
+	out_cfgPI ( POH_CL_PUMP_2_B_mA,			//(* Channel*)
+			cfg_PM_KP_PM,					//(*Kp factor*)
+			cfg_PM_KI_PM );					//(*Ki factor*)
 
 	/*****************MOTOR1****************/
 	out_cfg(POH_CL_MOTOR_1_mA, 				//(* PWM output close loop *)
@@ -106,13 +145,14 @@ static uint16 Motor_3_PWM = 0;
 static uint16 Motor_4_PWM = 0;
 static uint16 Motor_5_PWM = 0;
 static uint16 Motor_6_PWM = 0;
+
+static uint16 Pump_1_A_mEpsilon = 0;
+static uint16 Pump_1_B_mEpsilon = 0;
+static uint16 Pump_2_A_mEpsilon = 0;
+static uint16 Pump_2_B_mEpsilon = 0;
 void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal) {
 
 	static uint16 Pump_OD_mEpsilon = 0;
-	static uint16 Pump_1_A_mEpsilon = 0;
-	static uint16 Pump_1_B_mEpsilon = 0;
-	static uint16 Pump_2_A_mEpsilon = 0;
-	static uint16 Pump_2_B_mEpsilon = 0;
 
 	static uint16 Motor_OD_mEpsilon = 0;
 	static uint16 Motor_1_mEpsilon = 0;
@@ -387,14 +427,75 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	Motor_5_PWM = saturateMotorSignal(Motor_5_PWM);
 	Motor_6_PWM = saturateMotorSignal(Motor_6_PWM);
 
-	out(POH_CL_MOTOR_1_mA,Motor_1_PWM);
-	out(POH_CL_MOTOR_2_mA,Motor_2_PWM);
-	out(POH_CL_MOTOR_3_mA,Motor_3_PWM);
-	out(POH_CL_MOTOR_4_mA,Motor_4_PWM);
-	out(POH_CL_MOTOR_5_mA,Motor_5_PWM);
-	out(POH_CL_MOTOR_6_mA,Motor_6_PWM);
+	/* Actuate finaly */
+	out(POH_CL_MOTOR_1_mA, Motor_1_PWM);
+	out(POH_CL_MOTOR_2_mA, Motor_2_PWM);
+	out(POH_CL_MOTOR_3_mA, Motor_3_PWM);
+	out(POH_CL_MOTOR_4_mA, Motor_4_PWM);
+	out(POH_CL_MOTOR_5_mA, Motor_5_PWM);
+	out(POH_CL_MOTOR_6_mA, Motor_6_PWM);
+
+	/* Actuate pump */
+	pumpActuate(DriveSTATE);
 
 }
+
+static void pumpActuate(driveState xt28DriveState) {
+	/* Pumps */
+	static uint16 Pump_1_A_PWM = 0;
+	static uint16 Pump_1_B_PWM = 0;
+	static uint16 Pump_2_A_PWM = 0;
+	static uint16 Pump_2_B_PWM = 0;
+
+	//--Pump calibrationdata--//
+	const uint16 Pump_1_MinA = 195;//185;
+	const uint16 Pump_1_MaxA = 605;
+	const uint16 Pump_2_MinA = 195;//185;//195;
+	const uint16 Pump_2_MaxA = 605;//660;
+
+	if (xt28DriveState == NEUTRAL_DRIVE) {
+		Pump_1_A_PWM = 0;
+		Pump_1_B_PWM = 0;
+		Pump_2_A_PWM = 0;
+		Pump_2_B_PWM = 0;
+	} else {
+		Pump_1_A_PWM = Pump_1_A_mEpsilon * (Pump_1_MaxA - Pump_1_MinA) / (1000) + Pump_1_MinA;
+		Pump_1_B_PWM = Pump_1_B_mEpsilon * (Pump_1_MaxA - Pump_1_MinA) / (1000) + Pump_1_MinA;
+		Pump_2_A_PWM = Pump_2_A_mEpsilon * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
+		Pump_2_B_PWM = Pump_2_B_mEpsilon * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
+	}
+
+	if	(Pump_1_A_PWM > 650) {
+		Pump_1_A_PWM = 650;
+	}
+	else if (Pump_1_A_PWM < 155) {
+		Pump_1_A_PWM = 0;
+	}
+	if	(Pump_1_B_PWM > 650) {
+		Pump_1_B_PWM = 650;
+	}
+	else if (Pump_1_B_PWM < 155) {
+		Pump_1_B_PWM = 0;
+	}
+	if	(Pump_2_A_PWM > 650) {
+		Pump_2_A_PWM = 650;
+	} else if (Pump_2_A_PWM < 155) {
+		Pump_2_A_PWM = 0;
+	}
+	if	(Pump_2_B_PWM > 650) {
+		Pump_2_B_PWM = 650;
+	} else if (Pump_2_B_PWM < 155) {
+		Pump_2_B_PWM = 0;
+	}
+
+	out(POH_CL_PUMP_1_A_mA, Pump_1_A_PWM);
+	out(POH_CL_PUMP_1_B_mA, Pump_1_B_PWM);
+	out(POH_CL_PUMP_2_A_mA, Pump_2_A_PWM);
+	out(POH_CL_PUMP_2_B_mA, Pump_2_B_PWM);
+
+}
+
+
 
 static int saturateMotorSignal(int motorSignal) {
 	if	(motorSignal>650) {
@@ -415,6 +516,7 @@ void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
 		Motor_5_PWM = msg_CAN_ALYZER_2[4] * 3;
 		Motor_6_PWM = msg_CAN_ALYZER_2[5] * 3;
 	}
+	/*! fixme eh add CAN */
 
 }
 
