@@ -49,7 +49,8 @@ void SPSUppdateSystemPressureSensors(void) {
 	if (pressureData[ANALOG_PUMP1_PRESSURE_A] > Pressure_Umax) {
 		pressureData[MBAR_PUMP1_PRESSURE_A] = Umax_pressure;
 	}
-	else if (pressureData[ANALOG_PUMP1_PRESSURE_A] < Pressure_Umin) { pressureData[MBAR_PUMP1_PRESSURE_A] = 0;
+	else if (pressureData[ANALOG_PUMP1_PRESSURE_A] < Pressure_Umin) {
+		pressureData[MBAR_PUMP1_PRESSURE_A] = 0;
 	}
 
 	pressureData[MBAR_PUMP1_PRESSURE_B] = Umax_pressure * (pressureData[ANALOG_PUMP1_PRESSURE_B] - Pressure_Umin) / (Pressure_Umax - Pressure_Umin);
@@ -118,14 +119,13 @@ void SPSSendSensorDataOnCAN(void) {
 	//Construct msg SENSOR DMS 1
 	uint8 data_au8_sens_dms_1[8];
 	data_au8_sens_dms_1[0] = pressureData[MBAR_PUMP1_PRESSURE_A];
-	data_au8_sens_dms_1[1] = pressureData[MBAR_PUMP1_PRESSURE_A]>>8;
+	data_au8_sens_dms_1[1] = pressureData[MBAR_PUMP1_PRESSURE_A] >> 8;
 	data_au8_sens_dms_1[2] = pressureData[MBAR_PUMP1_PRESSURE_B];
-	data_au8_sens_dms_1[3] = pressureData[MBAR_PUMP1_PRESSURE_B]>>8;
+	data_au8_sens_dms_1[3] = pressureData[MBAR_PUMP1_PRESSURE_B] >> 8;
 	data_au8_sens_dms_1[4] = pressureData[MBAR_PUMP2_PRESSURE_A];
-	data_au8_sens_dms_1[5] = pressureData[MBAR_PUMP2_PRESSURE_A]>>8;
+	data_au8_sens_dms_1[5] = pressureData[MBAR_PUMP2_PRESSURE_A] >> 8;
 	data_au8_sens_dms_1[6] = pressureData[MBAR_PUMP2_PRESSURE_B];
-	data_au8_sens_dms_1[7] = pressureData[MBAR_PUMP2_PRESSURE_B]>>8;
-
+	data_au8_sens_dms_1[7] = pressureData[MBAR_PUMP2_PRESSURE_B] >> 8;
 
 	can_sendDatabox( sensorCANChannel,
 			sensorDataboxNumber,
@@ -133,7 +133,3 @@ void SPSSendSensorDataOnCAN(void) {
 			data_au8_sens_dms_1
 	);
 }
-
-
-
-

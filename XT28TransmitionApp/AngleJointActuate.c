@@ -25,9 +25,6 @@ void AJAInitAndSetupAngleJointActuate(void) {
 			cfg_T_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
 			cfg_T_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
 			cfg_T_RESISTANCE_MAX );			//(* max resistance of solenoid for error detection[mOhm] *)
-	// out_cfgPI ( POH_CL_TURN_FRONT_B_mA,		//(* Channel*)
-	//		    cfg_T_KP_PM,					//(*Kp factor*)
-	//     		cfg_T_KI_PM );					//(*Ki factor*)
 
 	/*****************TURNINGVALVE2****************/
 	out_cfg(POH_CL_TURN_REAR_A_mA, 			//(* PWM output close loop *)
@@ -35,26 +32,19 @@ void AJAInitAndSetupAngleJointActuate(void) {
 			cfg_T_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
 			cfg_T_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
 			cfg_T_RESISTANCE_MAX);			//(* max resistance of solenoid for error detection[mOhm] *)
-	// out_cfgPI ( POH_CL_TURN_REAR_A_mA,		//(* Channel*)
-	//		    cfg_T_KP_PM,					//(*Kp factor*)
-	//     		cfg_T_KI_PM );					//(*Ki factor*)
 
 	out_cfg(POH_CL_TURN_REAR_B_mA, 			//(* PWM output close loop *)
 			cfg_T_DEBOUNCE,					//(* debounce time [ms] for error detection *)
 			cfg_T_DITHER_FREQUENCY, 		//(* dither frequency [Hz]*)
 			cfg_T_RESISTANCE_MIN, 			//(* min resistance of solenoid for error detection [mOhm]*)
 			cfg_T_RESISTANCE_MAX);			//(* max resistance of solenoid for error detection[mOhm] *)
-	// out_cfgPI ( POH_CL_TURN_REAR_B_mA,		//(* Channel*)
-	//		    cfg_T_KP_PM,					//(*Kp factor*)
-	//     		cfg_T_KI_PM );					//(*Ki factor*)
-
 }
 
 
 //--Turning Valves current--//
 const uint16 TurningValve_Imin = 415;
 const uint16 TurningValve_Imax = 730;
-const uint16 TurningValve_Imed = 500;//580;
+const uint16 TurningValve_Imed = 500; /* 580 */
 
 static uint16 PWM_turn_front_A = 0;
 static uint16 PWM_turn_front_B = 0;
@@ -79,7 +69,7 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 			joystick_neg = 0;
 			joystick_pos = 0;
 		}
-	} else {
+	} else { /* charPosition == FALSE */
 		if (MiniJoystick < 0) {
 			joystick_pos = abs(MiniJoystick);
 			joystick_neg = 0;
@@ -101,6 +91,7 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 		PWM_turn_rear_A  = joystick_pos * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;//415-580
 		PWM_turn_rear_B  = joystick_neg * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;//415-580
 		break;
+
 	case TURN_FRONT:
 		PWM_turn_front_A = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
 		PWM_turn_front_B = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
@@ -118,8 +109,7 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 	case TURN_PID:
 		PWM_turn_front_A = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
 		PWM_turn_front_B = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
-
-		rearPIDControl(avrageWheelSpeed); /* This function sets the last two pwn, with the use of globals */
+		rearPIDControl( avrageWheelSpeed ); /* This function sets the last two pwn, with the use of globals */
 	}
 
 	/* 3. Actuate */
@@ -130,7 +120,7 @@ static void rearPIDControl(int avrageWheelSpeed) {
 
 	//--Turning PID parameters --//
 	static sint32 TurningData = 0;
-	static double errorAccT = 0;
+	static float errorAccT = 0;
 
 	sint32 Front_angle = 0;
 
@@ -167,35 +157,37 @@ static void rearPIDControl(int avrageWheelSpeed) {
 		errorAccT = -500 / IT;
 	}
 
-	volatile sint32 PID_TURN=0;
-	PID_TURN = PID_TURN_P+PID_TURN_I;
+	sint32 PID_TURN = PID_TURN_P + PID_TURN_I;
 
-	static int Turn_AB_switch = 0;
-	switch(Turn_AB_switch){
+	static enum {DEADBAND_STATE,
+		TURN_A_STATE,
+		TURN_B_STATE
+	} Turn_AB_switch = DEADBAND_STATE;
 
-	case 0:
+	switch(Turn_AB_switch) {
+	case DEADBAND_STATE:
 		errorAccT = 0;
-		if (TurningData>50) {
-			Turn_AB_switch = 1;
+		if (TurningData > 50) {
+			Turn_AB_switch = TURN_A_STATE;
 			break;
 		}
 		if (TurningData < -50) {
-			Turn_AB_switch = 2;
+			Turn_AB_switch = TURN_B_STATE;
 			break;
 		}
 		break;
 
-	case 1:
+	case TURN_A_STATE:
 		if ( (TurningData) < 0) {
-			Turn_AB_switch = 0;
+			Turn_AB_switch = DEADBAND_STATE;
 		}
 		PWM_turn_rear_A = PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;
 		PWM_turn_rear_B = 0;
 		break;
 
-	case 2:
+	case TURN_B_STATE:
 		if ( (TurningData) > 0) {
-			Turn_AB_switch = 0;
+			Turn_AB_switch = DEADBAND_STATE;
 		}
 		PWM_turn_rear_A = 0;
 		PWM_turn_rear_B = -PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;

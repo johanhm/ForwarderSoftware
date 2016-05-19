@@ -25,6 +25,7 @@
 #define INDEX_SIZE_PEDALS					21
 
 static void gasPedalLowPassFilter(void);
+static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
 
 
 
@@ -50,17 +51,14 @@ void GPSUppdatePedalSensorData(void) {
 	pedalData[ANALOG_GASPEDAL_REAR_A] = in(AIV_GAS_R_A);
 	pedalData[ANALOG_GASPEDAL_REAR_B] = in(AIV_GAS_R_B);
 
-
 	pedalData[ANALOG_BRAKEPEDAL_FRONT_A] = in(AIV_BRAKE_F_A);
 	pedalData[ANALOG_BRAKEPEDAL_FRONT_B] = in(AIV_BRAKE_F_B);
 	pedalData[ANALOG_BRAKEPEDAL_REAR_A] = in(AIV_BRAKE_R_A);
 	pedalData[ANALOG_BRAKEPEDAL_REAR_B] = in(AIV_BRAKE_R_B);
 
-
-
 	/**********PEDAL CONVERSION*********/
 
-	//Calibrated min max volt
+	/* Calibrated min max volt */
 	const int GAS_F_A_Umin = 535;
 	const int GAS_F_A_Umax = 4532;
 	const int GAS_F_B_Umax = 535;
@@ -84,22 +82,11 @@ void GPSUppdatePedalSensorData(void) {
 	/* Front GasPedal conversion */
 	/* A signal */
 	pedalData[PMIL_GASPEDAL_FRONT_A] = 1000 * (pedalData[ANALOG_GASPEDAL_FRONT_A] - GAS_F_A_Umin) / (GAS_F_A_Umax - GAS_F_A_Umin);
-	if (pedalData[ANALOG_GASPEDAL_FRONT_A] > GAS_F_A_Umax) {
-		pedalData[PMIL_GASPEDAL_FRONT_A] = 1000;
-	}
-	else if (pedalData[ANALOG_GASPEDAL_FRONT_A] < GAS_F_A_Umin) {
-		pedalData[PMIL_GASPEDAL_FRONT_A] = 0;
-	}
-
+	pedalData[PMIL_GASPEDAL_FRONT_A] = saturateAnInt(pedalData[ANALOG_GASPEDAL_FRONT_A], GAS_F_A_Umax, 1000, GAS_F_A_Umin, 0);
 
 	/* B signal */
 	pedalData[PMIL_GASPEDAL_FRONT_B] = 1000 * (pedalData[ANALOG_GASPEDAL_FRONT_B] - GAS_F_B_Umin) / (GAS_F_B_Umax - GAS_F_B_Umin);
-	if (pedalData[ANALOG_GASPEDAL_FRONT_B] > GAS_F_B_Umin) {
-		pedalData[PMIL_GASPEDAL_FRONT_B] = 0;
-	}
-	else if (pedalData[ANALOG_GASPEDAL_FRONT_B] < GAS_F_B_Umax) {
-		pedalData[PMIL_GASPEDAL_FRONT_B] = 1000;
-	}
+	pedalData[PMIL_GASPEDAL_FRONT_B] = saturateAnInt(pedalData[ANALOG_GASPEDAL_FRONT_B], GAS_F_B_Umin, 0, GAS_F_B_Umax, 1000);
 
 	/* Rear GasPedal conversion */
 	/* A signal */
@@ -107,7 +94,7 @@ void GPSUppdatePedalSensorData(void) {
 	if (pedalData[ANALOG_GASPEDAL_REAR_A] > GAS_R_A_Umax) {
 		pedalData[PMIL_GASPEDAL_REAR_A] = 1000;
 	}
-	else if (pedalData[ANALOG_GASPEDAL_REAR_A]<GAS_R_A_Umin) {
+	else if (pedalData[ANALOG_GASPEDAL_REAR_A] < GAS_R_A_Umin) {
 		pedalData[PMIL_GASPEDAL_REAR_A] = 0;
 	}
 	/* B signal */
@@ -139,7 +126,8 @@ void GPSUppdatePedalSensorData(void) {
 	/* Rear BrakePedal conversion */
 	/* A signal */
 	pedalData[PMIL_BRAKEPEDAL_REAR_A] = 1000 * (pedalData[ANALOG_BRAKEPEDAL_REAR_A] - BRAKE_R_A_Umin) / (BRAKE_R_A_Umax - BRAKE_R_A_Umin);
-	if (pedalData[ANALOG_BRAKEPEDAL_REAR_A] > BRAKE_R_A_Umax) {pedalData[PMIL_BRAKEPEDAL_REAR_A] = 1000;
+	if (pedalData[ANALOG_BRAKEPEDAL_REAR_A] > BRAKE_R_A_Umax) {
+		pedalData[PMIL_BRAKEPEDAL_REAR_A] = 1000;
 	}
 	else if (pedalData[ANALOG_BRAKEPEDAL_REAR_A] < BRAKE_R_A_Umin) {
 		pedalData[PMIL_BRAKEPEDAL_REAR_A] = 0;
@@ -162,6 +150,17 @@ void GPSUppdatePedalSensorData(void) {
 	 */
 
 	gasPedalLowPassFilter();
+}
+
+static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue) {
+	int returnSignal = 0;
+	if	(signal > maxValue) {
+		returnSignal = setMaxValue;
+	}
+	else if (signal < minValue) {
+		returnSignal = setMinvalue;
+	}
+	return returnSignal;
 }
 
 static void gasPedalLowPassFilter(void) {
@@ -188,11 +187,10 @@ static void gasPedalLowPassFilter(void) {
 
 int GPSGetGassPedalFilterdAndScaled(bool chairPosition) {
 	if (chairPosition == TRUE) {
-		return pedalData[PMIL_GASPEDAL_FRONT_A];
+		return pedalData[PMIL_LP_PEDAL];
 	} else {
-		return pedalData[PMIL_GASPEDAL_FRONT_B];
+		return pedalData[PMIL_LP_PEDAL];
 	}
-
 }
 
 int GPSGetBreakPedal(bool chairPosition) {

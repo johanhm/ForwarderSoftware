@@ -2,6 +2,7 @@
 #include "WheelMotorActuate.h"
 
 static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
+static int calculateSlipOffsetController(int motorNumber, driveState DriveSTATE, int periodicCallTime_ms);
 static void pumpActuate(driveState xt28DriveState);
 
 //Pump/Motor
@@ -152,22 +153,22 @@ static uint16 Pump_2_A_mEpsilon = 0;
 static uint16 Pump_2_B_mEpsilon = 0;
 void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal) {
 
-	static uint16 Pump_OD_mEpsilon = 0;
+	static int Pump_OD_mEpsilon = 0;
 
-	static uint16 Motor_OD_mEpsilon = 0;
-	static uint16 Motor_1_mEpsilon = 0;
-	static uint16 Motor_2_mEpsilon = 0;
-	static uint16 Motor_3_mEpsilon = 0;
-	static uint16 Motor_4_mEpsilon = 0;
-	static uint16 Motor_5_mEpsilon = 0;
-	static uint16 Motor_6_mEpsilon = 0;
+	static int Motor_OD_mEpsilon = 0;
+	static int Motor_1_mEpsilon = 0;
+	static int Motor_2_mEpsilon = 0;
+	static int Motor_3_mEpsilon = 0;
+	static int Motor_4_mEpsilon = 0;
+	static int Motor_5_mEpsilon = 0;
+	static int Motor_6_mEpsilon = 0;
 
-	static sint16 Motor_1_mEpsilon_ns = 0;
-	static sint16 Motor_2_mEpsilon_ns = 0;
-	static sint16 Motor_3_mEpsilon_ns = 0;
-	static sint16 Motor_4_mEpsilon_ns = 0;
-	static sint16 Motor_5_mEpsilon_ns = 0;
-	static sint16 Motor_6_mEpsilon_ns = 0;
+	static int Motor_1_mEpsilon_ns = 0;
+	static int Motor_2_mEpsilon_ns = 0;
+	static int Motor_3_mEpsilon_ns = 0;
+	static int Motor_4_mEpsilon_ns = 0;
+	static int Motor_5_mEpsilon_ns = 0;
+	static int Motor_6_mEpsilon_ns = 0;
 
 	driveState DriveSTATE = machineDriveState;
 
@@ -209,8 +210,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_4_mEpsilon = 0;
 			Motor_5_mEpsilon = 0;
 			Motor_6_mEpsilon = 0;
-		}
-		else {
+		} else {
 			Pump_1_B_mEpsilon = Pump_OD_mEpsilon;
 			Pump_2_B_mEpsilon = Pump_OD_mEpsilon;
 			Pump_1_A_mEpsilon = 0;
@@ -237,8 +237,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_4_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 			Motor_5_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 			Motor_6_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
-		}
-		else {
+		} else {
 			Pump_1_B_mEpsilon = 0;
 			Pump_2_B_mEpsilon = 0;
 			Pump_1_A_mEpsilon = pMilLowPassGasPedalSignal * 2;
@@ -254,118 +253,15 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	case PID_DRIVE:
 		/* NYI so much code, did not want to clean it all*/
 		break;
-	default:
-		DriveSTATE = NEUTRAL_DRIVE;
-		break;
 	}
-
-	/* FROM OUTPUT TASK */
-	//--------MOTOR-----//
-	static uint16 k1 = 0;
-	static uint16 k2 = 0;
-	static uint16 k3 = 0;
-	static uint16 k4 = 0;
-	static uint16 k5 = 0;
-	static uint16 k6 = 0;
-
-	/* Step 2 - Set k values depending on drive state or CAN */
-	if (DriveSTATE == PID_DRIVE) {
-		k1 = 14;;
-		k2 = 14;
-		k3 = 14;
-		k4 = 14;
-		k5 = 14;
-		k6 = 14;
-	}
-	else if (DriveSTATE == FORWARD_DRIVE || DriveSTATE == BACKWARD_DRIVE) {
-		k1 = 2.6;
-		k2 = 2.6;
-		k3 = 2.6;
-		k4 = 2.6;
-		k5 = 2.6;
-		k6 = 2.6;
-	}
-	else if (msg_CAN_ALYZER_4[0] != 0) {
-		k1 = msg_CAN_ALYZER_4[0] / 10;
-		k2 = msg_CAN_ALYZER_4[1] / 10;
-		k3 = msg_CAN_ALYZER_4[2] / 10;
-		k4 = msg_CAN_ALYZER_4[3] / 10;
-		k5 = msg_CAN_ALYZER_4[4] / 10;
-		k6 = msg_CAN_ALYZER_4[5] / 10;
-	}
-
-	/* Step 3 -  Tune lowpass filter constants depending on avrage RPM*/
-	/* low pass filter Sliping stuff */
-	static float f_cutoff_ns;
-	static float Tf_S_ns;
-	static float alpha_S_ns;
-
-	if (WMSGetAvrageRPMForWheels() > 500){
-		f_cutoff_ns = 0.02;
-	} else {
-		f_cutoff_ns = 0.10;
-	}
-
-	Tf_S_ns = 1 / (2 * M_PI * f_cutoff_ns);
-	alpha_S_ns = Tf_S_ns / (Tf_S_ns + (float)periodicCallTime_ms / 1000);
-
-	/* Step 4 - Calculate slip offset, and lowpass filter this badboj */
-	/* Slip */
-	static sint16 slip1 		= 0;
-	static sint16 slip1_old_lp 	= 0;
-	static sint16 slip1_lp 		= 0;
-
-	static sint16 slip2 		= 0;
-	static sint16 slip2_old_lp 	= 0;
-	static sint16 slip2_lp 		= 0;
-
-	static sint16 slip3 		= 0;
-	static sint16 slip3_old_lp 	= 0;
-	static sint16 slip3_lp 		= 0;
-
-	static sint16 slip4 		= 0;
-	static double slip4_old_lp 	= 0;
-	static double slip4_lp 		= 0;
-
-	static sint16 slip5 		= 0;
-	static sint16 slip5_old_lp 	= 0;
-	static sint16 slip5_lp 		= 0;
-
-	static sint16 slip6 		= 0;
-	static sint16 slip6_old_lp 	= 0;
-	static sint16 slip6_lp 		= 0;
-
-	slip1 = k1 * (WMSGetRPMForWheel(1) - WMSGetAvrageRPMForWheels());
-	slip1_old_lp = slip1_lp;
-	slip1_lp = alpha_S_ns * slip1_old_lp + (1 - alpha_S_ns) * slip1;
-
-	slip2 = k2 * (WMSGetRPMForWheel(2) - WMSGetAvrageRPMForWheels());
-	slip2_old_lp = slip2_lp;
-	slip2_lp = alpha_S_ns*slip2_old_lp + (1 - alpha_S_ns) * slip2;
-
-	slip3=k3 * (WMSGetRPMForWheel(3) - WMSGetAvrageRPMForWheels());
-	slip3_old_lp = slip3_lp;
-	slip3_lp = alpha_S_ns*slip3_old_lp + (1 - alpha_S_ns) * slip3;
-
-	slip4 = k4 * (WMSGetRPMForWheel(4) - WMSGetAvrageRPMForWheels());
-	slip4_old_lp = slip4_lp;
-	slip4_lp = alpha_S_ns * slip4_old_lp + (1 - alpha_S_ns) * slip4;
-
-	slip5 = k5 * (WMSGetRPMForWheel(5) - WMSGetAvrageRPMForWheels());
-	slip5_old_lp = slip5_lp;
-	slip5_lp = alpha_S_ns * slip5_old_lp + (1 - alpha_S_ns) * slip5;
-
-	slip6=k6 * (WMSGetRPMForWheel(6) - WMSGetAvrageRPMForWheels());
-	slip6_old_lp = slip6_lp;
-	slip6_lp = alpha_S_ns * slip6_old_lp + (1 - alpha_S_ns) * slip6;
 
 	/* Step 5 - Substract the slip */
-	Motor_1_mEpsilon_ns = Motor_1_mEpsilon - slip1_lp;
-	Motor_2_mEpsilon_ns = Motor_2_mEpsilon - slip2_lp;
-	Motor_3_mEpsilon_ns = Motor_3_mEpsilon - slip3_lp;
-	Motor_4_mEpsilon_ns = Motor_4_mEpsilon - slip4_lp;
-	Motor_5_mEpsilon_ns = Motor_5_mEpsilon - slip5_lp;
-	Motor_6_mEpsilon_ns = Motor_6_mEpsilon - slip6_lp;
+	Motor_1_mEpsilon_ns = Motor_1_mEpsilon - calculateSlipOffsetController(0, DriveSTATE, periodicCallTime_ms);
+	Motor_2_mEpsilon_ns = Motor_2_mEpsilon - calculateSlipOffsetController(1, DriveSTATE, periodicCallTime_ms);
+	Motor_3_mEpsilon_ns = Motor_3_mEpsilon - calculateSlipOffsetController(2, DriveSTATE, periodicCallTime_ms);
+	Motor_4_mEpsilon_ns = Motor_4_mEpsilon - calculateSlipOffsetController(3, DriveSTATE, periodicCallTime_ms);
+	Motor_5_mEpsilon_ns = Motor_5_mEpsilon - calculateSlipOffsetController(4, DriveSTATE, periodicCallTime_ms);
+	Motor_6_mEpsilon_ns = Motor_6_mEpsilon - calculateSlipOffsetController(5, DriveSTATE, periodicCallTime_ms);
 
 	/* Step 6 - Saftey saturate */
 	Motor_1_mEpsilon_ns = saturateAnInt(Motor_1_mEpsilon_ns, 1000, 1000, 0, 0);
@@ -429,7 +325,7 @@ static void pumpActuate(driveState xt28DriveState) {
 	const uint16 Pump_2_MinA = 195;//185;//195;
 	const uint16 Pump_2_MaxA = 605;//660;
 
-	if (xt28DriveState == NEUTRAL_DRIVE) {
+	if (xt28DriveState == NEUTRAL_DRIVE) { /**! FIXME This is not needed really, Pump_1_A_mEpsilon is already set to zero in neutral drive mode. */
 		Pump_1_A_PWM = 0;
 		Pump_1_B_PWM = 0;
 		Pump_2_A_PWM = 0;
@@ -453,6 +349,57 @@ static void pumpActuate(driveState xt28DriveState) {
 
 }
 
+static int calculateSlipOffsetController(int motorNumber, driveState DriveSTATE, int periodicCallTime_ms) {
+
+	static int k[6] = {0};
+
+	/* Step 2 - Set k values depending on drive state or CAN */
+	if (DriveSTATE == PID_DRIVE) {
+		k[motorNumber] = 14;
+	}
+	else if (DriveSTATE == FORWARD_DRIVE || DriveSTATE == BACKWARD_DRIVE) {
+		k[motorNumber] = 2.6;
+	}
+	else if (msg_CAN_ALYZER_4[0] != 0) {
+		k[0] = msg_CAN_ALYZER_4[0] / 10;
+		k[1] = msg_CAN_ALYZER_4[1] / 10;
+		k[2] = msg_CAN_ALYZER_4[2] / 10;
+		k[3] = msg_CAN_ALYZER_4[3] / 10;
+		k[4] = msg_CAN_ALYZER_4[4] / 10;
+		k[5] = msg_CAN_ALYZER_4[5] / 10;
+	}
+
+	/* Step 3 -  Tune lowpass filter constants depending on avrage RPM*/
+	/* low pass filter Sliping stuff */
+	static float f_cutoff_ns;
+	static float Tf_S_ns;
+	static float alpha_S_ns;
+
+	if (WMSGetAvrageRPMForWheels() > 500){
+		f_cutoff_ns = 0.02;
+	} else {
+		f_cutoff_ns = 0.10;
+	}
+
+	Tf_S_ns = 1 / (2 * M_PI * f_cutoff_ns);
+	alpha_S_ns = Tf_S_ns / (Tf_S_ns + (float)periodicCallTime_ms / 1000);
+
+	/* Step 4 - Calculate slip offset, and lowpass filter this badboj */
+	/* Slip */
+	static int slip[6] 			= {0};
+	static int slip_old_lp[6] 	= {0};
+	static int slip_lp[6] 		= {0};
+
+	slip[motorNumber] = k[motorNumber] * (WMSGetRPMForWheel(motorNumber) - WMSGetAvrageRPMForWheels());
+	slip_old_lp[motorNumber] = slip_lp[motorNumber];
+	slip_lp[motorNumber] = alpha_S_ns * slip_old_lp[motorNumber] + (1 - alpha_S_ns) * slip[motorNumber];
+
+	/* Step 5 - Substract the slip */
+	return slip_lp[motorNumber];
+}
+
+
+
 static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue) {
 	if	(signal > maxValue) {
 		signal = setMaxValue;
@@ -464,7 +411,7 @@ static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue
 }
 
 void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
-	if (buttonCANSendState == TRUE && msg_CAN_ALYZER_2[0] > 0){
+	if (buttonCANSendState == TRUE && msg_CAN_ALYZER_2[0] > 0) {
 		Motor_1_PWM = msg_CAN_ALYZER_2[0] * 3;
 		Motor_2_PWM = msg_CAN_ALYZER_2[1] * 3;
 		Motor_3_PWM = msg_CAN_ALYZER_2[2] * 3;
@@ -472,7 +419,7 @@ void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
 		Motor_5_PWM = msg_CAN_ALYZER_2[4] * 3;
 		Motor_6_PWM = msg_CAN_ALYZER_2[5] * 3;
 	}
-	/*! fixme eh add CAN */
+	/*! fixme eh add CAN send stupid */
 
 }
 

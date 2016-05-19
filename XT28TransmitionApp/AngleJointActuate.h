@@ -32,8 +32,14 @@ typedef enum {
  */
 void AJAInitAndSetupAngleJointActuate(void);
 
+/*!
+ * Actuate the joints, behaves differently depending on state.
+ * @param xt28TurnState
+ * @param joystickValue
+ * @param chairPosition
+ * @param avrageWheelSpeed
+ */
 void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, int avrageWheelSpeed);
-
 
 
 

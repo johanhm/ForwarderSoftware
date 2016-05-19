@@ -1,25 +1,8 @@
 #include "api_lib_basic.h"
+#include "XT28TransmissitionAPI.h"
 
-#include "AngleJointSensor.h"
-#include "SystemPressureSensors.h"
-#include "GasPedalSensor.h"
-#include "CabinSensors.h"
-#include "WheelMotorActuate.h"
-#include "WheelMotorSensor.h"
-#include "Excipad.h"
-#include "AngleJointActuate.h"
 
 #include "NinjaController.h"
-
-
-#define CAN_ID_TX_SENSOR_INFO_DMS_1				0x18FE1010 	//Sensor data
-#define CAN_ID_TX_SENSOR_INFO_DMS_2				0x18FE1011
-#define CAN_ID_TX_SENSOR_INFO_DMS_3				0x18FE1012
-#define CAN_ID_TX_SENSOR_INFO_DMS_4				0x18FE1020
-
-#define DB_RX_INDEX_CAN_2					11
-#define DB_RX_INDEX_CAN_3					10
-#define DB_RX_INDEX_CAN_4					1
 
 /* Private prototypes */
 void sys_main(void);
@@ -39,6 +22,7 @@ void sys_main(void) {
 	SPSConfigureSystemPressureSensors();
 	SPSConfigureSendSensorDatabox(CAN_1, 15, CAN_ID_TX_SENSOR_INFO_DMS_1);
 
+
 	/* Gas pedal sensor and cabin sensor's */
 	GPSConfigureGasPedalInputSensors();
 	CSConfigureCabinSensors();
@@ -49,15 +33,8 @@ void sys_main(void) {
 
 	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
 	sys_initTC(0, 10);
-	can_cfgBufs(CAN_1, 5, 5, 40, 40);
-	can_cfgBufs(CAN_2, 5, 5, 20, DB_RX_INDEX_CAN_2);
-	can_cfgBufs(CAN_3, 5, 5, 20, DB_RX_INDEX_CAN_3);
-	can_cfgBufs(CAN_4, 5, 5, 20, DB_RX_INDEX_CAN_4);
 
-	can_init(CAN_1, BAUD_1000K);
-	can_init(CAN_2, BAUD_250K);
-	can_init(CAN_3, BAUD_250K);
-	can_init(CAN_4, BAUD_250K);
+	XT28TCANInitAndSetup();
 
 	sys_registerTask(mainTask_10ms, 10,	10, 0, 0);
 
@@ -78,6 +55,7 @@ static void mainTask_10ms(void) {
 	setMachineState();
 
 	/* Send stuff on CAN */
+	CANSendDebuggMessage( CAN_1 );
 	AJSSendAngleDataOnCAN();
 	SPSSendSensorDataOnCAN();
 	WMSSendSensorDataOnCAN();
@@ -104,7 +82,7 @@ static void setMachineState(void) {
 	switch (userPressedButton) {
 	case NONE:
 		break;
-	case BUTTON_1: /* Enable crane movment if char pos */
+	case BUTTON_1: /* Enable crane movement if char position */
 		/*! nyi */
 		break;
 	case BUTTON_2:
@@ -143,8 +121,12 @@ static void setMachineState(void) {
 		xt28TurnState = TURN_REAR;
 		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_15: /* Turn PID */
-		xt28TurnState = TURN_PID;
+	case BUTTON_15: /* Turn PID or Combined */
+		if (xt28TurnState != TURN_COMBINED) {
+			xt28TurnState = TURN_COMBINED;
+		} else {
+			xt28TurnState = TURN_PID;
+		}
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_16: { /* Enable break */

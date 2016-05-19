@@ -64,7 +64,9 @@ OBJECTS          = $(OUTPUT_PATH)/TransmissionApp.o\
 									 $(OUTPUT_PATH)/CabinSensors.o\
 									 $(OUTPUT_PATH)/WheelMotorActuate.o\
 									 $(OUTPUT_PATH)/WheelMotorSensor.o\
+									 $(OUTPUT_PATH)/XT28TransmissionCANSupport.o\
 									 $(OUTPUT_PATH)/CodeGenerationTest.o\
+									 
 									 
 									 
 ####################################################################################################
