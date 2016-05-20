@@ -1,3 +1,18 @@
+/** \defgroup DRIVERINTERFACE Driver interface */
+
+/** \defgroup EXPRIGHT Excipad right
+ * \ingroup DRIVERINTERFACE
+ * \brief Right excipad buttons and joystick.
+ *
+ *  Does the following:
+ *
+ *  1. Setup right excipad
+ *  2. Get what button driver have pressed
+ *  3. Get joystick value.
+ *
+ *  @{
+ */
+
 
 #ifndef XT28_EXCIPAD_H_
 #define XT28_EXCIPAD_H_

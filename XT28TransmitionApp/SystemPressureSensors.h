@@ -1,8 +1,15 @@
-/*
- * SystemPressureSensors.h
+/** \defgroup SPS System pressure sensors
+ * \ingroup SENSORS
+ * \brief System pressure sensors
  *
- *  Created on: 12 maj 2016
- *      Author: ladmin
+ *  Does the following:
+ *
+ *  1. Configure system pressure sensors.
+ *  2. Update sensor data.
+ *  3. Get pump pressure.
+ *  4. Send pump pressure on CAN
+ *
+ *  @{
  */
 
 #ifndef XT28TRANSMITIONAPP_SYSTEMPRESSURESENSORS_H_

@@ -1,4 +1,26 @@
 
+/** \defgroup CS Cabin Sensors
+ * \ingroup SENSORS
+ * \brief Handles sensors related to the cabin.
+ *
+ *  Does the following:
+ *
+ *  1. Configure cabin sensors
+ *  2. Update sensor data
+ *  3. Get the chair position.
+ *
+ *  The module handles the following sensors
+ *
+ *  1. Chair position
+ *  2. Oil temperature
+ *  3. Door sensor
+ *  4. Fuel meter sensor
+ *
+ *  @{
+ */
+
+
+
 #ifndef XT28TRANSMITIONAPP_CABINSENSORS_H_
 #define XT28TRANSMITIONAPP_CABINSENSORS_H_
 

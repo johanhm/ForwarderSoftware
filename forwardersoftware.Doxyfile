@@ -773,7 +773,7 @@ WARN_LOGFILE =
 #
 # XT28API\README.txt XT28API\ActiveDampening\ActiveDampening.h XT28API\Excipad\ExcipadButtons.h XT28API\Excipad\ExcipadJoyStick.h\
 
-INPUT = XT28API XT28API\Sensors XT28API\ActiveDampening XT28API\Actuate XT28API\Constants XT28API\Excipad
+INPUT = XT28API XT28API\Sensors XT28API\ActiveDampening XT28API\Actuate XT28API\Constants XT28API\Excipad    XT28TransmitionApp
 	
 
 # This tag can be used to specify the character encoding of the source files

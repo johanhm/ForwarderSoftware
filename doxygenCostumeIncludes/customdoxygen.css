@@ -322,6 +322,7 @@ blockquote {
 
 table.table {
 	width: auto;
+	min-width: 80%;
 	border: 2px solid transparent;
 	table-layout: fixed;
     word-wrap: break-word;

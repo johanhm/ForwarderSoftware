@@ -1,4 +1,11 @@
-
+/** \defgroup DRIVECAN Transmission CAN Support
+ * \ingroup SUPPORT
+ * \brief CAN Support for transmission ECU
+ *
+ *
+ *
+ *  @{
+ */
 
 #ifndef XT28TRANSMITIONAPP_XT28TRANSMISSIONCANSUPPORT_H_
 #define XT28TRANSMITIONAPP_XT28TRANSMISSIONCANSUPPORT_H_
@@ -24,16 +31,18 @@ extern sint32 g_debug5;
 extern sint32 g_debug6;
 
 /*!
- * Set up CAN for the transmissition ECU
+ * Set up CAN for the transmission ECU
  */
 void XT28TCANInitAndSetup(void);
 
 /*!
- * Send the debugg variabels
- * @param CANChannel
+ * Send the debug variables
+ * @param CANChannel Channel to send the debug variable on
  */
 void CANSendDebuggMessage(uint8 CANChannel);
 
 
 
 #endif /* XT28TRANSMITIONAPP_XT28TRANSMISSIONCANSUPPORT_H_ */
+
+/** @}*/

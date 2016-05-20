@@ -27,7 +27,7 @@ The API contains the following modules and sub modules
 	+ \ref ADPID
 	+ \ref ADSH
 	+ \ref ADSM
- - \ref EXP
+ - \ref EXPLEFT
  - \ref SENSORS
    + \ref IMU
    + \ref PAPOS

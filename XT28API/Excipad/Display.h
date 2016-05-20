@@ -1,8 +1,8 @@
-/*
- * Display.h
+/*! \defgroup DPS Display Suspension
+ * \ingroup DRIVERINTERFACE
+ *  \brief Set display states from suspension
  *
- *  Created on: 3 maj 2016
- *      Author: ladmin
+ *   @{
  */
 
 #ifndef XT28API_EXCIPAD_DISPLAY_H_
@@ -74,3 +74,4 @@ void DisplaySendLatestStatesOnCAN(void);
 
 
 #endif /* XT28API_EXCIPAD_DISPLAY_H_ */
+/** @}*/

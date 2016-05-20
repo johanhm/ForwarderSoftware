@@ -1,8 +1,13 @@
-/*
- * WheelMotorActuate.h
+/** \defgroup WMA Wheel motor actuate
+ * \ingroup ACTUATE
+ * \brief Actuate the motors on each wheel
  *
- *  Created on: 13 maj 2016
- *      Author: ladmin
+ *  Does the following:
+ *
+ *  1. Configure motor actuation.
+ *  2. Actuate depending on speed.
+ *
+ *  @{
  */
 
 #ifndef XT28TRANSMITIONAPP_WHEELMOTORACTUATE_H_
@@ -68,3 +73,4 @@ void WMASendMotorPWNOnCAN(bool buttonCANSendState);
 
 
 #endif /* XT28TRANSMITIONAPP_WHEELMOTORACTUATE_H_ */
+/** @}*/

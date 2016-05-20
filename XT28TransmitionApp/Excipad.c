@@ -10,6 +10,12 @@
 #define CAN_ID_JOYSTICK_Y					(0x18FE010B)
 #define CAN_ID_JOYSTICK_X					(0x18FE000B)
 
+/* From Excipad Transmission */
+#define CAN_ID_RX_EXCIPAD_RSpeed				0x18FE0115// (*Excipad Right Speed Regulator mex ID hex 18FE0115 *)
+#define CAN_ID_RX_EXCIPAD_RButton				0x18FE0315// (*Excipad Right Buttons mex ID hex 18FE0315*)
+#define CAN_ID_RX_EXCIPAD_RMiniJoy				0x18FE0015 // (*Excipad Right mini joystick x-axis*)
+
+
 /* CAN message exipad */
 #define BUTTON_ID_1		(0x01) /* 1,  byte 3 */
 #define BUTTON_ID_2	 	(0x04) /* 4,  byte 3 */

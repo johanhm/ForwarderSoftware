@@ -1,8 +1,14 @@
-/*
- * WheelMotorSensor.h
+/** \defgroup WMS Wheel motor sensors
+ * \ingroup SENSORS
+ * \brief Get motor RPM and wheel speed
  *
- *  Created on: 13 maj 2016
- *      Author: ladmin
+ *  Does the following:
+ *
+ *  1. Configure motor sensors
+ *  2. Update sensor data.
+ *  3. Get motor RPM or wheel speed
+ *
+ *  @{
  */
 
 #ifndef XT28TRANSMITIONAPP_WHEELMOTORSENSOR_H_

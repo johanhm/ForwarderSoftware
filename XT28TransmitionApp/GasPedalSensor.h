@@ -1,3 +1,16 @@
+/** \defgroup GPS Gas pedal sensors
+ * \ingroup CS
+ * \brief Handles the gas and break pedal sensor
+ *
+ *  Does the following:
+ *
+ *  1. Configure cabin sensors
+ *  2. Update sensor data
+ *  3. Get the gas or break pedal sensor value.
+ *
+ *  @{
+ */
+
 
 #ifndef XT28TRANSMITIONAPP_GASPEDALSENSOR_H_
 #define XT28TRANSMITIONAPP_GASPEDALSENSOR_H_

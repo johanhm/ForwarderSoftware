@@ -1,5 +1,6 @@
-/*! \defgroup EXP Excipad
- *  \brief Handle Exipad and Joystick
+/*! \defgroup EXPLEFT Excipad left side
+ * \ingroup DRIVERINTERFACE
+ *  \brief Handle Exipad and Joystick left side
  *
  *  This module handles the user interface with the Excipad. It handles the following:
  *

@@ -176,7 +176,6 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	/* Step 1 - Set Epsilons depending on drive state! */
 	switch(DriveSTATE){
 	case NEUTRAL_DRIVE:
-
 		Pump_1_A_mEpsilon = 0;
 		Pump_1_B_mEpsilon = 0;
 		Pump_2_A_mEpsilon = 0;
@@ -189,8 +188,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 		Motor_6_mEpsilon = 1000;
 
 		break;
-	case FORWARD_DRIVE:
-		/* Action in state forward*/
+	case FORWARD_DRIVE:	/* Action in state forward*/
 		if (pMilLowPassGasPedalSignal > 500){
 			Pump_OD_mEpsilon = 1000;
 			Motor_OD_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
@@ -399,7 +397,6 @@ static int calculateSlipOffsetController(int motorNumber, driveState DriveSTATE,
 }
 
 
-
 static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue) {
 	if	(signal > maxValue) {
 		signal = setMaxValue;
@@ -420,7 +417,6 @@ void WMASendMotorPWNOnCAN(bool buttonCANSendState) {
 		Motor_6_PWM = msg_CAN_ALYZER_2[5] * 3;
 	}
 	/*! fixme eh add CAN send stupid */
-
 }
 
 

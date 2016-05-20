@@ -1,3 +1,15 @@
+/** \defgroup AJA Angle joint actuate
+ * \ingroup ACTUATE
+ * \brief Turn the machine
+ *
+ *  Does the following:
+ *
+ *  1. Configure angle joint actuation
+ *  2. Actuate
+ *
+ *  @{
+ */
+
 
 #ifndef XT28TRANSMITIONAPP_ANGLEJOINTACTUATE_H_
 #define XT28TRANSMITIONAPP_ANGLEJOINTACTUATE_H_
@@ -6,13 +18,13 @@
 #include "stdlib.h"
 #include "AngleJointSensor.h"
 
-//Turning cylinders
+/* Turning cylinders */
 #define	POH_CL_TURN_FRONT_A_mA				OUT_13_POH_CL 	// (*FRONT*)
 #define	POH_CL_TURN_FRONT_B_mA				OUT_14_POH_CL
 #define	POH_CL_TURN_REAR_A_mA				OUT_15_POH_CL	//(*REAR*)
 #define	POH_CL_TURN_REAR_B_mA				OUT_16_POH_CL
 
-//TurningValves
+/* TurningValves */
 #define cfg_T_DEBOUNCE				100					/* [ms] */
 #define cfg_T_DITHER_FREQUENCY 		f_200Hz_DU16		/* [Hz] */
 #define cfg_T_RESISTANCE_MIN		5000		//7400	/* [mOhm] */
@@ -45,3 +57,4 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 
 
 #endif /* XT28TRANSMITIONAPP_ANGLEJOINTACTUATE_H_ */
+/** @}*/

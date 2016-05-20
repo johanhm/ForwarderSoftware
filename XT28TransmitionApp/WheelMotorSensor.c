@@ -57,7 +57,6 @@ void WMSInitAndConfigureSpeedSensors(void) {
 }
 
 
-
 void WMSUpdateSensorValues(void) {
 
 	speedData[FREQUENCY_MOTOR_1] = in(FI_Motor_1_hz);
