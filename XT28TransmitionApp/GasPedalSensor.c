@@ -41,6 +41,7 @@ void GPSConfigureGasPedalInputSensors(void) {
 static int pedalData[INDEX_SIZE_PEDALS] = {0};
 void GPSUppdatePedalSensorData(chairPosition chairPos) {
 
+
 	/* Transmission */
 	pedalData[ANALOG_GASPEDAL_FRONT_A] = in(AIV_GAS_F_A);
 	pedalData[ANALOG_GASPEDAL_FRONT_B] = in(AIV_GAS_F_B);
