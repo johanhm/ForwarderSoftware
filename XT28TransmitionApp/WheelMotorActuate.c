@@ -285,10 +285,10 @@ void saturateEpsilonAndActuateMotors(SRControlSignals controlSignals) {
 	uint16 Pump_2_A_PWM = controlSignals.pump_A_mEpsilon[1] * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
 	uint16 Pump_2_B_PWM = controlSignals.pump_B_mEpsilon[1] * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
 
-	Pump_1_A_PWM = saturateAnInt(Pump_1_A_PWM, 650, 650, 155, 0);
-	Pump_1_B_PWM = saturateAnInt(Pump_1_B_PWM, 650, 650, 150, 0);
-	Pump_2_A_PWM = saturateAnInt(Pump_2_A_PWM, 650, 650, 155, 0);
-	Pump_2_B_PWM = saturateAnInt(Pump_2_B_PWM, 650, 650, 155, 0);
+	Pump_1_A_PWM = saturateAnInt(Pump_1_A_PWM, 605, 605, 197, 0);
+	Pump_1_B_PWM = saturateAnInt(Pump_1_B_PWM, 605, 605, 197, 0);
+	Pump_2_A_PWM = saturateAnInt(Pump_2_A_PWM, 605, 605, 197, 0);
+	Pump_2_B_PWM = saturateAnInt(Pump_2_B_PWM, 605, 605, 197, 0);
 
 	g_debug3_1 = Pump_1_A_PWM;
 	g_debug3_2 = Pump_1_B_PWM;
