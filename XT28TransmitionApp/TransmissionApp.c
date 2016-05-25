@@ -13,6 +13,18 @@ static void setMachineState(void);
 /* Start of program */
 void sys_main(void) {
 
+	/* Setup CAN */
+	XT28TCANInitAndSetup();
+
+	/* Engine CAN Communications */
+	ECCInitAndSetupEngineCANCommunications();
+
+	/* Excipad configure */
+	EXPConfigureExcipad(CAN_2, 1, 2, 3);
+
+	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
+	emcy_disableInput(EMCY_DISABLE_KEY_DU32, ~EMCY_DISABLE_KEY_DU32);
+
 	/* Angle joint sensor and actuate */
 	AJAInitAndSetupAngleJointActuate();
 	AJSInitAngleJointSensors();
@@ -22,7 +34,6 @@ void sys_main(void) {
 	SPSConfigureSystemPressureSensors();
 	SPSConfigureSendSensorDatabox(CAN_1, 15, CAN_ID_TX_SENSOR_INFO_DMS_1);
 
-
 	/* Gas pedal sensor and cabin sensor's */
 	GPSConfigureGasPedalInputSensors();
 	CSConfigureCabinSensors();
@@ -31,10 +42,7 @@ void sys_main(void) {
 	WMASetupOutputToMotorsAndPumps();
 	WMSInitAndConfigureSpeedSensors();
 
-	sys_init("XT28-Transmission", "RC30-00D6"); /* RC28-14/30 */
 	sys_initTC(0, 10);
-
-	XT28TCANInitAndSetup();
 
 	sys_registerTask(mainTask_10ms, 10,	10, 0, 0);
 
@@ -43,13 +51,19 @@ void sys_main(void) {
 
 static void mainTask_10ms(void) {
 	sys_triggerTC(0);
+	sys_setVP(VP_1, ON);
+	sys_setVP(VP_2, ON);
 
 	/* Update sensor stuff */
 	AJSUppdateAngleSensorData();
 	SPSUppdateSystemPressureSensors();
-	GPSUppdatePedalSensorData();
 	CSUpdateCabinSensor();
+	GPSUppdatePedalSensorData( CSGetCharPosition() );
 	WMSUpdateSensorValues();
+
+	/* Update RPM Reference and engine data */
+	ECCSetEngineRPMReference( EXPGetScrollerValue());
+	ECCUpdateDataFromCAN();
 
 	/* Set machine state and actuate */
 	setMachineState();
@@ -60,6 +74,9 @@ static void mainTask_10ms(void) {
 	SPSSendSensorDataOnCAN();
 	WMSSendSensorDataOnCAN();
 	WMASendMotorPWNOnCAN(TRUE);
+	CANSendDebuggMessage(CAN_1);
+	DTSendDMSOnCAN(CAN_1);
+	DTSendDMSOnCAN(CAN_4);
 
 	/* Code generation test */
 	float gg = NinjaController(10,10);
@@ -79,11 +96,22 @@ static void setMachineState(void) {
 
 	/* Switch on user pressed button, change states accordingly. */
 	exipadButton userPressedButton = EXPGetLastPressedButtonWithToggle();
+
+	/*
+	g_debug1_1 = userPressedButton;
+	g_debug1_2 = EXPGetJoystickXScaledValueLeftRight();
+	g_debug1_3 = EXPGetScrollerValue();
+
+	g_debug2_1 = CSGetCharPosition();
+	g_debug2_2 = GPSGetGassPedalFilterdAndScaled();
+	g_debug2_3 = GPSGetBreakPedal();
+	g_debug2_4 = WMSGetAvrageRPMForWheels();
+	*/
+
 	switch (userPressedButton) {
 	case NONE:
 		break;
 	case BUTTON_1: /* Enable crane movement if char position */
-		/*! nyi */
 		break;
 	case BUTTON_2:
 		break;
@@ -101,37 +129,37 @@ static void setMachineState(void) {
 		break;
 	case BUTTON_9:
 		break;
-	case BUTTON_10: /* Forward drive state */
-		xt28DriveState = FORWARD_DRIVE;
+	case BUTTON_10: /* Backward drive state */
+		xt28DriveState = WMAAttemtToSetDriveStateTo(BACKWARD_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_11: /* Neutral drive state */
-		xt28DriveState = NEUTRAL_DRIVE;
+		xt28DriveState = WMAAttemtToSetDriveStateTo(NEUTRAL_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_12: /* Backward drive state */
-		xt28DriveState = BACKWARD_DRIVE;
+	case BUTTON_12: /* Forward drive state */
+		xt28DriveState = WMAAttemtToSetDriveStateTo(FORWARD_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_13: /* Turn Front */
-		xt28TurnState = TURN_FRONT;
+		xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_FRONT);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_14: /* Turn Rear */
-		xt28TurnState = TURN_REAR;
+		xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_REAR);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_15: /* Turn PID or Combined */
 		if (xt28TurnState != TURN_COMBINED) {
-			xt28TurnState = TURN_COMBINED;
+			xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_COMBINED);
 		} else {
-			xt28TurnState = TURN_PID;
+			xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_PID);
 		}
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_16: { /* Enable break */
 		xt28BreakState = TRUE;
-		EXPSetButtonStateTo(NONE);
+		//EXPSetButtonStateTo(NONE);
 		break;
 	}
 	case BUTTON_17:
@@ -144,12 +172,11 @@ static void setMachineState(void) {
 		break;
 	case BUTTON_21: /* Overdrive */
 		overdriveState = TRUE;
-		EXPSetButtonStateTo(NONE);
+		//EXPSetButtonStateTo(NONE);
 		break;
 	}
-
-
 	/* Drive state */
+	/*
 	if (xt28BreakState == TRUE) {
 		WMASetBreakState(TRUE);
 	} else {
@@ -163,14 +190,19 @@ static void setMachineState(void) {
 				gasPedalSignalIn
 		);
 	}
+	*/
+
+	/* Set break state temporary */
+	WMASetBreakState(FALSE);
+
+	WMAActuate( GPSGetGassPedalFilterdAndScaled() );
 
 	/* Actuate turn state */
 	int joystick = EXPGetJoystickXScaledValueLeftRight();
-	AJAActuate( xt28TurnState,
+	AJAActuate(
 			joystick,
 			CSGetCharPosition(),
 			WMSGetAvrageRPMForWheels()
 	);
-
 }
 

@@ -23,12 +23,18 @@
 #define CAN_ID_DEBUG2	 						0x8
 #define CAN_ID_DEBUG3	 						0x10
 
-extern sint32 g_debug1;
-extern sint32 g_debug2;
-extern sint32 g_debug3;
-extern sint32 g_debug4;
-extern sint32 g_debug5;
-extern sint32 g_debug6;
+extern sint16 g_debug1_1;
+extern sint16 g_debug1_2;
+extern sint16 g_debug1_3;
+extern sint16 g_debug1_4;
+extern sint16 g_debug2_1;
+extern sint16 g_debug2_2;
+extern sint16 g_debug2_3;
+extern sint16 g_debug2_4;
+extern sint16 g_debug3_1;
+extern sint16 g_debug3_2;
+extern sint16 g_debug3_3;
+extern sint16 g_debug3_4;
 
 /*!
  * Set up CAN for the transmission ECU

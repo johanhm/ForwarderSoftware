@@ -17,6 +17,7 @@
 #include "api_lib_basic.h"
 #include "stdlib.h"
 #include "AngleJointSensor.h"
+#include "XT28TransmissionCANSupport.h"
 
 /* Turning cylinders */
 #define	POH_CL_TURN_FRONT_A_mA				OUT_13_POH_CL 	// (*FRONT*)
@@ -38,6 +39,18 @@ typedef enum {
 	TURN_PID
 } turnState;
 
+/*!
+ *
+ * @param attemtedState
+ * @return
+ */
+turnState AJAAttemtToSetTurnStateTo(turnState attemtedState);
+
+/*!
+ *
+ * @return
+ */
+turnState AJAGetTurnState(void);
 
 /*!
  * Set up, need to be called for the rest off the functions to function at all
@@ -51,7 +64,7 @@ void AJAInitAndSetupAngleJointActuate(void);
  * @param chairPosition
  * @param avrageWheelSpeed
  */
-void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, int avrageWheelSpeed);
+void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed);
 
 
 

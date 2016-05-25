@@ -67,4 +67,28 @@ void CSUpdateCabinSensor(void);
  */
 chairPosition CSGetCharPosition(void);
 
+/*!
+ *
+ * @return
+ */
+bool CSGetDoorState(void);
+
+/*!
+ *
+ * @return
+ */
+int CSGetFuelMeterPercentage(void);
+
+/*!
+ *
+ * @return
+ */
+int CSGetFuelMeterOhm(void);
+
+/*!
+ *
+ * @return
+ */
+int CSGetTankTemp(void);
+
 #endif /* XT28TRANSMITIONAPP_CABINSENSORS_H_ */

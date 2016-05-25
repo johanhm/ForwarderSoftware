@@ -17,6 +17,7 @@
 
 #include "api_lib_basic.h"
 #include <math.h>
+#include "CabinSensors.h"
 
 		//(*FORWARD drive*)
 #define AIV_GAS_F_A							IN_33_AIV // (*Signal A, 0.5V-4.5V*)
@@ -44,20 +45,18 @@ void GPSConfigureGasPedalInputSensors(void);
 /*!
  * Call this periodicly to uppdate the sensor data.
  */
-void GPSUppdatePedalSensorData(void);
+void GPSUppdatePedalSensorData(chairPosition charPos);
 
 /*!
  * Get gasPedal sensor value
- * @param chairPosition
  * @return
  */
-int GPSGetGassPedalFilterdAndScaled(bool chairPosition);
+int GPSGetGassPedalFilterdAndScaled(void);
 
 /*!
  * Get break pedal sensor value
- * @param chairPosition
  * @return
  */
-int GPSGetBreakPedal(bool chairPosition);
+int GPSGetBreakPedal(void);
 
 #endif /* XT28TRANSMITIONAPP_GASPEDALSENSOR_H_ */

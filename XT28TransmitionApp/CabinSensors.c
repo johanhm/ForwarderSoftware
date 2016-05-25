@@ -54,9 +54,25 @@ void CSUpdateCabinSensor(void) {
 	Pcent_fuelmeterData = 100 * Ohm_fuelmeterData / (Fuel_meter_Ohm_max-Fuel_meter_Ohm_min) - 100 * Fuel_meter_Ohm_min / (Fuel_meter_Ohm_max - Fuel_meter_Ohm_min);
 
 	/* Gas tank */
-	tanktempData = in(AIT_oil_temp)-50;
-
+	tanktempData = in(AIT_oil_temp) - 50;
 }
+
+bool CSGetDoorState(void) {
+	return doorDataDig;
+}
+
+int CSGetFuelMeterPercentage(void) {
+	return Pcent_fuelmeterData;
+}
+
+int CSGetFuelMeterOhm(void) {
+	return Ohm_fuelmeterData;
+}
+
+int CSGetTankTemp(void) {
+	return tanktempData;
+}
+
 
 /*!
  * fixme redundans sensor, fix some logic to check for erros yo, if errors are ignored the following return should be sufficent

@@ -53,8 +53,7 @@ void AJSUppdateAngleSensorData(void) {
 	/* Turn - Left */
 	bool turnLeft = (angleData[ANALOG_ANGLE_SENSOR_FRONT_1] > Front_zeroAngle_mV);
 	if	(turnLeft) {
-		int kvot = (angleData[ANALOG_ANGLE_SENSOR_FRONT_1] - Front_left_maxAngle_mV) / (Front_left_maxAngle_mV - Front_zeroAngle_mV);
-		angleData[MDEG_ANGLE_SENSOR_FRONT_1] = (Front_maxAngle_deg * 100) * kvot + Front_maxAngle_deg * 100;
+		angleData[MDEG_ANGLE_SENSOR_FRONT_1] = (Front_maxAngle_deg * 100) * (angleData[ANALOG_ANGLE_SENSOR_FRONT_1] - Front_left_maxAngle_mV) / (Front_left_maxAngle_mV - Front_zeroAngle_mV) + Front_maxAngle_deg * 100;
 	} else { //Turn right and zero
 		angleData[MDEG_ANGLE_SENSOR_FRONT_1] = (-Front_maxAngle_deg * 100) * (angleData[ANALOG_ANGLE_SENSOR_FRONT_1] - Front_right_maxAngle_mV) / (Front_right_maxAngle_mV - Front_zeroAngle_mV) - Front_maxAngle_deg * 100;
 	}

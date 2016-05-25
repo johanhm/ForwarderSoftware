@@ -8,11 +8,13 @@
 #include "GasPedalSensor.h"
 #include "CabinSensors.h"
 #include "WheelMotorSensor.h"
+#include "EngineComunicationsCAN.h"
 
 /* Driver interface */
-#include "Excipad.h"
+#include "DisplayTrans.h"
+#include "RightExcipad.h"
 
-/* Actuate */
+/* Actuation */
 #include "WheelMotorActuate.h"
 #include "AngleJointActuate.h"
 

@@ -1,10 +1,21 @@
-
 #include "WheelMotorActuate.h"
 
-static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
-static int calculateSlipOffsetController(int motorNumber, driveState DriveSTATE, int periodicCallTime_ms);
-static void pumpActuate(driveState xt28DriveState);
+typedef struct SRControlSignals {
+	int pump_A_mEpsilon[2];
+	int pump_B_mEpsilon[2];
+	int motor_mEpsilon[6];
+} SRControlSignals;
 
+/* Private declerations */
+static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
+static int calculateSlipOffsetController(int motorNumber, transmControlState DriveSTATE, int periodicCallTime_ms);
+static void pumpActuate(driveState xt28DriveState);
+static float pumpRegulator(void);
+void saturateEpsilonAndActuateMotors(SRControlSignals controlSignals);
+
+static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal);
+
+/* Private defines unsed only in thos module */
 //Pump/Motor
 #define	cfg_PM_DEBOUNCE 			100					/* debounce time [ms] for error detection */
 #define	cfg_PM_DITHER_FREQUENCY 	f_100Hz_DU16 		/* dither frequency [Hz]*/
@@ -15,6 +26,8 @@ static void pumpActuate(driveState xt28DriveState);
 #define	cfg_PM_KP_PM2 				400					/*Kp factor*/
 #define	cfg_PM_KI_PM2				262					/*Ki factor*/
 
+
+/* Function implementations */
 void WMASetupOutputToMotorsAndPumps(void) {
 
 	/*****************PUMP1****************/
@@ -126,17 +139,173 @@ void WMASetupOutputToMotorsAndPumps(void) {
 void WMASetBreakState(bool state) {
 
 	/* ------BREAK----- */
-	if (state == TRUE) {
-		out(DOH_PBRAKEVALVE1,TRUE);		//Pbrake valve 1 output
-		out(DOH_PBRAKEVALVE2,TRUE);		//Pbrake valve 2 output
-		out(DOH_PBRAKEVALVE3,TRUE);		//Pbrake valve 3 output
+	if (state == FALSE) {
+		out(DOH_PBRAKEVALVE1, TRUE);		//Pbrake valve 1 output
+		out(DOH_PBRAKEVALVE2, TRUE);		//Pbrake valve 2 output
+		out(DOH_PBRAKEVALVE3, TRUE);		//Pbrake valve 3 output
 	} else {
-		out(DOH_PBRAKEVALVE1,FALSE);	//Pbrake valve 1 output
-		out(DOH_PBRAKEVALVE2,FALSE);	//Pbrake valve 2 output
-		out(DOH_PBRAKEVALVE3,FALSE);	//Pbrake valve 3 output
+		out(DOH_PBRAKEVALVE1, FALSE);	//Pbrake valve 1 output
+		out(DOH_PBRAKEVALVE2, FALSE);	//Pbrake valve 2 output
+		out(DOH_PBRAKEVALVE3, FALSE);	//Pbrake valve 3 output
 	}
 }
 
+static driveState WMASetDriveState = NEUTRAL_DRIVE;
+driveState WMAAttemtToSetDriveStateTo(driveState attemtedDriveState) {
+
+	if (CSGetDoorState() == FALSE) {
+		WMASetDriveState = NEUTRAL_DRIVE;
+		return WMASetDriveState;
+	}
+
+	WMASetDriveState = attemtedDriveState;
+	return WMASetDriveState;
+}
+
+driveState WMAGetSetDriveState(void) {
+	return WMASetDriveState;
+}
+
+/* Test */
+
+static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal) {
+	SRControlSignals controlSignals;
+
+	static int pumpEpsilon = 0;
+	static int motorEpsilon = 0;
+
+	/* 1. Calculate a ställtal linarely from gaspedal */
+	if (pMilLowPassGasPedalSignal > 500) {
+		pumpEpsilon = 1000;
+		motorEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
+	} else {
+		pumpEpsilon = pMilLowPassGasPedalSignal * 2;
+		motorEpsilon = 1000;
+	}
+
+	/* 2. Set induvidual control ställtal for all wheels */
+	int wheel = 0;
+	for (wheel = 0; wheel < 6; wheel++) {
+		controlSignals.motor_mEpsilon[wheel] = motorEpsilon; // + noSlip(wheel);
+	}
+
+	/* 3. Set pump values */
+	controlSignals.pump_A_mEpsilon[0] = pumpEpsilon;
+	controlSignals.pump_A_mEpsilon[1] = pumpEpsilon; // + pumpRegulator();
+	controlSignals.pump_B_mEpsilon[0] = pumpEpsilon;
+	controlSignals.pump_B_mEpsilon[1] = pumpEpsilon; // + pumpRegulator();
+
+	return controlSignals;
+}
+
+void WMAActuate(int gasPedal) {
+
+	SRControlSignals controlSignals;
+	controlSignals = sekvensRegulation(gasPedal);
+
+	switch(WMASetDriveState) {
+	case NEUTRAL_DRIVE:
+		controlSignals.pump_A_mEpsilon[0] = 0;
+		controlSignals.pump_A_mEpsilon[1] = 0;
+		controlSignals.pump_B_mEpsilon[0] = 0;
+		controlSignals.pump_B_mEpsilon[1] = 0;
+		controlSignals.motor_mEpsilon[0]  = 1000;
+		controlSignals.motor_mEpsilon[1]  = 1000;
+		controlSignals.motor_mEpsilon[2]  = 1000;
+		controlSignals.motor_mEpsilon[3]  = 1000;
+		controlSignals.motor_mEpsilon[4]  = 1000;
+		controlSignals.motor_mEpsilon[5]  = 1000;
+		break;
+	case FORWARD_DRIVE:
+		controlSignals.pump_B_mEpsilon[0] = 0;
+		controlSignals.pump_B_mEpsilon[1] = 0;
+		break;
+	case BACKWARD_DRIVE:
+		controlSignals.pump_A_mEpsilon[0] = 0;
+		controlSignals.pump_A_mEpsilon[1] = 0;
+		break;
+	case FORWARD_OVERDRIVE:
+		controlSignals.pump_B_mEpsilon[0] = 0;
+		controlSignals.pump_B_mEpsilon[1] = 0;
+		controlSignals.motor_mEpsilon[2]  = 0;
+		controlSignals.motor_mEpsilon[3]  = 0;
+		controlSignals.motor_mEpsilon[4]  = 0;
+		controlSignals.motor_mEpsilon[5]  = 0;
+		break;
+	}
+
+	saturateEpsilonAndActuateMotors(controlSignals);
+}
+
+void saturateEpsilonAndActuateMotors(SRControlSignals controlSignals) {
+
+	/* Step 7 - Calculate the PWM signal from the given epsilon */
+	const int m_imax = 650;
+	const int m_imin = 150;
+
+	uint16 Motor_1_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[0] / 1000 + m_imax;
+	uint16 Motor_2_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[1] / 1000 + m_imax;
+	uint16 Motor_3_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[2] / 1000 + m_imax;
+	uint16 Motor_4_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[3] / 1000 + m_imax;
+	uint16 Motor_5_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[4] / 1000 + m_imax;
+	uint16 Motor_6_PWM = (m_imin - m_imax) * controlSignals.motor_mEpsilon[5] / 1000 + m_imax;
+
+	/* Step 8 - FIXME Saturate again? why signal is allready saturated and then a static calculation is made. I suggest removeing the first saturation and keep this one */
+	Motor_1_PWM = saturateAnInt(Motor_1_PWM, 650, 650, 155, 0);
+	Motor_2_PWM = saturateAnInt(Motor_2_PWM, 650, 650, 155, 0);
+	Motor_3_PWM = saturateAnInt(Motor_3_PWM, 650, 650, 155, 0);
+	Motor_4_PWM = saturateAnInt(Motor_4_PWM, 650, 650, 155, 0);
+	Motor_5_PWM = saturateAnInt(Motor_5_PWM, 650, 650, 155, 0);
+	Motor_6_PWM = saturateAnInt(Motor_6_PWM, 650, 650, 155, 0);
+
+	g_debug1_1 = Motor_1_PWM;
+	g_debug1_2 = Motor_2_PWM;
+	g_debug1_3 = Motor_3_PWM;
+	g_debug1_4 = Motor_4_PWM;
+	g_debug2_1 = Motor_5_PWM;
+	g_debug2_2 = Motor_5_PWM;
+	/* Step 9 - Actuate finaly */
+	/*
+	out(POH_CL_MOTOR_1_mA, Motor_1_PWM);
+	out(POH_CL_MOTOR_2_mA, Motor_2_PWM);
+	out(POH_CL_MOTOR_3_mA, Motor_3_PWM);
+	out(POH_CL_MOTOR_4_mA, Motor_4_PWM);
+	out(POH_CL_MOTOR_5_mA, Motor_5_PWM);
+	out(POH_CL_MOTOR_6_mA, Motor_6_PWM);
+	 */
+
+	//--Pump calibrationdata--//
+	const uint16 Pump_1_MinA = 195;//185;
+	const uint16 Pump_1_MaxA = 605;
+	const uint16 Pump_2_MinA = 195;//185;//195;
+	const uint16 Pump_2_MaxA = 605;//660;
+
+	uint16 Pump_1_A_PWM = controlSignals.pump_A_mEpsilon[0] * (Pump_1_MaxA - Pump_1_MinA) / (1000) + Pump_1_MinA;
+	uint16 Pump_1_B_PWM = controlSignals.pump_B_mEpsilon[0] * (Pump_1_MaxA - Pump_1_MinA) / (1000) + Pump_1_MinA;
+	uint16 Pump_2_A_PWM = controlSignals.pump_A_mEpsilon[1] * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
+	uint16 Pump_2_B_PWM = controlSignals.pump_B_mEpsilon[1] * (Pump_2_MaxA - Pump_2_MinA) / (1000) + Pump_2_MinA;
+
+	Pump_1_A_PWM = saturateAnInt(Pump_1_A_PWM, 650, 650, 155, 0);
+	Pump_1_B_PWM = saturateAnInt(Pump_1_B_PWM, 650, 650, 150, 0);
+	Pump_2_A_PWM = saturateAnInt(Pump_2_A_PWM, 650, 650, 155, 0);
+	Pump_2_B_PWM = saturateAnInt(Pump_2_B_PWM, 650, 650, 155, 0);
+
+	g_debug3_1 = Pump_1_A_PWM;
+	g_debug3_2 = Pump_1_B_PWM;
+	g_debug3_3 = Pump_2_A_PWM;
+	g_debug3_4 = Pump_2_B_PWM;
+	/*
+	out(POH_CL_PUMP_1_A_mA, Pump_1_A_PWM);
+	out(POH_CL_PUMP_1_B_mA, Pump_1_B_PWM);
+	out(POH_CL_PUMP_2_A_mA, Pump_2_A_PWM);
+	out(POH_CL_PUMP_2_B_mA, Pump_2_B_PWM);
+	*/
+}
+
+/* Test */
+
+
+/* Local globals */
 static uint8 msg_CAN_ALYZER_4[8] = {0};
 static uint8 msg_CAN_ALYZER_2[8] = {0};
 
@@ -189,7 +358,7 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 
 		break;
 	case FORWARD_DRIVE:	/* Action in state forward*/
-		if (pMilLowPassGasPedalSignal > 500){
+		if (pMilLowPassGasPedalSignal > 500) {
 			Pump_OD_mEpsilon = 1000;
 			Motor_OD_mEpsilon = 1000 * 350 / (pMilLowPassGasPedalSignal / 2) - 400;
 		} else {
@@ -248,18 +417,18 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 			Motor_6_mEpsilon = 1000;
 		}
 		break;
-	case PID_DRIVE:
+	case FORWARD_OVERDRIVE:
 		/* NYI so much code, did not want to clean it all*/
 		break;
 	}
 
 	/* Step 5 - Substract the slip */
-	Motor_1_mEpsilon_ns = Motor_1_mEpsilon - calculateSlipOffsetController(0, DriveSTATE, periodicCallTime_ms);
-	Motor_2_mEpsilon_ns = Motor_2_mEpsilon - calculateSlipOffsetController(1, DriveSTATE, periodicCallTime_ms);
-	Motor_3_mEpsilon_ns = Motor_3_mEpsilon - calculateSlipOffsetController(2, DriveSTATE, periodicCallTime_ms);
-	Motor_4_mEpsilon_ns = Motor_4_mEpsilon - calculateSlipOffsetController(3, DriveSTATE, periodicCallTime_ms);
-	Motor_5_mEpsilon_ns = Motor_5_mEpsilon - calculateSlipOffsetController(4, DriveSTATE, periodicCallTime_ms);
-	Motor_6_mEpsilon_ns = Motor_6_mEpsilon - calculateSlipOffsetController(5, DriveSTATE, periodicCallTime_ms);
+	Motor_1_mEpsilon_ns = Motor_1_mEpsilon - calculateSlipOffsetController(0, REGULATOR_SEKVENS, periodicCallTime_ms);
+	Motor_2_mEpsilon_ns = Motor_2_mEpsilon - calculateSlipOffsetController(1, REGULATOR_SEKVENS, periodicCallTime_ms);
+	Motor_3_mEpsilon_ns = Motor_3_mEpsilon - calculateSlipOffsetController(2, REGULATOR_SEKVENS, periodicCallTime_ms);
+	Motor_4_mEpsilon_ns = Motor_4_mEpsilon - calculateSlipOffsetController(3, REGULATOR_SEKVENS, periodicCallTime_ms);
+	Motor_5_mEpsilon_ns = Motor_5_mEpsilon - calculateSlipOffsetController(4, REGULATOR_SEKVENS, periodicCallTime_ms);
+	Motor_6_mEpsilon_ns = Motor_6_mEpsilon - calculateSlipOffsetController(5, REGULATOR_SEKVENS, periodicCallTime_ms);
 
 	/* Step 6 - Saftey saturate */
 	Motor_1_mEpsilon_ns = saturateAnInt(Motor_1_mEpsilon_ns, 1000, 1000, 0, 0);
@@ -298,15 +467,35 @@ void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideSt
 	Motor_6_PWM = saturateAnInt(Motor_6_PWM, 650, 650, 155, 0);
 
 	/* Step 9 - Actuate finaly */
+	/*
 	out(POH_CL_MOTOR_1_mA, Motor_1_PWM);
 	out(POH_CL_MOTOR_2_mA, Motor_2_PWM);
 	out(POH_CL_MOTOR_3_mA, Motor_3_PWM);
 	out(POH_CL_MOTOR_4_mA, Motor_4_PWM);
 	out(POH_CL_MOTOR_5_mA, Motor_5_PWM);
 	out(POH_CL_MOTOR_6_mA, Motor_6_PWM);
+	 */
 
 	/* Step 10 - Actuate pump */
 	pumpActuate(DriveSTATE);
+
+}
+
+static float pumpRegulator(void) {
+
+	const float proportionalConstant = 0.0;
+	const float integralConstant = 0.0;
+	static float integratedError = 0;
+
+	/* 1. Update error signals */
+	float pumpPressureError = SPSGetPump1Pressure_mbar() - SPSGetPump2Pressure_mbar();
+	integratedError = integratedError + pumpPressureError;
+
+	/* 2. Calculate PI signal */
+	float PISignal = (proportionalConstant * pumpPressureError) + (integralConstant * integratedError);
+
+	/* 3. Return signal */
+	return PISignal;
 
 }
 
@@ -347,15 +536,15 @@ static void pumpActuate(driveState xt28DriveState) {
 
 }
 
-static int calculateSlipOffsetController(int motorNumber, driveState DriveSTATE, int periodicCallTime_ms) {
+static int calculateSlipOffsetController(int motorNumber, transmControlState DriveSTATE, int periodicCallTime_ms) {
 
 	static int k[6] = {0};
 
 	/* Step 2 - Set k values depending on drive state or CAN */
-	if (DriveSTATE == PID_DRIVE) {
+	if (DriveSTATE == REGULAOR_SECOUNDARY) {
 		k[motorNumber] = 14;
 	}
-	else if (DriveSTATE == FORWARD_DRIVE || DriveSTATE == BACKWARD_DRIVE) {
+	else if (DriveSTATE == REGULATOR_SEKVENS) {
 		k[motorNumber] = 2.6;
 	}
 	else if (msg_CAN_ALYZER_4[0] != 0) {

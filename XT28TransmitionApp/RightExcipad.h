@@ -18,6 +18,7 @@
 #define XT28_EXCIPAD_H_
 
 #include "api_lib_basic.h"
+#include "XT28TransmissionCANSupport.h"
 
 /*!
  * Excipad Button Enum. Used for Excipad related functions.
@@ -91,17 +92,16 @@ exipadButton EXPGetCurrentlyPressedButton(void);
 bool EXPGetUserIsHoldingAButtonDown(void);
 
 /*!
- *  Get the scaled value of the excipad joy stick.
- *
- * \return Int values in range [-400 - 400]
+ * Get scroller value [0-1000]
+ * @return
  */
-float EXPGetJoystickScaledValueUppDown(void);
+int EXPGetScrollerValue(void);
 
 /*!
  *  Get the scaled value of the excipad joystick Left right X
  * @param setButtonState
  */
-float EXPGetJoystickXScaledValueLeftRight(void);
+int EXPGetJoystickXScaledValueLeftRight(void);
 /** @}*/
 
 /*! \name Set */

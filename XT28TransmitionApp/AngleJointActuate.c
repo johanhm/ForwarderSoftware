@@ -40,6 +40,17 @@ void AJAInitAndSetupAngleJointActuate(void) {
 			cfg_T_RESISTANCE_MAX);			//(* max resistance of solenoid for error detection[mOhm] *)
 }
 
+static turnState AJACurrentTurnState = TURN_FRONT;
+turnState AJAAttemtToSetTurnStateTo(turnState attemtedState) {
+	AJACurrentTurnState = attemtedState;
+	return AJACurrentTurnState;
+}
+
+
+turnState AJAGetTurnState(void) {
+	return AJACurrentTurnState;
+}
+
 
 //--Turning Valves current--//
 const uint16 TurningValve_Imin = 415;
@@ -50,7 +61,7 @@ static uint16 PWM_turn_front_A = 0;
 static uint16 PWM_turn_front_B = 0;
 static uint16 PWM_turn_rear_A  = 0;
 static uint16 PWM_turn_rear_B  = 0;
-void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, int avrageWheelSpeed) {
+void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed) {
 
 	static sint32 joystick_pos = 0;
 	static sint32 joystick_neg = 0;
@@ -84,7 +95,7 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 	}
 
 	/* 2. Calculate signals depending on state */
-	switch(xt28TurnState){
+	switch(AJACurrentTurnState){
 	case TURN_COMBINED:
 		PWM_turn_front_A = joystick_pos * (TurningValve_Imax - TurningValve_Imin) / 1000 + TurningValve_Imin;//415-730
 		PWM_turn_front_B = joystick_neg * (TurningValve_Imax - TurningValve_Imin) / 1000 + TurningValve_Imin;//415-730
@@ -107,9 +118,11 @@ void AJAActuate(turnState xt28TurnState, int joystickValue, bool chairPosition, 
 		break;
 
 	case TURN_PID:
+
 		PWM_turn_front_A = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
 		PWM_turn_front_B = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
-		rearPIDControl( avrageWheelSpeed ); /* This function sets the last two pwn, with the use of globals */
+		rearPIDControl( avrageWheelSpeed );
+		/* This function sets the last two pwn, with the use of globals */
 	}
 
 	/* 3. Actuate */
@@ -124,7 +137,7 @@ static void rearPIDControl(int avrageWheelSpeed) {
 
 	sint32 Front_angle = 0;
 
-	Front_angle = AJSGetAngleBack();
+	Front_angle = AJSGetAngleFront();
 	TurningData = (Front_angle - AJSGetAngleBack());
 
 	if (TurningData > 10) {
@@ -197,6 +210,7 @@ static void rearPIDControl(int avrageWheelSpeed) {
 
 static void saturateAndActuateAngleJoint(void) {
 	/** fixme Change this function so it works on arguments inputs and not globals? */
+
 	if (PWM_turn_front_A > TurningValve_Imin) {
 		out(POH_CL_TURN_FRONT_A_mA, PWM_turn_front_A);
 	} else {
@@ -208,11 +222,13 @@ static void saturateAndActuateAngleJoint(void) {
 	} else {
 		out(POH_CL_TURN_FRONT_B_mA, 0);
 	}
+
 	if (PWM_turn_rear_A > TurningValve_Imin) {
 		out(POH_CL_TURN_REAR_A_mA, PWM_turn_rear_A);
 	} else {
 		out(POH_CL_TURN_REAR_A_mA, 0);
 	}
+
 	if (PWM_turn_rear_B > TurningValve_Imin) {
 		out(POH_CL_TURN_REAR_B_mA, PWM_turn_rear_B);
 	} else {

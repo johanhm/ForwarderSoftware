@@ -17,6 +17,9 @@
 #include "api_lib_basic.h"
 #include <math.h>
 #include "WheelMotorSensor.h"
+#include "SystemPressureSensors.h"
+#include "CabinSensors.h"
+#include "XT28TransmissionCANSupport.h"
 
 
 /* Motors */
@@ -42,9 +45,33 @@ typedef enum {
 	NEUTRAL_DRIVE,
 	FORWARD_DRIVE,
 	BACKWARD_DRIVE,
-	PID_DRIVE
+	FORWARD_OVERDRIVE
 } driveState;
 
+typedef enum {
+	REGULAOR_SECOUNDARY,
+	REGULATOR_SEKVENS
+
+}transmControlState;
+
+/*!
+ * Get current drive state
+ * @return
+ */
+driveState WMAGetSetDriveState(void);
+
+/*!
+ *
+ * @param attemtedDriveState
+ * @return
+ */
+driveState WMAAttemtToSetDriveStateTo(driveState attemtedDriveState);
+
+/*!
+ *
+ * @param gasPedal
+ */
+void WMAActuate(int gasPedal);
 
 /*!
  *
@@ -58,10 +85,13 @@ void WMASetupOutputToMotorsAndPumps(void);
 void WMASetBreakState(bool state);
 
 /*!
+ * Actuate the wheels to drive in a direction depending on the set state.
  *
  * @param machineDriveState
+ * @param overideState
  * @param slipState
  * @param periodicCallTime_ms
+ * @param pMilLowPassGasPedalSignal
  */
 void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal);
 
