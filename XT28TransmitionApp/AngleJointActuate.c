@@ -46,11 +46,9 @@ turnState AJAAttemtToSetTurnStateTo(turnState attemtedState) {
 	return AJACurrentTurnState;
 }
 
-
 turnState AJAGetTurnState(void) {
 	return AJACurrentTurnState;
 }
-
 
 //--Turning Valves current--//
 const uint16 TurningValve_Imin = 415;
@@ -153,7 +151,7 @@ static void rearPIDControl(int avrageWheelSpeed) {
 	static sint16 PID_TURN_P = 0;
 	static sint16 PID_TURN_I = 0;
 
-	volatile float Speed_dependancy = 0;
+	float Speed_dependancy = 0;
 
 	Speed_dependancy = abs(avrageWheelSpeed) / 50;
 	if (Speed_dependancy > 1) {
@@ -235,5 +233,3 @@ static void saturateAndActuateAngleJoint(void) {
 		out(POH_CL_TURN_REAR_B_mA, 0);
 	}
 }
-
-

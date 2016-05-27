@@ -10,7 +10,6 @@ void DTSetMaxValueToDisplay(int maxValue) {
 	maxValueToDisplay = maxValue;
 }
 
-
 void DTSendDMSOnCAN(uint8 CANChannel) {
 
 	uint16 Button_Drive_Status = 0;

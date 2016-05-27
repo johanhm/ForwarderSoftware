@@ -186,8 +186,8 @@ int EXPGetScrollerValue(void) {
 
 	switch (scrollerState) {
 	case SCROLLER_START: {
-		bool sensorHaveVoltageAndIsAtMinimumScrollPosition = ((mVexcipad_wheel < (Excipad_wheel_mV_min + 20)) && (sys_getTime_us() > 2000000) );
-		if (sensorHaveVoltageAndIsAtMinimumScrollPosition) {
+		bool sensorHaveVoltage_And_IsAtMinimumScrollPosition = ((mVexcipad_wheel < (Excipad_wheel_mV_min + 20)) && (sys_getTime_us() > 2000000) );
+		if (sensorHaveVoltage_And_IsAtMinimumScrollPosition) {
 			scrollerState = SCROLLER_NORMAL;
 		}
 		break;
@@ -247,15 +247,6 @@ void EXPSetButtonStateTo(exipadButton setButtonState) {
 }
 
 exipadButton EXPGetCurrentlyPressedButton(void) {
-
-	g_debug1_2 = rightExcipadButtonsMessage[0];
-	g_debug1_3 = rightExcipadButtonsMessage[1];
-	g_debug1_4 = rightExcipadButtonsMessage[2];
-	g_debug2_1 = rightExcipadButtonsMessage[3];
-	g_debug2_2 = rightExcipadButtonsMessage[4];
-	g_debug2_3 = rightExcipadButtonsMessage[5];
-	g_debug2_4 = rightExcipadButtonsMessage[6];
-	g_debug3_1 = rightExcipadButtonsMessage[7];
 
 	exipadButton exipadButtonPresed = NONE;
 

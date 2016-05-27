@@ -194,7 +194,6 @@ static void setMachineState(void) {
 	}
 
 	/* Drive state */
-	//g_debug2_3 = maxSpeed;
 	static float regulatorOffset = 0;
 	if (ECCGetEngineData().engineLoad > 60) {
 		regulatorOffset = regulatorOffset - 2.0f;
@@ -209,7 +208,7 @@ static void setMachineState(void) {
 	if (maxSpeed < 100) {
 		maxSpeed = 100;
 	}
-
+	//g_debug2_3 = maxSpeed;
 	TCSActuate( GPSGetGassPedalFilterdAndScaled() , maxSpeed);
 	DTSetMaxValueToDisplay(maxSpeed);
 

@@ -11,8 +11,8 @@ static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue
 static driveState TCSSetDriveState = NEUTRAL_DRIVE;
 driveState TCSAttemtToSetDriveStateTo(driveState attemtedDriveState) {
 
-	bool doorIsOpenAndGasPedalIsNotPressed = (CSGetDoorState() == FALSE && GPSGetGassPedalFilterdAndScaled() < 150);
-	if (doorIsOpenAndGasPedalIsNotPressed) {
+	bool doorIsOpen_And_GasPedalIsNotPressed = (CSGetDoorState() == FALSE && GPSGetGassPedalFilterdAndScaled() < 150);
+	if (doorIsOpen_And_GasPedalIsNotPressed) {
 		TCSSetDriveState = NEUTRAL_DRIVE;
 		return TCSSetDriveState;
 	}
@@ -30,9 +30,8 @@ bool TCSAttemtToSetBreakStateTo(bool breakState) {
 	/* Can only leave or enter break sate if the gas pedal is NOT pressed */
 	if (GPSGetGassPedalFilterdAndScaled() < 150) {
 		WMASetBreakState(breakState);
-		return breakState;
 	}
-	return !breakState;
+	return WMAGetBreakState();
 }
 
 void TCSActuate(int gasPedal, int maxSpeed) {
@@ -179,13 +178,22 @@ static SRControlSignals sekvensRegulationWithPumpRegulaton(int pMilLowPassGasPed
 
 static float pumpRegulator(void) {
 
-	const float proportionalConstant = 0.0;
-	const float integralConstant = 0.0;
+	const float sampelingTime = 0.01;
+	const float proportionalConstant = 0;
+	const float integralConstant = 0.00040;
 	static float integratedError = 0;
 
 	/* 1. Update error signals */
 	float pumpPressureError = SPSGetPump1Pressure_mbar() - SPSGetPump2Pressure_mbar();
-	integratedError = integratedError + pumpPressureError;
+	integratedError = integratedError + pumpPressureError * sampelingTime;
+
+	const float maxIntegrator = 250000.0f;
+	if (integratedError > maxIntegrator) {
+		integratedError = maxIntegrator;
+	}
+	else if (integratedError < -maxIntegrator) {
+		integratedError = - maxIntegrator;
+	}
 
 	/* 2. Calculate PI signal */
 	float PISignal = (proportionalConstant * pumpPressureError) + (integralConstant * integratedError);
