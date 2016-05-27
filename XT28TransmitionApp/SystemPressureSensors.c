@@ -39,7 +39,6 @@ void SPSUppdateSystemPressureSensors(void) {
 	pressureData[ANALOG_PUMP2_PRESSURE_A] = in(AIV_Pressure_2_A_mV);
 	pressureData[ANALOG_PUMP2_PRESSURE_B] = in(AIV_Pressure_2_B_mV);
 
-
 	/**********PRESSURE CONVERSION*********/
 	const int Pressure_Umax = 4500;
 	const int Pressure_Umin = 500;
@@ -78,20 +77,18 @@ void SPSUppdateSystemPressureSensors(void) {
 	}
 
 	//LOW PASS FILTER OF SIGNALS
-	const double T_s = 0.020;
-	const double f_cutoff = 0.8;
+	const float T_s = 0.020;
+	const float f_cutoff = 0.8;
 
-	const double Tf = 1 / (2 * M_PI * f_cutoff);
-	const double alpha = Tf / (Tf + T_s);
+	const float Tf = 1 / (2 * M_PI * f_cutoff);
+	const float alpha = Tf / (Tf + T_s);
 
 	uint8 i;
 	for (i = 0; i <= 3; i++) {
 		pressureData[MBAR_LP_OLD_PUMP1_PRESSURE_A + i] = pressureData[MBAR_LP_PUMP1_PRESSURE_A + i];
 		pressureData[MBAR_LP_PUMP1_PRESSURE_A + i] = alpha * pressureData[MBAR_LP_OLD_PUMP1_PRESSURE_A + i] + (1 - alpha) * pressureData[MBAR_PUMP1_PRESSURE_A + i];
 	}
-
 }
-
 
 int SPSGetPump1Pressure_mbar(void) {
 	return pressureData[MBAR_PUMP1_PRESSURE_A];

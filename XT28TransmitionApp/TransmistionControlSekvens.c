@@ -4,6 +4,7 @@
 static int calculateSlipOffsetController(int motorNumber, transmControlState DriveSTATE, int periodicCallTime_ms);
 static float pumpRegulator(void);
 static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal, int maxSpeed);
+static SRControlSignals sekvensRegulationWithPumpRegulaton(int pMilLowPassGasPedalSignal, int maxSpeed);
 static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue);
 
 
@@ -15,13 +16,6 @@ driveState TCSAttemtToSetDriveStateTo(driveState attemtedDriveState) {
 		TCSSetDriveState = NEUTRAL_DRIVE;
 		return TCSSetDriveState;
 	}
-	/*
-	bool breakStateIsEnabled = WMAGetBreakState();
-	if (breakStateIsEnabled) {
-		TCSSetDriveState = NEUTRAL_DRIVE;
-		return TCSSetDriveState;
-	}
-	 */
 
 	/* Door is closed, gaspedal is not pressed and the break state is not active */
 	TCSSetDriveState = attemtedDriveState;
@@ -41,15 +35,18 @@ bool TCSAttemtToSetBreakStateTo(bool breakState) {
 	return !breakState;
 }
 
-
 void TCSActuate(int gasPedal, int maxSpeed) {
 
 	/* 0. Check that the drive state is OK. */
 	TCSAttemtToSetDriveStateTo(TCSSetDriveState);
 
 	/* 1. Get control signals block from sequence regulator */
-	SRControlSignals controlSignals;
-	controlSignals = sekvensRegulation(gasPedal, maxSpeed);
+	SRControlSignals controlSignals = sekvensRegulation(gasPedal, maxSpeed);
+
+	/* TEST */
+	SRControlSignals testControlSignals = sekvensRegulationWithPumpRegulaton(gasPedal, maxSpeed);
+	testControlSignals.pump_A_mEpsilon[0] = 0;
+	/* END TEST */
 
 	/* 2. Change the signals depending on control state */
 	switch(TCSSetDriveState) {
@@ -94,9 +91,7 @@ static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal, int max
 
 	float niva = 3.0;
 	int speedControl;
-
 	maxSpeed = saturateAnInt(maxSpeed, 1000, 1000, 100, 100);
-
 	speedControl = pMilLowPassGasPedalSignal * maxSpeed / 1000;
 
 	/* 1. Calculate a ställtal linarely from gaspedal */
@@ -123,8 +118,6 @@ static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal, int max
 	g_debug3_2 = calculateSlipOffsetController(5, REGULATOR_SEKVENS, 10);
 	/* end test */
 
-
-
 	/* 3. Set pump values */
 	controlSignals.pump_A_mEpsilon[0] = pumpEpsilon;
 	controlSignals.pump_A_mEpsilon[1] = pumpEpsilon; // + pumpRegulator();
@@ -134,8 +127,55 @@ static SRControlSignals sekvensRegulation(int pMilLowPassGasPedalSignal, int max
 	return controlSignals;
 }
 
+static SRControlSignals sekvensRegulationWithPumpRegulaton(int pMilLowPassGasPedalSignal, int maxSpeed) {
+	SRControlSignals controlSignals;
 
-/* Test */
+	static int pumpEpsilonA = 0;
+	static int motorEpsilonA = 0;
+	static int pumpEpsilonB = 0;
+	static int motorEpsilonB = 0;
+
+	const float niva = 3.0;
+	int speedControlA;
+	int speedControlB;
+	maxSpeed = saturateAnInt(maxSpeed, 1000, 1000, 100, 100);
+
+	/* 1. A side */
+	speedControlA = pMilLowPassGasPedalSignal * maxSpeed / 1000;
+	if (speedControlA > 1000 / niva) {
+		pumpEpsilonA = 1000;
+		motorEpsilonA = 1000 * (1000 / niva) / (speedControlA);
+	} else {
+		pumpEpsilonA = speedControlA * niva;
+		motorEpsilonA = 1000;
+	}
+
+	/* 2. Same thing B side */
+	speedControlB = speedControlA + pumpRegulator();   /* <-------- NEW REGULATOR YOLO */
+	if (speedControlB > 1000 / niva) {
+		pumpEpsilonB = 1000;
+		motorEpsilonB = 1000 * (1000 / niva) / (speedControlB);
+	} else {
+		pumpEpsilonB = speedControlB * niva;
+		motorEpsilonB = 1000;
+	}
+
+	/* 3 . Set induvidual control ställtal for all wheels */
+	controlSignals.motor_mEpsilon[0] = motorEpsilonA; //+ calculateSlipOffsetController(0, REGULATOR_SEKVENS, 10);
+	controlSignals.motor_mEpsilon[1] = motorEpsilonB; //+ calculateSlipOffsetController(1, REGULATOR_SEKVENS, 10);
+	controlSignals.motor_mEpsilon[2] = motorEpsilonB; //+ calculateSlipOffsetController(2, REGULATOR_SEKVENS, 10);
+	controlSignals.motor_mEpsilon[3] = motorEpsilonA; //+ calculateSlipOffsetController(3, REGULATOR_SEKVENS, 10);
+	controlSignals.motor_mEpsilon[4] = motorEpsilonB; //+ calculateSlipOffsetController(4, REGULATOR_SEKVENS, 10);
+	controlSignals.motor_mEpsilon[5] = motorEpsilonA; //+ calculateSlipOffsetController(5, REGULATOR_SEKVENS, 10);
+
+	/* 4. Set pump values */
+	controlSignals.pump_A_mEpsilon[0] = pumpEpsilonA;
+	controlSignals.pump_A_mEpsilon[1] = pumpEpsilonA;
+	controlSignals.pump_B_mEpsilon[0] = pumpEpsilonB;
+	controlSignals.pump_B_mEpsilon[1] = pumpEpsilonB;
+
+	return controlSignals;
+}
 
 static float pumpRegulator(void) {
 
@@ -184,7 +224,7 @@ static int calculateSlipOffsetController(int motorNumber, transmControlState Dri
 	static float Tf_S_ns;
 	static float alpha_S_ns;
 
-	if (WMSGetAvrageRPMForWheels() > 500){
+	if (WMSGetAvrageRPMForWheels() > 500) {
 		f_cutoff_ns = 0.02;
 	} else {
 		f_cutoff_ns = 0.10;

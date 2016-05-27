@@ -46,6 +46,9 @@ void sys_main(void) {
 
 	sys_registerTask(mainTask_10ms, 10,	10, 0, 0);
 
+	/* init breakState */
+	WMASetBreakState(FALSE);
+
 }
 
 
@@ -104,14 +107,8 @@ static void setMachineState(void) {
 	g_debug2_3 = GPSGetBreakPedal();
 	g_debug2_4 = WMSGetAvrageRPMForWheels();
 	 */
-	static int maxSpeed = 500;
-	if (ECCGetEngineData().engineLoad > 62) {
-		maxSpeed = maxSpeed - 1;
-		if (maxSpeed < 100) {
-			maxSpeed = 100;
-		}
-	}
 
+	static int userMaxSpeedReference = 500;
 
 	switch (userPressedButton) {
 	case NONE:
@@ -154,7 +151,7 @@ static void setMachineState(void) {
 		xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_REAR);
 		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_15: /* Turn PID or Combined */
+	case BUTTON_15: /* Turn PID or Combined, toggle when pressed */
 		if (xt28TurnState != TURN_COMBINED) {
 			xt28TurnState = AJAAttemtToSetTurnStateTo(TURN_COMBINED);
 		} else {
@@ -172,9 +169,9 @@ static void setMachineState(void) {
 		break;
 	case BUTTON_19:
 		if (EXPGetUserIsHoldingAButtonDown()) {
-			maxSpeed = maxSpeed + 1;
-			if (maxSpeed > 1000) {
-				maxSpeed = 1000;
+			userMaxSpeedReference = userMaxSpeedReference + 1;
+			if (userMaxSpeedReference > 1000) {
+				userMaxSpeedReference = 1000;
 			}
 		} else {
 			EXPSetButtonStateTo(NONE);
@@ -182,9 +179,9 @@ static void setMachineState(void) {
 		break;
 	case BUTTON_20:
 		if (EXPGetUserIsHoldingAButtonDown()) {
-			maxSpeed = maxSpeed - 1;
-			if (maxSpeed < 100) {
-				maxSpeed = 100;
+			userMaxSpeedReference = userMaxSpeedReference - 1;
+			if (userMaxSpeedReference < 100) {
+				userMaxSpeedReference = 100;
 			}
 		} else {
 			EXPSetButtonStateTo(NONE);
@@ -197,8 +194,22 @@ static void setMachineState(void) {
 	}
 
 	/* Drive state */
-	WMASetBreakState(FALSE);
 	//g_debug2_3 = maxSpeed;
+	static float regulatorOffset = 0;
+	if (ECCGetEngineData().engineLoad > 60) {
+		regulatorOffset = regulatorOffset - 2.0f;
+	} else {
+		regulatorOffset = regulatorOffset + 0.5f;
+		if (regulatorOffset > 0) {
+			regulatorOffset = 0;
+		}
+	}
+	static int maxSpeed = 0;
+	maxSpeed = userMaxSpeedReference + regulatorOffset;
+	if (maxSpeed < 100) {
+		maxSpeed = 100;
+	}
+
 	TCSActuate( GPSGetGassPedalFilterdAndScaled() , maxSpeed);
 	DTSetMaxValueToDisplay(maxSpeed);
 
