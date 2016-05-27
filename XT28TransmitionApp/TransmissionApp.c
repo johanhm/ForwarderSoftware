@@ -73,7 +73,6 @@ static void mainTask_10ms(void) {
 	AJSSendAngleDataOnCAN();
 	SPSSendSensorDataOnCAN();
 	WMSSendSensorDataOnCAN();
-	WMASendMotorPWNOnCAN(TRUE);
 	CANSendDebuggMessage(CAN_1);
 	DTSendDMSOnCAN(CAN_1);
 	DTSendDMSOnCAN(CAN_4);
@@ -91,8 +90,6 @@ static void setMachineState(void) {
 	/* Static states, initialized with default states */
 	static driveState xt28DriveState 	= NEUTRAL_DRIVE;
 	static turnState  xt28TurnState     = TURN_COMBINED;
-	static bool 	  overdriveState    = FALSE;
-	static bool 	  xt28BreakState 	= FALSE;
 
 	/* Switch on user pressed button, change states accordingly. */
 	exipadButton userPressedButton = EXPGetLastPressedButtonWithToggle();
@@ -106,7 +103,15 @@ static void setMachineState(void) {
 	g_debug2_2 = GPSGetGassPedalFilterdAndScaled();
 	g_debug2_3 = GPSGetBreakPedal();
 	g_debug2_4 = WMSGetAvrageRPMForWheels();
-	*/
+	 */
+	static int maxSpeed = 500;
+	if (ECCGetEngineData().engineLoad > 62) {
+		maxSpeed = maxSpeed - 1;
+		if (maxSpeed < 100) {
+			maxSpeed = 100;
+		}
+	}
+
 
 	switch (userPressedButton) {
 	case NONE:
@@ -130,15 +135,15 @@ static void setMachineState(void) {
 	case BUTTON_9:
 		break;
 	case BUTTON_10: /* Backward drive state */
-		xt28DriveState = WMAAttemtToSetDriveStateTo(BACKWARD_DRIVE);
+		xt28DriveState = TCSAttemtToSetDriveStateTo(BACKWARD_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_11: /* Neutral drive state */
-		xt28DriveState = WMAAttemtToSetDriveStateTo(NEUTRAL_DRIVE);
+		xt28DriveState = TCSAttemtToSetDriveStateTo(NEUTRAL_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_12: /* Forward drive state */
-		xt28DriveState = WMAAttemtToSetDriveStateTo(FORWARD_DRIVE);
+		xt28DriveState = TCSAttemtToSetDriveStateTo(FORWARD_DRIVE);
 		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_13: /* Turn Front */
@@ -157,45 +162,45 @@ static void setMachineState(void) {
 		}
 		EXPSetButtonStateTo(NONE);
 		break;
-	case BUTTON_16: { /* Enable break */
-		xt28BreakState = TRUE;
-		//EXPSetButtonStateTo(NONE);
+	case BUTTON_16: /* Enable break */
+		TCSAttemtToSetBreakStateTo( !WMAGetBreakState() );
+		EXPSetButtonStateTo(NONE);
 		break;
-	}
 	case BUTTON_17:
 		break;
 	case BUTTON_18:
 		break;
 	case BUTTON_19:
+		if (EXPGetUserIsHoldingAButtonDown()) {
+			maxSpeed = maxSpeed + 1;
+			if (maxSpeed > 1000) {
+				maxSpeed = 1000;
+			}
+		} else {
+			EXPSetButtonStateTo(NONE);
+		}
 		break;
 	case BUTTON_20:
+		if (EXPGetUserIsHoldingAButtonDown()) {
+			maxSpeed = maxSpeed - 1;
+			if (maxSpeed < 100) {
+				maxSpeed = 100;
+			}
+		} else {
+			EXPSetButtonStateTo(NONE);
+		}
 		break;
 	case BUTTON_21: /* Overdrive */
-		overdriveState = TRUE;
-		//EXPSetButtonStateTo(NONE);
+		xt28DriveState = TCSAttemtToSetDriveStateTo(FORWARD_OVERDRIVE);
+		EXPSetButtonStateTo(NONE);
 		break;
 	}
+
 	/* Drive state */
-	/*
-	if (xt28BreakState == TRUE) {
-		WMASetBreakState(TRUE);
-	} else {
-		WMASetBreakState(FALSE);
-		int gasPedalSignalIn = GPSGetBreakPedal( CSGetCharPosition() );
-		bool slipState = TRUE;
-		WMASetMotorReferenceAndActuate(xt28DriveState,
-				overdriveState,
-				slipState,
-				10,
-				gasPedalSignalIn
-		);
-	}
-	*/
-
-	/* Set break state temporary */
 	WMASetBreakState(FALSE);
-
-	WMAActuate( GPSGetGassPedalFilterdAndScaled() );
+	//g_debug2_3 = maxSpeed;
+	TCSActuate( GPSGetGassPedalFilterdAndScaled() , maxSpeed);
+	DTSetMaxValueToDisplay(maxSpeed);
 
 	/* Actuate turn state */
 	int joystick = EXPGetJoystickXScaledValueLeftRight();

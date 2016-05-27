@@ -15,6 +15,7 @@
 #define XT28TRANSMITIONAPP_WHEELMOTORSENSOR_H_
 
 #include "api_lib_basic.h"
+#include <Math.h>
 
 
 		//(*Motor speeds*)

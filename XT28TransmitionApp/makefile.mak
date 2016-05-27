@@ -67,6 +67,7 @@ OBJECTS          = $(OUTPUT_PATH)/TransmissionApp.o\
 									 $(OUTPUT_PATH)/XT28TransmissionCANSupport.o\
 									 $(OUTPUT_PATH)/CodeGenerationTest.o\
 									 $(OUTPUT_PATH)/EngineComunicationsCAN.o\
+									 $(OUTPUT_PATH)/TransmistionControlSekvens.o\
 									 
 									 
 ####################################################################################################

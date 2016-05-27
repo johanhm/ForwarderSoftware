@@ -173,21 +173,28 @@ static void gasPedalLowPassFilter(chairPosition chairPos) {
 	pedalData[PMIL_PEDAL_OLD] = pedalData[PMIL_LP_PEDAL];
 	pedalData[PMIL_PEDAL] 	  = pedalData[PMIL_GASPEDAL] - pedalData[PMIL_BRAKEPEDAL];
 
-	const double T_s = 0.020;
-	const double f_cutoff_pedal=0.3;
+	const double T_s = 0.010;
+	const double f_cutoff_pedal = 0.05;
 
 	/* LOW PASS FILTER OF SIGNALS */
 	const double Tf = 1 / (2 * M_PI * f_cutoff_pedal);
 	const double alpha = Tf / (Tf + T_s);
 
-	pedalData[PMIL_LP_PEDAL] = alpha * pedalData[PMIL_PEDAL_OLD] + (1 - alpha) * pedalData[PMIL_PEDAL];
+	///
+	static float pedalData_lp = 0;
+	static float pedalData_lp_old = 0;
 
-	if (pedalData[PMIL_LP_PEDAL] > 1000) {
-		pedalData[PMIL_LP_PEDAL] = 1000;
+	pedalData_lp_old=pedalData_lp;
+	///
+	pedalData_lp = alpha * pedalData_lp+(1-alpha)*pedalData[PMIL_PEDAL];
+
+	if (pedalData_lp > 1000) {
+		pedalData_lp = 1000;
 	}
-	if (pedalData[PMIL_LP_PEDAL] < 0) {
-		pedalData[PMIL_LP_PEDAL] = 0;
+	if (pedalData_lp < 0) {
+		pedalData_lp = 0;
 	}
+	pedalData[PMIL_LP_PEDAL] = pedalData_lp;
 }
 
 

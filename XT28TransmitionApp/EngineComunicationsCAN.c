@@ -8,7 +8,6 @@
 #define	DB_RX_ENGINE_FUEL_ECONOMY			7
 #define	DB_RX_ENGINE_INLET_EXHAUST			8
 #define	DB_RX_ENGINE_ERROR					9
-#define DB_RX_INDEX_CAN_3					10
 
 #define CAN_ENGINE		CAN_3
 
@@ -22,6 +21,7 @@
 #define CAN_ID_RX_ENGINE_INLET_EXHAUST 			0x18FEF600
 #define CAN_ID_RX_ENGINE_FUEL_ECONOMY 			0x18FEF200
 #define CAN_ID_RX_ENGINE_ERROR 					0x18FF0000
+#define CAN_ID_RX_EEC2							0xCF00300
 
 		//Engine
 #define CAN_ID_TX_ENGINE						0X1		  	//Sends engine speed ref to engine(*Engine ICE_TSC1_P1_Sisu_Proprietary mex ID hex 0;*)
@@ -35,6 +35,7 @@
 
 /* Private decelerations */
 static void engineTemperatureMessageCallback(void);
+static void engineLoadMessageCallback(void);
 
 /* Start of function implementation */
 void ECCInitAndSetupEngineCANCommunications(void) {
@@ -50,6 +51,18 @@ void ECCInitAndSetupEngineCANCommunications(void) {
 			5,
 			engineTemperatureMessageCallback
 	);
+
+	static can_DataboxData_ts engineLoadDataboxBuffer[5];
+	can_initRxDatabox(CAN_ENGINE,
+			11,
+			CAN_ID_RX_EEC2,
+			CAN_EXD_DU8,
+			8,
+			engineLoadDataboxBuffer,
+			5,
+			engineLoadMessageCallback
+	);
+
 
 	/* Retrice databoxes */
 	can_cfgRxDatabox(CAN_ENGINE, DB_RX_ENGINE_TSC_EEC1,
@@ -133,10 +146,23 @@ void ECCUpdateDataFromCAN(void) {
 
 }
 
+static uint8 msg_EngineLoad[8] = {0};
+static void engineLoadMessageCallback(void) {
+	uint8 DataboxNumBytes_u8 = 8;
+	can_getDatabox(CAN_ENGINE,
+			11,
+			msg_EngineLoad,
+			&DataboxNumBytes_u8
+	);
+
+	g_debug2_4 = msg_EngineLoad[2];
+}
+
 static uint8 msg_ENGINE_TEMP[8] = {0};
 static void engineTemperatureMessageCallback(void) {
 	uint8 DataboxNumBytes_u8 = 8;
-	can_getDatabox(CAN_ENGINE,DB_RX_ENGINE_TEMP,
+	can_getDatabox(CAN_ENGINE,
+			DB_RX_ENGINE_TEMP,
 			msg_ENGINE_TEMP,
 			&DataboxNumBytes_u8
 	);
@@ -160,6 +186,7 @@ EngineData ECCGetEngineData(void) {
 
 	engineData.engineTemperature = msg_ENGINE_TEMP[0] - 40;
 	engineData.engineSpeedActual = (msg_ENGINE_TSC_EEC1[3] + (msg_ENGINE_TSC_EEC1[4] << 8)) / 8;
+	engineData.engineLoad = msg_EngineLoad[2];
 
 	return engineData;
 }

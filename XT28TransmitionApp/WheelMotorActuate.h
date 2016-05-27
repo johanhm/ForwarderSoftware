@@ -15,12 +15,7 @@
 
 
 #include "api_lib_basic.h"
-#include <math.h>
-#include "WheelMotorSensor.h"
-#include "SystemPressureSensors.h"
-#include "CabinSensors.h"
 #include "XT28TransmissionCANSupport.h"
-
 
 /* Motors */
 #define	POH_CL_MOTOR_1_mA					OUT_5_POH_CL
@@ -41,37 +36,18 @@
 #define	DOH_PBRAKEVALVE2					OUT_21_DOH	//	(*Pbrake valve 2*)
 #define	DOH_PBRAKEVALVE3					OUT_22_DOH	//	(*Pbrake valve 3*)
 
-typedef enum {
-	NEUTRAL_DRIVE,
-	FORWARD_DRIVE,
-	BACKWARD_DRIVE,
-	FORWARD_OVERDRIVE
-} driveState;
+typedef struct SRControlSignals {
+	int pump_A_mEpsilon[2];
+	int pump_B_mEpsilon[2];
+	int motor_mEpsilon[6];
+} SRControlSignals;
 
-typedef enum {
-	REGULAOR_SECOUNDARY,
-	REGULATOR_SEKVENS
-
-}transmControlState;
-
-/*!
- * Get current drive state
- * @return
- */
-driveState WMAGetSetDriveState(void);
 
 /*!
  *
- * @param attemtedDriveState
- * @return
+ * @param controlSignals
  */
-driveState WMAAttemtToSetDriveStateTo(driveState attemtedDriveState);
-
-/*!
- *
- * @param gasPedal
- */
-void WMAActuate(int gasPedal);
+void WMASaturateEpsilonAndActuateMotors(SRControlSignals controlSignals);
 
 /*!
  *
@@ -85,21 +61,10 @@ void WMASetupOutputToMotorsAndPumps(void);
 void WMASetBreakState(bool state);
 
 /*!
- * Actuate the wheels to drive in a direction depending on the set state.
  *
- * @param machineDriveState
- * @param overideState
- * @param slipState
- * @param periodicCallTime_ms
- * @param pMilLowPassGasPedalSignal
+ * @return
  */
-void WMASetMotorReferenceAndActuate(driveState machineDriveState, bool overideState, bool slipState, int periodicCallTime_ms, int pMilLowPassGasPedalSignal);
-
-/*!
- *
- * @param buttonCANSendState
- */
-void WMASendMotorPWNOnCAN(bool buttonCANSendState);
+bool WMAGetBreakState(void);
 
 
 #endif /* XT28TRANSMITIONAPP_WHEELMOTORACTUATE_H_ */

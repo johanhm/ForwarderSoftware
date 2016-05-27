@@ -1,7 +1,7 @@
 
 #include "WheelMotorSensor.h"
 
-		//defines index for global frequency motor
+//defines index for global frequency motor
 #define FREQUENCY_MOTOR_1					0
 #define FREQUENCY_MOTOR_2					1
 #define FREQUENCY_MOTOR_3					2
@@ -90,6 +90,23 @@ void WMSUpdateSensorValues(void) {
 	speedData[RPM_WHEEL_5] = speedData[RPM_MOTOR_5] / 48.3;
 	speedData[RPM_WHEEL_6] = speedData[RPM_MOTOR_6] / 48.3;
 
+	speedData[RPM_WHEEL_AVG] = (speedData[RPM_WHEEL_1] + speedData[RPM_WHEEL_2] + speedData[RPM_WHEEL_3] + speedData[RPM_WHEEL_4] + speedData[RPM_WHEEL_5] + speedData[RPM_WHEEL_6]) / 6; //Average speed
+
+	if (speedData[RPM_WHEEL_AVG] == 0) {
+		speedData[RPM_WHEEL_AVG] = 1;
+	}
+
+	//LOW PASS FILTER OF SIGNALS
+	const float T_s = 0.020;
+	const float f_cutoff_speed = 0.1;
+	const float Tf_S = 1 / ( 2 * M_PI * f_cutoff_speed);
+	const float alpha_S = Tf_S / (Tf_S + T_s);
+	speedData[RPM_WHEEL_AVG_OLD_LP] = speedData[RPM_WHEEL_AVG_LP];
+	speedData[RPM_WHEEL_AVG_LP] = alpha_S * speedData[RPM_WHEEL_AVG_OLD_LP] + (1 - alpha_S) * speedData[RPM_WHEEL_AVG];
+
+
+	//sint16 act_speed = 0;
+	//act_speed = (speedData[RPM_WHEEL_AVG] * 0.1047 * 0.74 / 10) * 10;
 }
 
 
@@ -98,11 +115,9 @@ void WMSSendSensorDataOnCAN(void) {
 }
 
 int WMSGetRPMForWheel(int wheel) {
-	wheel = 0;
-	/*!
-	 * fixme ret
-	 */
-	return speedData[RPM_WHEEL_4];
+	int RPMWheel = RPM_WHEEL_1 + wheel;
+
+	return speedData[RPMWheel];
 }
 
 int WMSGetAvrageRPMForWheels(void) {

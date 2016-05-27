@@ -18,6 +18,9 @@
 #include "WheelMotorActuate.h"
 #include "AngleJointActuate.h"
 
+/* Transmission controllers */
+#include "TransmistionControlSekvens.h"
+
 /* CAN Support */
 #include "XT28TransmissionCANSupport.h"
 

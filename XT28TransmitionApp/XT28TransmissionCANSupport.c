@@ -1,8 +1,8 @@
 #include "XT28TransmissionCANSupport.h"
 
-#define DB_RX_INDEX_CAN_2					11
-#define DB_RX_INDEX_CAN_3					10
-#define DB_RX_INDEX_CAN_4					1
+#define DB_RX_INDEX_CAN_2					20
+#define DB_RX_INDEX_CAN_3					20
+#define DB_RX_INDEX_CAN_4					10
 
 #define CAN_1_NUM_RX_DATABOXES_DU16    		(100)
 #define CAN_2_NUM_RX_DATABOXES_DU16    		(100)
