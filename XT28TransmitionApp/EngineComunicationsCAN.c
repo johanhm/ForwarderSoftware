@@ -69,11 +69,13 @@ void ECCInitAndSetupEngineCANCommunications(void) {
 			CAN_ID_RX_ENGINE_TSC_EEC1,
 			CAN_EXD_DU8
 	);
+	/*
 	can_cfgRxDatabox(CAN_ENGINE,
 			DB_RX_ENGINE_TEMP,
 			CAN_ID_RX_ENGINE_TEMP,
 			CAN_EXD_DU8
 	);
+	*/
 	can_cfgRxDatabox(CAN_ENGINE,
 			DB_RX_ENGINE_HOURS_STATUS,
 			CAN_ID_RX_ENGINE_HOURS_STATUS,
@@ -155,7 +157,7 @@ static void engineLoadMessageCallback(void) {
 			&DataboxNumBytes_u8
 	);
 
-	g_debug2_4 = msg_EngineLoad[2];
+	//g_debug2_4 = msg_EngineLoad[2];
 }
 
 static uint8 msg_ENGINE_TEMP[8] = {0};
@@ -166,6 +168,7 @@ static void engineTemperatureMessageCallback(void) {
 			msg_ENGINE_TEMP,
 			&DataboxNumBytes_u8
 	);
+	g_debug3_2 = g_debug3_2 + msg_ENGINE_TEMP[0] + 1;
 }
 
 void ECCSetEngineRPMReference(int RPMReference) {
@@ -185,6 +188,9 @@ EngineData ECCGetEngineData(void) {
 	EngineData engineData;
 
 	engineData.engineTemperature = msg_ENGINE_TEMP[0] - 40;
+
+	g_debug3_1 = engineData.engineTemperature;
+
 	engineData.engineSpeedActual = (msg_ENGINE_TSC_EEC1[3] + (msg_ENGINE_TSC_EEC1[4] << 8)) / 8;
 	engineData.engineLoad = msg_EngineLoad[2];
 

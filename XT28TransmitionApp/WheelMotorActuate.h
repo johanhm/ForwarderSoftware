@@ -66,6 +66,16 @@ void WMASetBreakState(bool state);
  */
 bool WMAGetBreakState(void);
 
+/*!
+ *
+ */
+void WMACANConfigure(uint8 CANChannel);
+
+/*!
+ *
+ */
+void WMASendCurrentReferenceOnCAN(void);
+
 
 #endif /* XT28TRANSMITIONAPP_WHEELMOTORACTUATE_H_ */
 /** @}*/

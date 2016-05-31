@@ -39,7 +39,7 @@ void DTSendDMSOnCAN(uint8 CANChannel) {
 	data_au8_fun_dms_1[4] = AJSGetAngleFront() * 2 / 100; //angleData[MDEG_ANGLE_SENSOR_FRONT_1]*2/100;
 	data_au8_fun_dms_1[5] = AJSGetAngleBack() * 2 / 100; //angleData[MDEG_ANGLE_SENSOR_REAR_1]*2/100;
 	data_au8_fun_dms_1[6] = ECCGetEngineData().engineSpeedActual / 10; //Engine_speed_Act/10;
-	data_au8_fun_dms_1[7] = (uint8)ECCGetEngineData().engineTemperature;//Engine_temp;
+	data_au8_fun_dms_1[7] = (sint8)ECCGetEngineData().engineTemperature;//Engine_temp;
 
 	can_sendData(CANChannel, CAN_ID_TX_FUNCTION_INFO_DMS_1, CAN_EXD_DU8, 8, data_au8_fun_dms_1);
 

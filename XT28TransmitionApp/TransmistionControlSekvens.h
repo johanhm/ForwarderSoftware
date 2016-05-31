@@ -48,7 +48,7 @@ driveState TCSAttemtToSetDriveStateTo(driveState attemtedDriveState);
  *
  * @param gasPedal
  */
-void TCSActuate(int gasPedal, int maxSpeed);
+void TCSActuate(int gasPedal, int maxSpeed, bool pumpRegulatorState);
 
 /*!
  *

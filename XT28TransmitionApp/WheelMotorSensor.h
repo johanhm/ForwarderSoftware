@@ -48,6 +48,12 @@ void WMSUpdateSensorValues(void);
 
 /*!
  *
+ * @param CANChannel
+ */
+void WMSCANConfigure(uint8 CANChannel);
+
+/*!
+ *
  */
 void WMSSendSensorDataOnCAN(void);
 

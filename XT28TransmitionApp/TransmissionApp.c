@@ -39,8 +39,10 @@ void sys_main(void) {
 	CSConfigureCabinSensors();
 
 	/* Wheel motor sensor and actuate */
+	WMACANConfigure(CAN_1);
 	WMASetupOutputToMotorsAndPumps();
 	WMSInitAndConfigureSpeedSensors();
+	WMSCANConfigure(CAN_1);
 
 	sys_initTC(0, 10);
 
@@ -79,6 +81,7 @@ static void mainTask_10ms(void) {
 	CANSendDebuggMessage(CAN_1);
 	DTSendDMSOnCAN(CAN_1);
 	DTSendDMSOnCAN(CAN_4);
+	WMASendCurrentReferenceOnCAN();
 
 	/* Code generation test */
 	float gg = NinjaController(10,10);
@@ -109,6 +112,7 @@ static void setMachineState(void) {
 	 */
 
 	static int userMaxSpeedReference = 500;
+	static bool sekvensTranmisionPumpRegulatorState = FALSE;
 
 	switch (userPressedButton) {
 	case NONE:
@@ -130,6 +134,8 @@ static void setMachineState(void) {
 	case BUTTON_8:
 		break;
 	case BUTTON_9:
+		sekvensTranmisionPumpRegulatorState = !sekvensTranmisionPumpRegulatorState;
+		EXPSetButtonStateTo(NONE);
 		break;
 	case BUTTON_10: /* Backward drive state */
 		xt28DriveState = TCSAttemtToSetDriveStateTo(BACKWARD_DRIVE);
@@ -209,15 +215,23 @@ static void setMachineState(void) {
 		maxSpeed = 100;
 	}
 	//g_debug2_3 = maxSpeed;
-	TCSActuate( GPSGetGassPedalFilterdAndScaled() , maxSpeed);
+	TCSActuate( GPSGetGassPedalFilterdAndScaled() , maxSpeed, sekvensTranmisionPumpRegulatorState);
 	DTSetMaxValueToDisplay(maxSpeed);
 
 	/* Actuate turn state */
+	static bool driveDirection = TRUE;
+	if (TCSGetSetDriveState() == BACKWARD_DRIVE) {
+		driveDirection = FALSE;
+	} else {
+		driveDirection = TRUE;
+	}
+
 	int joystick = EXPGetJoystickXScaledValueLeftRight();
 	AJAActuate(
 			joystick,
 			CSGetCharPosition(),
-			WMSGetAvrageRPMForWheels()
+			WMSGetAvrageRPMForWheels(),
+			driveDirection
 	);
 }
 

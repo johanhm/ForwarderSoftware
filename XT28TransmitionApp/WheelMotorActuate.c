@@ -14,6 +14,11 @@ static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue
 #define	cfg_PM_KP_PM2 				400					/*Kp factor*/
 #define	cfg_PM_KI_PM2				262					/*Ki factor*/
 
+#define CAN_ID_TX_AKTUATOR_INFO_DMS_3			0x18FE1015
+#define CAN_ID_TX_AKTUATOR_INFO_DMS_4			0x18FE1016
+#define DB_TX_AKTUATOR_INFO_DMS_3			7
+#define DB_TX_AKTUATOR_INFO_DMS_4			8
+
 
 /* Function implementations */
 void WMASetupOutputToMotorsAndPumps(void) {
@@ -191,15 +196,6 @@ void WMASaturateEpsilonAndActuateMotors(SRControlSignals controlSignals) {
 	Motor_5_PWM = saturateAnInt(Motor_5_PWM, 650, 650, 155, 0);
 	Motor_6_PWM = saturateAnInt(Motor_6_PWM, 650, 650, 155, 0);
 
-/*
-	g_debug1_1 = Motor_1_PWM;
-	g_debug1_2 = Motor_2_PWM;
-	g_debug1_3 = Motor_3_PWM;
-	g_debug1_4 = Motor_4_PWM;
-	g_debug2_1 = Motor_5_PWM;
-	g_debug2_2 = Motor_5_PWM;
-*/
-
 	/* Step 3 - Actuate finaly */
 
 	out(POH_CL_MOTOR_1_mA, Motor_1_PWM);
@@ -226,17 +222,113 @@ void WMASaturateEpsilonAndActuateMotors(SRControlSignals controlSignals) {
 	Pump_2_A_PWM = saturateAnInt(Pump_2_A_PWM, 605, 605, 197, 0);
 	Pump_2_B_PWM = saturateAnInt(Pump_2_B_PWM, 605, 605, 197, 0);
 
-/*
-	g_debug3_1 = Pump_1_A_PWM;
-	g_debug3_2 = Pump_1_B_PWM;
-	g_debug3_3 = Pump_2_A_PWM;
-	g_debug3_4 = Pump_2_B_PWM;
-*/
-
 	out(POH_CL_PUMP_1_A_mA, Pump_1_A_PWM);
 	out(POH_CL_PUMP_1_B_mA, Pump_1_B_PWM);
 	out(POH_CL_PUMP_2_A_mA, Pump_2_A_PWM);
 	out(POH_CL_PUMP_2_B_mA, Pump_2_B_PWM);
+}
+
+static uint8 sendCANChannel;
+void WMACANConfigure(uint8 CANChannel) {
+	sendCANChannel = CANChannel;
+	can_cfgTxDatabox(CANChannel, DB_TX_AKTUATOR_INFO_DMS_3 ,CAN_ID_TX_AKTUATOR_INFO_DMS_3, CAN_EXD_DU8);
+	can_cfgTxDatabox(CANChannel, DB_TX_AKTUATOR_INFO_DMS_4 ,CAN_ID_TX_AKTUATOR_INFO_DMS_4, CAN_EXD_DU8);
+}
+
+
+/* Turning cylinders, FOR MESSAGE; should probably move to the AJA module */
+#define	POH_CL_TURN_FRONT_A_mA				OUT_13_POH_CL 	// (*FRONT*)
+#define	POH_CL_TURN_FRONT_B_mA				OUT_14_POH_CL
+#define	POH_CL_TURN_REAR_A_mA				OUT_15_POH_CL	//(*REAR*)
+#define	POH_CL_TURN_REAR_B_mA				OUT_16_POH_CL
+void WMASendCurrentReferenceOnCAN(void) {
+
+		/* Pump message */
+	{
+		/* AJActuate */
+		out_ts out_s1;
+		out_ts out_s2;
+		out_ts out_s3;
+		out_ts out_s4;
+
+		out_getStatusxt(POH_CL_TURN_FRONT_A_mA, &out_s1);
+		out_getStatusxt(POH_CL_TURN_FRONT_B_mA, &out_s2);
+		out_getStatusxt(POH_CL_TURN_REAR_A_mA, &out_s3);
+		out_getStatusxt(POH_CL_TURN_REAR_B_mA, &out_s4);
+
+		uint16 i_mA_Turn_Front_A = out_s1.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Turn_Front_B = out_s2.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Turn_Rear_A = out_s3.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Turn_Rear_B = out_s4.out_po_s.i_mA_u16; /* actual current in mA */
+
+		out_ts out_pa1;
+		out_ts out_pa2;
+		out_ts out_pb1;
+		out_ts out_pb2;
+
+		/* Pump currents */
+		out_getStatusxt(POH_CL_PUMP_1_A_mA, &out_pa1);
+		out_getStatusxt(POH_CL_PUMP_1_B_mA, &out_pb1);
+		out_getStatusxt(POH_CL_PUMP_2_A_mA, &out_pa2);
+		out_getStatusxt(POH_CL_PUMP_2_B_mA, &out_pb2);
+
+		uint16 i_mA_Pump_1A_act = out_pa1.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Pump_1B_act = out_pb1.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Pump_2A_act = out_pa2.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Pump_2B_act = out_pb2.out_po_s.i_mA_u16; /* actual current in mA */
+
+
+		//Construct msg AKTUATOR DMS 3
+		uint8 data_au8_akt_dms_3[8];
+		data_au8_akt_dms_3[0] = i_mA_Pump_1A_act / 3;
+		data_au8_akt_dms_3[1] = i_mA_Pump_1B_act / 3;
+		data_au8_akt_dms_3[2] = i_mA_Pump_2A_act / 3;
+		data_au8_akt_dms_3[3] = i_mA_Pump_2B_act / 3;
+		data_au8_akt_dms_3[4] = i_mA_Turn_Front_A / 3;
+		data_au8_akt_dms_3[5] = i_mA_Turn_Front_B / 3;
+		data_au8_akt_dms_3[6] = i_mA_Turn_Rear_A / 3;
+		data_au8_akt_dms_3[7] = i_mA_Turn_Rear_B / 3;
+
+		can_sendDatabox(sendCANChannel,DB_TX_AKTUATOR_INFO_DMS_3, 8, data_au8_akt_dms_3);
+	}
+		/* Motor message */
+	{
+		out_ts out_m1;
+		out_ts out_m2;
+		out_ts out_m3;
+		out_ts out_m4;
+		out_ts out_m5;
+		out_ts out_m6;
+
+		out_getStatusxt(POH_CL_MOTOR_1_mA, &out_m1);
+		out_getStatusxt(POH_CL_MOTOR_2_mA, &out_m2);
+		out_getStatusxt(POH_CL_MOTOR_3_mA, &out_m3);
+		out_getStatusxt(POH_CL_MOTOR_4_mA, &out_m4);
+		out_getStatusxt(POH_CL_MOTOR_5_mA, &out_m5);
+		out_getStatusxt(POH_CL_MOTOR_6_mA, &out_m6);
+
+
+		uint16 i_mA_Motor_1_act = out_m1.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Motor_2_act = out_m2.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Motor_3_act = out_m3.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Motor_4_act = out_m4.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Motor_5_act = out_m5.out_po_s.i_mA_u16; /* actual current in mA */
+		uint16 i_mA_Motor_6_act = out_m6.out_po_s.i_mA_u16; /* actual current in mA */
+
+		//Construct msg AKTUATOR DMS 4
+		uint8 data_au8_akt_dms_4[8];
+		data_au8_akt_dms_4[0] = i_mA_Motor_1_act / 3;
+		data_au8_akt_dms_4[1] = i_mA_Motor_2_act / 3;
+		data_au8_akt_dms_4[2] = i_mA_Motor_3_act / 3;
+		data_au8_akt_dms_4[3] = i_mA_Motor_4_act / 3;
+		data_au8_akt_dms_4[4] = i_mA_Motor_5_act / 3;
+		data_au8_akt_dms_4[5] = i_mA_Motor_6_act / 3;
+		data_au8_akt_dms_4[6] = 0;
+		data_au8_akt_dms_4[7] = 0;
+
+		can_sendDatabox(sendCANChannel,DB_TX_AKTUATOR_INFO_DMS_4, 8, data_au8_akt_dms_4);
+	}
+
 }
 
 static int saturateAnInt(int signal, int maxValue, int setMaxValue, int minValue, int setMinvalue) {

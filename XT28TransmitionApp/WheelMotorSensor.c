@@ -1,5 +1,6 @@
 
 #include "WheelMotorSensor.h"
+#include "XT28TransmissionCANSupport.h"
 
 //defines index for global frequency motor
 #define FREQUENCY_MOTOR_1					0
@@ -42,6 +43,8 @@ static int speedData[INDEX_SIZE_FREQUENCY_MOTOR] = {0};
 #define INDEX_SIZE_MOTOR		12
 static int revCount[INDEX_SIZE_MOTOR] = {0};
 //static int cm_wheeldistance_sint32[INDEX_SIZE_MOTOR] = {0};
+
+#define DB_TX_SENSOR_INFO_DMS_2				16
 
 
 /* Public Functions */
@@ -90,6 +93,17 @@ void WMSUpdateSensorValues(void) {
 	speedData[RPM_WHEEL_5] = speedData[RPM_MOTOR_5] / 48.3;
 	speedData[RPM_WHEEL_6] = speedData[RPM_MOTOR_6] / 48.3;
 
+	/* test */
+	/*
+	g_debug2_3 = speedData[RPM_WHEEL_1];
+	g_debug2_4 = speedData[RPM_WHEEL_2];
+	g_debug3_1 = speedData[RPM_WHEEL_3];
+	g_debug3_2 = speedData[RPM_WHEEL_4];
+	g_debug3_3 = speedData[RPM_WHEEL_5];
+	g_debug3_4 = speedData[RPM_WHEEL_6];
+	*/
+/* end test */
+
 	speedData[RPM_WHEEL_AVG] = (speedData[RPM_WHEEL_1] + speedData[RPM_WHEEL_2] + speedData[RPM_WHEEL_3] + speedData[RPM_WHEEL_4] + speedData[RPM_WHEEL_5] + speedData[RPM_WHEEL_6]) / 6; //Average speed
 
 	if (speedData[RPM_WHEEL_AVG] == 0) {
@@ -109,9 +123,25 @@ void WMSUpdateSensorValues(void) {
 	//act_speed = (speedData[RPM_WHEEL_AVG] * 0.1047 * 0.74 / 10) * 10;
 }
 
+static uint8 canSendChannel;
+void WMSCANConfigure(uint8 CANChannel) {
+	canSendChannel = CANChannel;
+	can_cfgTxDatabox(CANChannel, DB_TX_SENSOR_INFO_DMS_2 ,CAN_ID_TX_SENSOR_INFO_DMS_2, CAN_EXD_DU8);
+}
 
 void WMSSendSensorDataOnCAN(void) {
-	/** fixme Implement */
+	//Construct msg SENSOR DMS 2
+	uint8 data_au8_sens_dms_2[8];
+	data_au8_sens_dms_2[0] = WMSGetRPMForWheel(0);
+	data_au8_sens_dms_2[1] = WMSGetRPMForWheel(0) >> 8;
+	data_au8_sens_dms_2[2] = WMSGetRPMForWheel(0);
+	data_au8_sens_dms_2[3] = WMSGetRPMForWheel(0) >> 8;
+	data_au8_sens_dms_2[4] = WMSGetRPMForWheel(0);
+	data_au8_sens_dms_2[5] = WMSGetRPMForWheel(0) >> 8;
+	data_au8_sens_dms_2[6] = WMSGetRPMForWheel(0);
+	data_au8_sens_dms_2[7] = WMSGetRPMForWheel(0) >> 8;
+
+	can_sendDatabox(canSendChannel, DB_TX_SENSOR_INFO_DMS_2, 8, data_au8_sens_dms_2);
 }
 
 int WMSGetRPMForWheel(int wheel) {

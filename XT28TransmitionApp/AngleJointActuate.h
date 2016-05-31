@@ -64,7 +64,7 @@ void AJAInitAndSetupAngleJointActuate(void);
  * @param chairPosition
  * @param avrageWheelSpeed
  */
-void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed);
+void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed, bool driveDirectionIsForward);
 
 
 

@@ -16,6 +16,7 @@
 #define XT28TRANSMITIONAPP_ANGLEJOINTSENSOR_H_
 
 #include "api_lib_basic.h"
+#include "WheelMotorSensor.h"
 
 /*! Angle sensors of joints */
 ///@{

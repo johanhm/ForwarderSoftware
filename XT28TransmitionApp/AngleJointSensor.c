@@ -126,10 +126,10 @@ void AJSConfigureSendDatabox(uint8 CANChannel, int databoxNumber, uint32 AngleSe
 void AJSSendAngleDataOnCAN(void) {
 	/* Construct msg SENSOR DMS 3 */
 	uint8 data_au8_sens_dms_3[8];
-	data_au8_sens_dms_3[0] = 0;
-	data_au8_sens_dms_3[1] = 0;
-	data_au8_sens_dms_3[2] = 0;
-	data_au8_sens_dms_3[3] = 0;
+	data_au8_sens_dms_3[0] = WMSGetRPMForWheel(4);
+	data_au8_sens_dms_3[1] = WMSGetRPMForWheel(4) >> 8;
+	data_au8_sens_dms_3[2] = WMSGetRPMForWheel(5);
+	data_au8_sens_dms_3[3] = WMSGetRPMForWheel(5) >> 8;
 	data_au8_sens_dms_3[4] = angleData[MDEG_ANGLE_SENSOR_FRONT_1];
 	data_au8_sens_dms_3[5] = angleData[MDEG_ANGLE_SENSOR_FRONT_1] >> 8;
 	data_au8_sens_dms_3[6] = angleData[MDEG_ANGLE_SENSOR_REAR_1];

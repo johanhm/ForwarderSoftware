@@ -1,5 +1,6 @@
 
 #include "SystemPressureSensors.h"
+#include "XT28TransmissionCANSupport.h"
 
 #define ANALOG_PUMP1_PRESSURE_A				0
 #define ANALOG_PUMP1_PRESSURE_B				1
@@ -88,6 +89,19 @@ void SPSUppdateSystemPressureSensors(void) {
 		pressureData[MBAR_LP_OLD_PUMP1_PRESSURE_A + i] = pressureData[MBAR_LP_PUMP1_PRESSURE_A + i];
 		pressureData[MBAR_LP_PUMP1_PRESSURE_A + i] = alpha * pressureData[MBAR_LP_OLD_PUMP1_PRESSURE_A + i] + (1 - alpha) * pressureData[MBAR_PUMP1_PRESSURE_A + i];
 	}
+
+	/*
+	g_debug2_1 = in_getStatus(AIV_Pressure_1_A_mV);
+	g_debug2_2 = in_getStatus(AIV_Pressure_2_A_mV);
+	g_debug2_3 = in_getStatus(AIV_Pressure_1_B_mV);
+	g_debug2_4 = in_getStatus(AIV_Pressure_2_B_mV);
+	*/
+	/*
+	g_debug3_1 = in(AIV_Pressure_1_A_mV);//pressureData[MBAR_PUMP1_PRESSURE_A];
+	g_debug3_2 = in(AIV_Pressure_2_A_mV);//pressureData[MBAR_PUMP1_PRESSURE_B];
+	g_debug3_3 = in(AIV_Pressure_1_B_mV);//pressureData[MBAR_PUMP2_PRESSURE_A];
+	g_debug3_4 = in(AIV_Pressure_2_B_mV);//pressureData[MBAR_PUMP2_PRESSURE_B];
+	*/
 }
 
 int SPSGetPump1Pressure_mbar(void) {

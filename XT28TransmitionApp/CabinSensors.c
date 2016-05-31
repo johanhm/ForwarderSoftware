@@ -1,4 +1,5 @@
 #include "CabinSensors.h"
+#include "XT28TransmissionCANSupport.h"
 
 #define DIGITAL_CHAIR_FRONT					0
 #define DIGITAL_CHAIR_REAR					1
@@ -44,6 +45,8 @@ void CSUpdateCabinSensor(void) {
 
 	/* Mother's door */
 	doorDataDig = in(IN_1_AID);
+
+	//g_debug2_3 = in(IN_1_AIV);
 
 	/* Temperature */
 	Ohm_fuelmeterData= in(AIR_fuel_meter);

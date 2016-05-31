@@ -4,8 +4,11 @@
 #define IT 0.05
 #define WINDUP 3500
 
+#define FORWARD_STATE (TRUE)
+#define BACKWARD_STATE (FALSE)
+
 /* Decleration */
-static void rearPIDControl(int avrageWheelSpeed);
+static void rearPIDControl(int avrageWheelSpeed, bool resetIPart);
 static void saturateAndActuateAngleJoint(void);
 
 void AJAInitAndSetupAngleJointActuate(void) {
@@ -59,10 +62,14 @@ static uint16 PWM_turn_front_A = 0;
 static uint16 PWM_turn_front_B = 0;
 static uint16 PWM_turn_rear_A  = 0;
 static uint16 PWM_turn_rear_B  = 0;
-void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed) {
+static uint16 PWM_turn_PI_A  = 0;
+static uint16 PWM_turn_PI_B  = 0;
+
+void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed, bool driveDirectionIsForward) {
 
 	static sint32 joystick_pos = 0;
 	static sint32 joystick_neg = 0;
+	static bool driveDirectionOld = FORWARD_STATE;
 
 	/* 1. Convert excipad joystick signal */
 	sint16 MiniJoystick = joystickValue;
@@ -117,21 +124,40 @@ void AJAActuate(int joystickValue, bool chairPosition, int avrageWheelSpeed) {
 
 	case TURN_PID:
 
-		PWM_turn_front_A = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
-		PWM_turn_front_B = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
-		rearPIDControl( avrageWheelSpeed );
+		if (driveDirectionIsForward != driveDirectionOld) {
+			rearPIDControl( avrageWheelSpeed, TRUE);
+		} else {
+			rearPIDControl( avrageWheelSpeed, FALSE);
+		}
+		if (driveDirectionIsForward == FORWARD_STATE) {
+			PWM_turn_front_A = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
+			PWM_turn_front_B = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
+			PWM_turn_rear_A  = PWM_turn_PI_A;
+			PWM_turn_rear_B  = PWM_turn_PI_B;
+		} else {
+			PWM_turn_front_A = PWM_turn_PI_B;
+			PWM_turn_front_B = PWM_turn_PI_A;
+			PWM_turn_rear_A  = joystick_pos * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
+			PWM_turn_rear_B  = joystick_neg * (TurningValve_Imax-TurningValve_Imin) / 1000 + TurningValve_Imin;
+
+		}
 		/* This function sets the last two pwn, with the use of globals */
 	}
 
+	driveDirectionOld = driveDirectionIsForward;
 	/* 3. Actuate */
 	saturateAndActuateAngleJoint();
 }
 
-static void rearPIDControl(int avrageWheelSpeed) {
+static void rearPIDControl(int avrageWheelSpeed, bool resetIPart) {
 
 	//--Turning PID parameters --//
 	static sint32 TurningData = 0;
 	static float errorAccT = 0;
+
+	if (resetIPart == TRUE) {
+		errorAccT = 0;
+	}
 
 	sint32 Front_angle = 0;
 
@@ -192,16 +218,16 @@ static void rearPIDControl(int avrageWheelSpeed) {
 		if ( (TurningData) < 0) {
 			Turn_AB_switch = DEADBAND_STATE;
 		}
-		PWM_turn_rear_A = PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;
-		PWM_turn_rear_B = 0;
+		PWM_turn_PI_A = PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;
+		PWM_turn_PI_B = 0;
 		break;
 
 	case TURN_B_STATE:
 		if ( (TurningData) > 0) {
 			Turn_AB_switch = DEADBAND_STATE;
 		}
-		PWM_turn_rear_A = 0;
-		PWM_turn_rear_B = -PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;
+		PWM_turn_PI_A = 0;
+		PWM_turn_PI_B = -PID_TURN * (TurningValve_Imed - TurningValve_Imin) / 1000 + TurningValve_Imin;
 		break;
 	}
 }
