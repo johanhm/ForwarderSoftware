@@ -1,0 +1,356 @@
+ 
+ .page-header {
+    padding-bottom: 9px;
+    margin: 15px 0 20px;
+}
+
+ .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+     color:white;
+     background-color:#689F38;
+}
+
+div.title.h1 {
+	font-size: 36px;
+	font-weight: 500;
+	font-family: Roboto, sans-serif
+}
+
+div.ingroups {
+    font-size: 16pt;
+    width: 100%;
+    text-align: left;
+    padding-top: 5pt;
+}
+
+h2.groupheader {
+    border-bottom: 2px solid #2F4F4F;
+    color: #2F4F4F;
+}
+
+div.directory {
+    margin: 10px 0px;
+    border-top: 0px solid rgba(163, 198, 47, 0.41);
+    border-bottom: 0px solid rgba(163, 198, 47, 0.41);
+    width: 100%;
+}
+
+div.caption {
+	padding-bottom: 12pt;
+}
+
+html {
+   height: 100%;
+}
+
+body {
+   min-height: 100%;
+}
+
+img {
+    width: 80%;
+}
+
+div.image img[src="support28api.png"]{ 
+    width: 45%; 
+}
+
+div.image img[src="xt28Bild.jpeg"]{ 
+    width: 70%; 
+    box-shadow: 3px 3px 5px #888888;
+    border-radius: 3pt;
+}
+
+
+
+.pannel-default > .active  {
+    border-color: red;
+}
+
+
+footer h2 {
+    color: #fff;
+    line-height: 60px;
+    font-size: 24px;
+    border-bottom: 3px solid #505346;
+}
+
+footer {
+    width: 100%;
+    padding-bottom: 30px;
+    background-color: #5e5e5e;
+    color: #f5f9ea;
+    z-index: 100;
+    position: relative;
+    font-size: .77777em;
+}
+
+footer a, footer a:link, footer a:visited {
+    color: #f5f9ea;
+}
+
+td.memItemLeft > a, td.memItemLeft {
+    font-family: Menlo,monospace;
+    font-weight: bold;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    
+}
+
+.navbar-default {
+    background-color: #9ac72e;
+    border-bottom: 3px solid #6d9312;
+}
+
+.navbar-default .navbar-brand {
+    color: white;
+}
+
+body {
+    background-color: #f5f9ea;
+}
+
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+    color: white;
+    background-color: transparent;
+}
+
+hr.footer {
+    border-top: 0pt
+}
+
+td.memname {
+  color: blue;
+  font-family: Menlo,monospace;
+  font-size: 15px;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+table.memname {
+  display: block;
+  overflow-x: auto;
+}
+
+.paramtype {
+    color: purple;
+    font-family: Menlo,monospace;
+    font-size: 15px;
+}
+.paramname {
+    color: darkgreen;
+    font-family: Menlo,monospace;
+    font-size: 15px;
+}
+
+/* Custom Look and feel - Can be edited
+----------------------------------- */
+#navrow1, #navrow2, #navrow3, #navrow4, #navrow5{
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.adjust-right {
+	margin-left: 30px !important;
+	font-size: 1.15em !important;
+}
+
+/* DOXYGEN Code Styles - These are from doxygen but can be changed to fit the theme
+----------------------------------- */
+
+a.qindex {
+    font-weight: bold;
+}
+
+a.qindexHL {
+    font-weight: bold;
+    background-color: #9CAFD4;
+    color: #ffffff;
+    border: 1px double #869DCA;
+}
+
+.contents a.qindexHL:visited {
+    color: #ffffff;
+}
+
+a.code, a.code:visited, a.line, a.line:visited {
+    color: #4665A2;
+}
+
+a.codeRef, a.codeRef:visited, a.lineRef, a.lineRef:visited {
+    color: #4665A2;
+}
+
+/* @end */
+
+dl.el {
+    margin-left: -1cm;
+}
+
+pre.fragment {
+    border: 1px solid #C4CFE5;
+    background-color: #FBFCFD;
+    padding: 4px 6px;
+    margin: 4px 8px 4px 2px;
+    overflow: auto;
+    word-wrap: break-word;
+    font-size:  9pt;
+    line-height: 125%;
+    font-family: monospace, fixed;
+    font-size: 105%;
+}
+
+div.fragment {
+    padding: 4px 6px;
+    margin: 4px 8px 4px 2px;
+    border: 1px solid rgba(163, 198, 47, 0.41);
+}
+
+div.well {
+	width: auto
+}
+
+div.line {
+    font-family: Menlo,monospace;
+    font-size: 13px;
+    min-height: 13px;
+    line-height: 1.0;
+    text-wrap: unrestricted;
+    white-space: -moz-pre-wrap; /* Moz */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: pre-wrap;      /* CSS3  */
+    word-wrap: break-word;      /* IE 5.5+ */
+    text-indent: -53px;
+    padding-left: 53px;
+    padding-bottom: 0px;
+    margin: 0px;
+    -webkit-transition-property: background-color, box-shadow;
+    -webkit-transition-duration: 0.5s;
+    -moz-transition-property: background-color, box-shadow;
+    -moz-transition-duration: 0.5s;
+    -ms-transition-property: background-color, box-shadow;
+    -ms-transition-duration: 0.5s;
+    -o-transition-property: background-color, box-shadow;
+    -o-transition-duration: 0.5s;
+    transition-property: background-color, box-shadow;
+    transition-duration: 0.5s;
+}
+
+div.line.glow {
+    background-color: cyan;
+    box-shadow: 0 0 10px cyan;
+}
+
+
+span.lineno {
+    padding-right: 4px;
+    text-align: right;
+    border-right: 2px solid #0F0;
+    background-color: #E8E8E8;
+    white-space: pre;
+}
+span.lineno a {
+    background-color: #D8D8D8;
+}
+
+span.lineno a:hover {
+    background-color: #C8C8C8;
+}
+
+div.groupHeader {
+    margin-left: 16px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+div.groupText {
+    margin-left: 16px;
+    font-style: italic;
+}
+
+/* @group Code Colorization */
+
+span.keyword {
+    color: rgba(170,51,145,1);
+}
+
+span.keywordtype {
+    color: rgba(92,38,153,1);
+}
+
+span.keywordflow {
+    color: rgba(170,51,145,1);
+}
+
+span.comment {
+    color: green;
+}
+
+span.preprocessor {
+    color: #806020
+}
+
+span.stringliteral {
+    color: #002080
+}
+
+span.charliteral {
+    color: #008080
+}
+
+span.vhdldigit {
+    color: #ff00ff
+}
+
+span.vhdlchar {
+    color: #000000
+}
+
+span.vhdlkeyword {
+    color: #700070
+}
+
+span.vhdllogic {
+    color: #ff0000
+}
+
+blockquote {
+    background-color: #F7F8FB;
+    border-left: 2px solid #9CAFD4;
+    margin: 0 24px 0 4px;
+    padding: 0 12px 0 16px;
+}
+
+table.table {
+	width: auto;
+	min-width: 80%;
+	border: 2px solid transparent;
+	table-layout: fixed;
+    word-wrap: break-word;
+    overflow-x: auto;
+    display: inline-block;
+}
+
+a {
+    color: #4665A2;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.contents a:visited {
+    color: #4665A2;
+}
+
+ul.tablist.nav.nav-pills.nav-justified {
+	color: darkgreen;
+	
+}
+
+#content {
+	min-height: 60vh;
+}
+
+p.formulaDsp {
+    text-align: center;
+    overflow-x: auto;
+}
+
