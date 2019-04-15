@@ -8,7 +8,7 @@ Project information at [Skogforsk](https://www.skogforsk.se/kunskap/kunskapsbank
 
 ### Docs
 
-C-API docs generated using Doxygen. Documentation at https://johanhm.github.io/ForwarderSoftware/
+C-API docs generated using Doxygen. Documentation at https://johanhm.github.io/forwarder-software/
 
 ### More info
 
